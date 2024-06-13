@@ -1,0 +1,53 @@
+import React, { useState } from 'react';
+import StateDataKeyDefinitionForm from "./StateDataKeyDefinitionForm";
+
+function StateConfigOptions() {
+    const [stateConfig, setStateConfig] = useState({
+        primary_key: [],
+        query_state_inheritance: [],
+        remap_query_state_columns: [],
+        template_columns: [],
+    });
+
+    const handleAddField = (e, field) => {
+        e.preventDefault(); // Prevent form submission or page refresh
+        setStateConfig(prev => ({
+            ...prev,
+            [field]: [...prev[field], { name: '', alias: '', required: false }]
+        }));
+    };
+
+    const handleFieldChange = (field, index, newData) => {
+        const updatedFields = [...stateConfig[field]];
+        updatedFields[index] = newData;
+        setStateConfig(prev => ({ ...prev, [field]: updatedFields }));
+    };
+
+    const handleDeleteField = (field, index) => {
+        const updatedFields = [...stateConfig[field]];
+        updatedFields.splice(index, 1);
+        setStateConfig(prev => ({ ...prev, [field]: updatedFields }));
+    };
+
+    return (
+        <div>
+            {/* Repeat this structure for each of the four properties */}
+            <div>
+                <h3>Primary Key</h3>
+                {stateConfig.primary_key.map((item, index) => (
+                    <StateDataKeyDefinitionForm
+                        key={index}
+                        dataKeyDefinition={item}
+                        onChange={(newData) => handleFieldChange('primary_key', index, newData)}
+                        onDelete={() => handleDeleteField('primary_key', index)}
+                    />
+                ))}
+                <button onClick={(e) => handleAddField(e,'primary_key')}>Add Primary Key</button>
+            </div>
+            {/* Query State Inheritance, Remap Query State Columns, Template Columns */}
+            {/* Implement similar blocks for the other fields */}
+        </div>
+    );
+}
+
+export default StateConfigOptions

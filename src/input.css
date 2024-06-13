@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        font-family: "Roboto", system-ui, sans-serif;
+    }
+
+    label {
+        @apply text-label block mb-2 font-semibold text-gray-700;
+    }
+
+    h1 {
+        @apply uppercase block font-semibold text-blue-100 antialiased font-sans;
+    }
+
+    p {
+        @apply text-paragraph mb-2 antialiased;
+    }
+
+    ul {
+        @apply mb-3 pl-5 list-disc text-gray-600;
+    }
+
+    li {
+        @apply text-paragraph;
+    }
+
+    /*@font-face {*/
+    /*    font-family: 'Roboto';*/
+    /*    font-style: normal;*/
+    /*    font-weight: 400;*/
+    /*    font-display: swap;*/
+    /*    src: url(/fonts/Roboto.woff2) format('woff2');*/
+    /*}*/
+}
+
+body {
+    @apply font-sans;
+}

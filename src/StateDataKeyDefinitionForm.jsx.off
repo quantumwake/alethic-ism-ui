@@ -1,0 +1,30 @@
+function StateDataKeyDefinitionForm({ dataKeyDefinition, onChange, onDelete }) {
+    return (
+        <div className="flex items-center space-x-2 mb-2">
+            <input
+                type="text"
+                placeholder="Name"
+                value={dataKeyDefinition.name}
+                onChange={e => onChange({...dataKeyDefinition, name: e.target.value})}
+                className="input"
+            />
+            <input
+                type="text"
+                placeholder="Alias"
+                value={dataKeyDefinition.alias || ''}
+                onChange={e => onChange({...dataKeyDefinition, alias: e.target.value})}
+                className="input"
+            />
+            <input
+                type="checkbox"
+                checked={dataKeyDefinition.required || false}
+                onChange={e => onChange({...dataKeyDefinition, required: e.target.checked})}
+                className="checkbox"
+            />
+            <span>Required</span>
+            <button onClick={onDelete} className="delete-button">Delete</button>
+        </div>
+    );
+}
+
+export default StateDataKeyDefinitionForm
