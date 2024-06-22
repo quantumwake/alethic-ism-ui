@@ -26,7 +26,12 @@ const useStore = create(
             userId: null,
             setUserId: (userId) => set({ userId: userId }),
 
+            selectedEdgeId: null,
+            setSelectedEdgeId: (selectedEdgeId) => set({ selectedEdgeId: selectedEdgeId }),
+
+            //
             createUserProfile: async(userDetails) => {
+
                 const response = await fetch(`${get().ISM_API_BASE_URL}/user`, {
                     method: 'POST',
                     credentials: 'include',
@@ -34,6 +39,7 @@ const useStore = create(
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(userDetails),
+                    redirect: 'follow', // Explicitly follow redirects
                 });
 
                 if (!response.ok) {
@@ -66,10 +72,12 @@ const useStore = create(
 
 
             // test query state
-            forwardState: async(stateId, processorId) => {
+            // forwardState: async(stateId, processorId) => {
+            executeProcessorStateRoute: async(route_id) => {
                 try {
 
-                    const response = await fetch(`${get().ISM_API_BASE_URL}/route/${stateId}/${processorId}/forward/complete`, {
+                    // const response = await fetch(`${get().ISM_API_BASE_URL}/route/${stateId}/${processorId}/forward/complete`, {
+                    const response = await fetch(`${get().ISM_API_BASE_URL}/processor/state/route/${route_id}`, {
                         method: 'POST',
                         credentials: 'include',
                         headers: {
@@ -114,6 +122,23 @@ const useStore = create(
                 return response.json()
             },
 
+            insertOrUpdateTemplate: async (instructionTemplate) => {
+                set((state) => {
+                    // Check if the template already exists in the state store
+                    const existingIndex = state.templates.findIndex(template => template.template_id === instructionTemplate.template_id);
+
+                    if (existingIndex !== -1) {
+                        // Update the existing template
+                        const updatedTemplates = state.templates.map((template, index) =>
+                            index === existingIndex ? instructionTemplate : template
+                        );
+                        return { templates: updatedTemplates };
+                    } else {
+                        // Insert the new template
+                        return { templates: [...state.templates, instructionTemplate] };
+                    }
+                });
+            },
             // manage templates (e.g. language templates, code templates, other types of templates used for instruction execution)
             createTemplate: async (instructionTemplate) => {
                 try {
@@ -133,11 +158,8 @@ const useStore = create(
                     }
 
                     // update the project state
-                    const newInstructionTemplate = await response.json();
-                    set((state) => ({
-                        templates: [...state.templates, newInstructionTemplate],
-                    }));
-
+                    const newInstructionTemplate = await response.json()
+                    await get().insertOrUpdateTemplate(newInstructionTemplate)
                     return true;
                 } catch (error) {
                     console.error('Failed to add project:', error);
@@ -152,6 +174,8 @@ const useStore = create(
             setTemplates: (instructions) => set({ templates: instructions }),
             fetchTemplates: async (projectId) => {
                 try {
+                    set({ setTemplates: []});
+
                     const response = await fetch(`${get().ISM_API_BASE_URL}/project/${projectId}/templates`);
                     const templates = await response.json();
                     if (response.ok) {
@@ -244,27 +268,43 @@ const useStore = create(
                     console.error('Failed to fetch projects:', error);
                 }
             },
-            createProcessorState: async (processorId, stateId, direction) => {
-                if (!processorId || !stateId || !direction) {
-                    console.log(`warning: invalid processor state association, processorId: ${processorId}, stateId: ${stateId}, direction: ${direction}`)
-                }
+            deleteProcessorStateWithWorkflowEdge: async(id) => {
+                return await get().deleteWorkflowEdge(id).then(() => {
+                    get().deleteProcessorState(id).then(() => {
+                        const {workflowEdges} = get(); // Get the current state of workflowNodes
+                        const updatedEdges = workflowEdges.filter(edge => edge.id !== id);
 
-                let processorData = get().getNodeData(processorId)
-                let associatedStates = processorData.associated_states || []
+                        set((state) => ({
+                            workflowEdges: updatedEdges,
+                        }));
+                    })
+                })
+            },
+            deleteProcessorState: async (routeId) => {
+                try {
+                    const response = await fetch(`${get().ISM_API_BASE_URL}/processor/state/route/${routeId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
 
-                const processorStateObject =
-                    {
-                        "processor_id": processorId,
-                        "state_id": stateId,
-                        "direction": direction
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
+                } catch (error) {
+                    console.error(`Failed to delete state node configuration definition key  with id ${routeId}: `, error);
+                }
+            },
+            // createProcessorState: async (id, processorId, stateId, direction) => {
+            createProcessorState: async (processorState) => {
 
-                const response = await fetch(`${get().ISM_API_BASE_URL}/processor/state/create`, {
+                const response = await fetch(`${get().ISM_API_BASE_URL}/processor/state/route`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(processorStateObject),
+                    body: JSON.stringify(processorState),
                 });
 
                 if (!response.ok) {
@@ -273,6 +313,10 @@ const useStore = create(
 
                 // set only if the processor state is ok
                 if (response.ok) {
+                    const processorId = processorState.processor_id
+                    let processorData = get().getNodeData(processorId)
+                    let associatedStates = processorData.associated_states || []
+
                     // append the newly created processor state, this will provide an updated list of ids if any
                     let associatedStateResponse = await response.json();
                     associatedStates = [...associatedStates, associatedStateResponse]
@@ -397,6 +441,8 @@ const useStore = create(
             workflowNodes: [],
             fetchWorkflowNodes: async (projectId) => {
                 try {
+                    set({ workflowNodes: []});
+
                     const response = await fetch(`${get().ISM_API_BASE_URL}/project/${projectId}/workflow/nodes`);
                     const nodes = await response.json();
 
@@ -713,6 +759,8 @@ const useStore = create(
             workflowEdges: [],
             fetchWorkflowEdges: async (projectId) => {
                 try {
+                    set({ workflowEdges: []});
+
                     const response = await fetch(`${get().ISM_API_BASE_URL}/project/${projectId}/workflow/edges`);
                     const edges = await response.json();
 
@@ -725,7 +773,7 @@ const useStore = create(
                         sourceHandle: edge.source_handle,
                         targetHandle: edge.target_handle,
                         type: edge.type,
-                        animated: true
+                        animated: false
                     }));
 
                     set({ workflowEdges: updatedEdges });
@@ -741,7 +789,7 @@ const useStore = create(
                 try {
                     const edge = get().findWorkflowEdgeById(edgeId)
 
-                    const response = await fetch(`${get().ISM_API_BASE_URL}/workflow/edge/delete`, {
+                    const response = await fetch(`${get().ISM_API_BASE_URL}/workflow/edge`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -759,43 +807,96 @@ const useStore = create(
                     console.error('Failed to delete node:', error);
                 }
             },
-            createNewEdge: async (edge) => {
-                try {
-                    const response = await fetch(`${get().ISM_API_BASE_URL}/workflow/edge/create`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(edge),
-                    });
+            createProcessorStateWithWorkflowEdge: async (connection) => {
+                // createProcessorState(connection.id, targetNode.id, sourceNode.id, "INPUT")
 
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
+                const sourceNode = get().getNode(connection.source)
+                const targetNode = get().getNode(connection.target)
+                const sourceType = sourceNode.type
+                const targetType = targetNode.type
 
-                    const newEdge = await response.json();
-
-                    // TODO temporary hack for state type
-
-                    const updatedEdge = {
-                        id: newEdge.source_node_id + ":" + newEdge.target_node_id,
-                        source: newEdge.source_node_id,
-                        target: newEdge.target_node_id,
-                        sourceHandle: newEdge.source_handle,
-                        targetHandle: newEdge.target_handle,
-                        type: newEdge.type,
-                        // edge_label: newEdge
-                        animated: true, // or based on the response if your API specifies this
-                    };
-
-                    // Update the local Zustand store
-                    set((state) => ({
-                        workflowEdges: [...state.workflowEdges, updatedEdge],
-                    }));
-
-                } catch (error) {
-                    console.error('Failed to create a new edge:', error);
+                // check to ensure that the source node to the target node is not of same type
+                if (sourceType === targetType) {
+                    console.error(`unable to connect ${sourceType} to ${targetType}, invalid connection`)
+                    return
                 }
+
+                // persist the workflow edge configuration
+                let newConnection= {
+                    source_node_id: connection.source,
+                    target_node_id: connection.target,
+                    source_handle: connection.sourceHandle,
+                    target_handle: connection.targetHandle,
+                    type: 'default',
+                    edge_label: "", // TODO make it editable?
+                    animated: false,
+                }
+
+                // if the target node is a processor then the target node id is a processor id
+                if (targetNode.type.startsWith('processor')) {
+                    newConnection.type = 'state_auto_stream_playable_edge'
+                    await get().createNewEdge(newConnection).then((updatedEdge) => {
+                        get().createProcessorState(
+                            {
+                                "id": updatedEdge.id,
+                                "processor_id": updatedEdge.target,
+                                "state_id": updatedEdge.source,
+                                "direction": "INPUT"
+                            }
+                        )
+                    })
+                }
+
+                // if the target node is a state then the target node id is a state id
+                if (targetNode.type.startsWith('state')) {
+                    newConnection.type = 'default'
+                    await get().createNewEdge(newConnection).then((updatedEdge) => {
+                        get().createProcessorState(
+                            {
+                                "id": updatedEdge.id,
+                                "processor_id": updatedEdge.source,
+                                "state_id": updatedEdge.target,
+                                "direction": "OUTPUT"
+                            }
+                        )
+                    })
+                }
+                // get().createNewEdge(edge).then({
+                //     get().createProcessorState(connection.id, targetNode.id, sourceNode.id, "INPUT")
+                // })
+            },
+            createNewEdge: async (edge) => {
+                const response = await fetch(`${get().ISM_API_BASE_URL}/workflow/edge/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(edge),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const newEdge = await response.json();
+
+                const updatedEdge = {
+                    id: newEdge.source_node_id + ":" + newEdge.target_node_id,
+                    source: newEdge.source_node_id,
+                    target: newEdge.target_node_id,
+                    sourceHandle: newEdge.source_handle,
+                    targetHandle: newEdge.target_handle,
+                    type: newEdge.type,
+                    // edge_label: newEdge
+                    animated: false, // or based on the response if your API specifies this
+                };
+
+                // Update the local Zustand store
+                set((state) => ({
+                    workflowEdges: [...state.workflowEdges, updatedEdge],
+                }));
+
+                return updatedEdge
             },
             setWorkflowEdges: (edges) => set({ workflowEdges: edges }),
         }),

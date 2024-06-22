@@ -15,14 +15,14 @@ const useEdgesStateSynced = () => {
         // Apply changes directly
         const updatedEdges = applyNodeChanges(changes, workflowEdges);
         console.log('Updated edges:', updatedEdges);
-
-        // check for any deletions
-        changes.forEach((change: any) => {
-            if (change.type === 'remove') {
-                console.log(`removing edge ${change})`)
-                deleteWorkflowEdge(change.id)
-            }
-        })
+        //
+        // // check for any deletions
+        // changes.forEach((change: any) => {
+        //     if (change.type === 'remove') {
+        //         console.log(`removing edge ${change})`)
+        //         deleteWorkflowEdge(change.id)
+        //     }
+        // })
 
         // Update Zustand store directly with the new edges array
         setWorkflowEdges(updatedEdges);

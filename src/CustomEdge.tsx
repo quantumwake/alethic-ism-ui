@@ -7,8 +7,9 @@ import {
     useReactFlow,
 } from 'reactflow';
 
-import {PlayPauseIcon} from "@heroicons/react/24/outline";
 import useStore from "./store";
+import {faPlay, faRemove} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                                                         sourcePosition, targetPosition,
@@ -16,10 +17,13 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                                                         markerEnd}: EdgeProps) {
 
 
+    const [isHovered, setIsHovered] = useState(false);
     const [edge, setEdge] = useState()
     const [status, setStatus] = useState('')
     const processorStates = useStore(state => state.processorStates)
-    const {workflowEdges, findWorkflowEdgeById, forwardState} = useStore()
+    const {workflowEdges, findWorkflowEdgeById, deleteProcessorStateWithWorkflowEdge, executeProcessorStateRoute} = useStore()
+    const {selectedEdgeId, setSelectedEdgeId} = useStore()
+    const isSelected = selectedEdgeId === id;
 
     const getEdgeType = () => {
         if (edge) {
@@ -55,19 +59,38 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
 
     }, [processorStates])
 
-    const onEdgeClick = (edgeId: string) => {
+    // const onEdgeClick = (edgeId: string) => {
+    //     console.log(`hello world edge id: ${edgeId}`)
+    //     const edge = findWorkflowEdgeById(edgeId)
+    //     if (edge) {
+    //         const stateId = edge.source
+    //         const processorId = edge.target
+    //
+    //
+    //         console.log(`executing state id: ${stateId} with processor id ${processorId}`)
+    //         executeProcessorStateRoute(stateId, processorId)
+    //     }
+    // }
+
+    const onEdgeDelete = (edgeId: string) => {
+        deleteProcessorStateWithWorkflowEdge(edgeId)
+        // deleteProcessorState(edgeId)
+    }
+
+    const onEdgePlayClick = (edgeId: string) => {
         console.log(`hello world edge id: ${edgeId}`)
         const edge = findWorkflowEdgeById(edgeId)
         if (edge) {
-
             const stateId = edge.source
             const processorId = edge.target
 
             console.log(`executing state id: ${stateId} with processor id ${processorId}`)
 
-            forwardState(stateId, processorId)
+            const route_id = edge.id
+            executeProcessorStateRoute(route_id)
+            // forwardState(stateId, processorId)
         }
-    };
+    }
 
     const onEdgeHover = (edgeId: string) => {
         console.log(`hovering over edge ${edgeId}`)
@@ -102,42 +125,65 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
     return (
         <>
             {/*<BaseEdge path={edgePath} markerEnd={markerEnd} style={style}/>*/}
-            <path
-                id={id}
-                fill="none"
-                stroke="red"
-                strokeWidth="2.0"
-                className="animated"
-                d={edgePath}
-                markerEnd={markerEnd}
-            />
-            <EdgeLabelRenderer>
-                <div
-                    style={{
-                        position: 'absolute',
-                        transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-                        fontSize: 12,
-                        // everything inside EdgeLabelRenderer has no pointer events by default
-                        // if you have an interactive element, set pointer-events: all
-                        pointerEvents: 'all',
-                    }}
-                    className="nodrag nopan"
-                >
-                    <div className="flex flex-row">
-                        <div className= {statusColors(status) + " p-1 border-black shadow-md shadow-gray-200 align-middle text-gray-700"}>
-                            {status}
-                        </div>
+                <svg>
+                    <g>
+                        {/* Path to handle hover and click events */}
+                        <path
+                            id={id}
+                            fill="none"
+                            strokeWidth="3"
+                            d={edgePath}
+                            className={`${
+                                isSelected ? 'stroke-red-500' :
+                                    isHovered ? 'stroke-gray-800' :
+                                        'stroke-blue-700'
+                            }`}
+                            onClick={() => setSelectedEdgeId(id)}
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                            style={{
+                                cursor: 'pointer',
+                                strokeDasharray: 4,
+                            }}
+                        />
+                    </g>
+                </svg>
 
-                        {getEdgeType() === "state_auto_stream_playable_edge" && (
+
+                <EdgeLabelRenderer>
+                    <div
+                        style={{
+                            position: 'absolute',
+                            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+                            fontSize: 12,
+                            // everything inside EdgeLabelRenderer has no pointer events by default
+                            // if you have an interactive element, set pointer-events: all
+                            pointerEvents: 'all',
+                        }}
+                        className="nodrag nopan"
+                    >
+                        <div className="flex flex-row">
+                            <div
+                                className={statusColors(status) + " p-1 border-black shadow-md shadow-gray-200 align-middle text-gray-700"}>
+                                {status}
+                            </div>
+
+                            {getEdgeType() === "state_auto_stream_playable_edge" && (
+                                <button
+                                    onClick={() => onEdgePlayClick(id)}
+                                    className="ml-1 px-1.5 py-0.5 bg-emerald-500 text-white rounded-sm hover:bg-emerald-200 focus:outline-none">
+                                    <FontAwesomeIcon icon={faPlay}/>
+                                </button>
+                            )}
+
                             <button
-                                onClick={() => onEdgeClick(id)}
-                                className="ml-1 px-1.5 py-0.5 bg-emerald-500 text-white rounded-sm hover:bg-emerald-200 focus:outline-none">
-                                <PlayPauseIcon className="h-6 w-4"/>
+                                onClick={() => onEdgeDelete(id)}
+                                className="ml-1 px-1.5 py-0.5 bg-red-500 text-white rounded-sm hover:bg-pink-700 focus:outline-none">
+                                <FontAwesomeIcon icon={faRemove}/>
                             </button>
-                        )}
+                        </div>
                     </div>
-                </div>
-            </EdgeLabelRenderer>
+                </EdgeLabelRenderer>
         </>
     );
 }

@@ -18,9 +18,19 @@ module.exports = {
                 '5xl': '3rem',
                 '6xl': '4rem',
                 'label': '1rem',
-                'paragraph': '.875rem'
+                'paragraph': '.875rem',
+                // 'dasharray': 'none'
             }
         }
     },
-    plugins: [],
+    plugins: [
+        function({ addUtilities }) {
+            const newUtilities = {
+                '.stroke-nodash': {
+                    strokeDasharray: 'none',
+                },
+            };
+            addUtilities(newUtilities);
+        },
+    ],
 }

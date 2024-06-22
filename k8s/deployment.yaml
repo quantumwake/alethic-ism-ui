@@ -22,41 +22,48 @@ spec:
               secretKeyRef:
                 name: alethic-ism-ui-secret
                 key: REACT_APP_ENVIRONMENT
+
           - name: REACT_APP_ISM_API_BASE_URL
             valueFrom:
               secretKeyRef:
                 name: alethic-ism-ui-secret
                 key: REACT_APP_ISM_API_BASE_URL
-          - name: REACT_APP_API_KEY
+
+          - name: REACT_APP_FIREBASE_API_KEY
             valueFrom:
               secretKeyRef:
                 name: alethic-ism-ui-secret
-                key: REACT_APP_API_KEY
-          - name: REACT_APP_AUTH_DOMAIN
+                key: REACT_APP_FIREBASE_API_KEY
+
+          - name: REACT_APP_FIREBASE_AUTH_DOMAIN
             valueFrom:
               secretKeyRef:
                 name: alethic-ism-ui-secret
-                key: REACT_APP_AUTH_DOMAIN
-          - name: REACT_APP_PROJECT_ID
+                key: REACT_APP_FIREBASE_AUTH_DOMAIN
+
+          - name: REACT_APP_FIREBASE_PROJECT_ID
             valueFrom:
               secretKeyRef:
                 name: alethic-ism-ui-secret
-                key: REACT_APP_PROJECT_ID
-          - name: REACT_APP_STORAGE_BUCKET
+                key: REACT_APP_FIREBASE_PROJECT_ID
+
+          - name: REACT_APP_FIREBASE_STORAGE_BUCKET
             valueFrom:
               secretKeyRef:
                 name: alethic-ism-ui-secret
-                key: REACT_APP_STORAGE_BUCKET
-          - name: REACT_APP_MESSAGING_SENDER_ID
+                key: REACT_APP_FIREBASE_STORAGE_BUCKET
+
+          - name: REACT_APP_FIREBASE_MESSAGING_SENDER_ID
             valueFrom:
               secretKeyRef:
                 name: alethic-ism-ui-secret
-                key: REACT_APP_MESSAGING_SENDER_ID
-          - name: REACT_APP_APP_ID
+                key: REACT_APP_FIREBASE_MESSAGING_SENDER_ID
+
+          - name: REACT_APP_FIREBASE_APP_ID
             valueFrom:
               secretKeyRef:
                 name: alethic-ism-ui-secret
-                key: REACT_APP_APP_ID
+                key: REACT_APP_FIREBASE_APP_ID
         ports:
         - containerPort: 3000
         imagePullPolicy: Always

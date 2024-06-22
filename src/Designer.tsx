@@ -64,7 +64,8 @@ const Designer = () => {
     const createNewEdge = useStore((state) => state.createNewEdge)
     const selectedProjectId = useStore((state) => state.selectedProjectId)
     const getNode = useStore((state) => state.getNode)
-    const createProcessorState = useStore((state) => state.createProcessorState)
+    const createProcessorStateWithWorkflowEdge = useStore(state => state.createProcessorStateWithWorkflowEdge)
+    // const createProcessorState = useStore((state) => state.createProcessorState)
 
     const {workflowEdges, setWorkflowEdges, workflowNodes, setWorkflowNodes} = useStore(state => ({
         workflowEdges: state.workflowEdges,
@@ -92,42 +93,13 @@ const Designer = () => {
 
     const onConnect: OnConnect = useCallback(
         (connection) => {
-            const sourceNode = getNode(connection.source)
-            const targetNode = getNode(connection.target)
-
-            const sourceType = sourceNode.type
-            const targetType = targetNode.type
-
-            if (sourceType === targetType) {
-                console.error(`unable to connect ${sourceType} to ${targetType}, invalid connection`)
-            }
-
-            let newConnection= {
-                source_node_id: connection.source,
-                target_node_id: connection.target,
-                source_handle: connection.sourceHandle,
-                target_handle: connection.targetHandle,
-                type: 'default',
-                edge_label: "", // TODO make it editable?
-                animated: true,
-            }
-
-            if (targetNode.type.startsWith('processor')) {
-                createProcessorState(targetNode.id, sourceNode.id, "INPUT")
-                newConnection.type = 'state_auto_stream_playable_edge'
-                createNewEdge(newConnection)
-            } else if (targetNode.type.startsWith('state')) {
-                createProcessorState(sourceNode.id, targetNode.id, "OUTPUT")
-                newConnection.type = 'default'
-                createNewEdge(newConnection)
-            }
-
+            createProcessorStateWithWorkflowEdge(connection)
         },
         [workflowEdges, setEdges, getNode]
     );
 
 
-    const onDrop = (event: DragEvent) => {
+    const onDrop = async (event: DragEvent) => {
         event.preventDefault();
 
         const type = event.dataTransfer.getData('application/reactflow');
