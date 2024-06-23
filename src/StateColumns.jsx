@@ -60,6 +60,8 @@ function StateColumns({ nodeId }) {
             columns.splice(index, 1)
             setColumns(columns)
         }
+
+        setNodeDataColumns(nodeId, columns);
         // setNodeDataColumns(nodeId, columns)
     };
 
@@ -93,7 +95,7 @@ function StateColumns({ nodeId }) {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
 
-            {columns.map((item, index) => (
+            {columns.map((item, index) => (!item.deleted ? (
                 <tr key={index}>
                 <td className="px-3 py-3">
                     <CustomInput value={item.name} onChange={(e) => handleUpdateField(index, "name", e.target.value)}/>
@@ -121,7 +123,8 @@ function StateColumns({ nodeId }) {
                         </button>
                     </td>
                 </tr>
-            ))}
+                ) : null)
+            )}
             </tbody>
         </table>
     );

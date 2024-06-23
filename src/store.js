@@ -331,7 +331,7 @@ const useStore = create(
             // TODO combine these two methods (below), maybe the processor states can be derived from all the associated states or vice versa
             fetchProcessorStates: async (processorId) => {
                 try {
-                    const response = await fetch(`${get().ISM_API_BASE_URL}/processor/${processorId}/state`);
+                    const response = await fetch(`${get().ISM_API_BASE_URL}/processor/${processorId}/states`);
 
                     if (response.ok) {
                         const processor_states = await response.json();

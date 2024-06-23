@@ -22,5 +22,5 @@ docker build \
  --no-cache .
 
   docker push $TAG
-  echo "Use $TAG to deploy to kubernetes"
-fi;
+
+echo "Use $TAG to deploy to kubernetes"

@@ -5,6 +5,7 @@ import StateConfigDataKeyDefinitionHandler from "./StateConfigDataKeyDefinitionH
 import CustomListbox from "./CustomListbox";
 import CustomInput from "./CustomInput";
 import StateColumns from "./StateColumns";
+import CustomSwitch from "./CustomSwitch";
 
 const configOptions = [
     {config_type: 'StateConfig', config_name: 'Basic'},
@@ -26,6 +27,9 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
     const createState = useStore(state => state.createState)
     const fetchState = useStore(state => state.fetchState)
 
+    // Extract the flags from the config
+    const flags = Object.keys(nodeData?.config || {}).filter(key => key.startsWith('flag_'));
+
     // Fetch state object data if nodeId is provided
     useEffect(() => {
         (async () => {
@@ -33,6 +37,10 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
             console.log(stateData)
         })();
     }, [fetchState, nodeId])
+
+    const onChangeConfigFlag = (flag_name, value) => {
+        nodeData.config[flag_name] = value
+    }
 
     const onChangeDropDownSelection = (type, value) => {
         console.log(type + ' selected: ' + value);
@@ -126,82 +134,114 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
                                     State Config {nodeId}
                                 </Dialog.Title>
 
-                                <table className="min-w-full divide-y divide-gray-300">
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        <tr>
-                                            <td className="w-1/2 px-3 py-3">
-                                                <CustomListbox
-                                                    option_value_key="config_type"
-                                                    option_label_key="config_name"
-                                                    options={configOptions}
-                                                    onChange={onConfigTypeChange}
-                                                    value={nodeData?.state_type}>
-                                                </CustomListbox>
-                                            </td>
+                                <div className="mt-5 p-4 border-2 border-gray-200 rounded-lg shadow-sm">
+                                    <table className="min-w-full divide-y divide-gray-300">
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            <tr>
+                                                <td className="w-1/2 px-3 py-3">
+                                                    <CustomListbox
+                                                        option_value_key="config_type"
+                                                        option_label_key="config_name"
+                                                        options={configOptions}
+                                                        onChange={onConfigTypeChange}
+                                                        value={nodeData?.state_type}>
+                                                    </CustomListbox>
+                                                </td>
 
-                                            <td className="w-1/2 px-3 py-3">
-                                                <CustomInput placeholder="State name" name="name"
-                                                             value={nodeData?.config?.name || ''} onChange={handleChange}/>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                <td className="w-1/2 px-3 py-3">
+                                                    <CustomInput placeholder="State name" name="name"
+                                                                 value={nodeData?.config?.name || ''} onChange={handleChange}/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
 
-                                <table className="min-w-full divide-y divide-gray-300">
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {nodeData?.state_type === "StateConfigCode" && (
-                                        <tr>
-                                            <td className="px-3 py-3">
-                                                <CustomListbox
-                                                    placeholder="Select language"
-                                                    option_value_key="config_type"
-                                                    option_label_key="config_name"
-                                                    options={codeOptions}
-                                                    onChange={(value) => onChangeDropDownSelection("code_language", value)}
-                                                    value={nodeData?.config?.language}>
-                                                </CustomListbox>
-                                            </td>
+                                    <table className="min-w-full divide-y divide-gray-300">
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {nodeData?.state_type === "StateConfigCode" && (
+                                            <tr>
+                                                <td className="px-3 py-3">
+                                                    <CustomListbox
+                                                        placeholder="Select language"
+                                                        option_value_key="config_type"
+                                                        option_label_key="config_name"
+                                                        options={codeOptions}
+                                                        onChange={(value) => onChangeDropDownSelection("code_language", value)}
+                                                        value={nodeData?.config?.language}>
+                                                    </CustomListbox>
+                                                </td>
 
-                                            <td className="px-3 py-3">
-                                                <CustomListbox
-                                                    placeholder="Select code template"
-                                                    option_value_key="template_id"
-                                                    option_label_key="template_path"
-                                                    options={templates}
-                                                    onChange={(value) => onChangeDropDownSelection("code_template", value)}
-                                                    value={nodeData?.config?.template_id}>
-                                                </CustomListbox>
-                                            </td>
-                                        </tr>
-                                        )}
+                                                <td className="px-3 py-3">
+                                                    <CustomListbox
+                                                        placeholder="Select code template"
+                                                        option_value_key="template_id"
+                                                        option_label_key="template_path"
+                                                        options={templates}
+                                                        onChange={(value) => onChangeDropDownSelection("code_template", value)}
+                                                        value={nodeData?.config?.template_id}>
+                                                    </CustomListbox>
+                                                </td>
+                                            </tr>
 
-                                        {nodeData?.state_type === "StateConfigLM" && (
-                                        <tr>
-                                            <td className="px-3 py-3">
-                                                <CustomListbox
-                                                    placeholder="Select code instruction"
-                                                    option_value_key="template_id"
-                                                    option_label_key="template_path"
-                                                    options={templates}
-                                                    onChange={(value) => onChangeDropDownSelection("user_template", value)}
-                                                    value={nodeData?.config?.user_template_id}>
-                                                </CustomListbox>
-                                            </td>
+                                            )}
 
-                                            <td className="px-3 py-3">
-                                                <CustomListbox
-                                                    placeholder="Select system instruction template"
-                                                    option_value_key="template_id"
-                                                    option_label_key="template_path"
-                                                    options={templates}
-                                                    onChange={(value) => onChangeDropDownSelection("system_template", value)}
-                                                    value={nodeData?.config?.system_template_id}>
-                                                </CustomListbox>
-                                            </td>
-                                        </tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                                            {nodeData?.state_type === "StateConfigLM" && (
+                                            <tr>
+                                                <td className="px-3 py-3">
+                                                    <CustomListbox
+                                                        placeholder="Select code instruction"
+                                                        option_value_key="template_id"
+                                                        option_label_key="template_path"
+                                                        options={templates}
+                                                        onChange={(value) => onChangeDropDownSelection("user_template", value)}
+                                                        value={nodeData?.config?.user_template_id}>
+                                                    </CustomListbox>
+                                                </td>
+
+                                                <td className="px-3 py-3">
+                                                    <CustomListbox
+                                                        placeholder="Select system instruction template"
+                                                        option_value_key="template_id"
+                                                        option_label_key="template_path"
+                                                        options={templates}
+                                                        onChange={(value) => onChangeDropDownSelection("system_template", value)}
+                                                        value={nodeData?.config?.system_template_id}>
+                                                    </CustomListbox>
+                                                </td>
+                                            </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className="mt-5 p-4 border-2 border-gray-200 rounded-lg shadow-sm">
+                                    <label>State flags</label>
+                                    <p>
+                                        Enable or disable state options
+                                    </p>
+                                    <table className="w-full border-collapse">
+                                        <tbody>
+                                        {flags.map((flag, index) => (
+                                            <React.Fragment key={flag}>
+                                                {index % 2 === 0 && <tr/>} {/* Start a new row for every two items */}
+                                                <td className="px-3 py-3 border">
+                                                    <div className="flex w-max flex-row items-center">
+                                                        <div className="flex-1 w-1/2">
+                                                            <label className="mr-4">{flag.replace('flag_', '').replace(/_/g, ' ')}</label>
+                                                        </div>
+                                                        <div className="flex-1 w-1/2">
+                                                            <CustomSwitch
+                                                                checked={nodeData?.config[flag]}
+                                                                onChange={(checked) => onChangeConfigFlag(flag, checked)}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </React.Fragment>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                </div>
 
                                 <div className="mt-5 p-4 border-2 border-gray-200 rounded-lg shadow-sm">
                                     <label>
@@ -215,7 +255,8 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
 
                                     <ul>
                                         <li>
-                                            <strong>Evaluated Columns:</strong> Columns whose values are calculated based on other data.
+                                            <strong>Evaluated Columns:</strong> Columns whose values are calculated
+                                            based on other data.
                                         </li>
                                         <li><strong>Constant Value Columns:</strong> Columns with fixed values.</li>
                                     </ul>
