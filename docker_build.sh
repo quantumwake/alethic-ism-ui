@@ -21,6 +21,6 @@ docker build \
  --progress=plain -t $TAG \
  --no-cache .
 
-  docker push $TAG
+docker push $TAG
 
 echo "Use $TAG to deploy to kubernetes"

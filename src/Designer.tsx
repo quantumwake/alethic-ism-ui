@@ -60,10 +60,13 @@ const proOptions = { hideAttribution: true };
 const Designer = () => {
 
     const setSelectedNode = useStore((state) => state.setSelectedNode);
-    const createNewNode = useStore((state) => state.createNewNode)
-    const createNewEdge = useStore((state) => state.createNewEdge)
+    // const createNewNode = useStore((state) => state.createNewNode)
+    // const createNewEdge = useStore((state) => state.createNewEdge)
     const selectedProjectId = useStore((state) => state.selectedProjectId)
     const getNode = useStore((state) => state.getNode)
+
+    const createStateWithWorkflowNode = useStore(state => state.createStateWithWorkflowNode)
+    const createProcessorWithWorkflowNode = useStore(state => state.createProcessorWithWorkflowNode)
     const createProcessorStateWithWorkflowEdge = useStore(state => state.createProcessorStateWithWorkflowEdge)
     // const createProcessorState = useStore((state) => state.createProcessorState)
 
@@ -108,7 +111,7 @@ const Designer = () => {
             y: event.clientY - 20,
         });
 
-        createNewNode({
+        const nodeData = {
             node_type: type,
             node_label: type,
             project_id: selectedProjectId,
@@ -116,7 +119,17 @@ const Designer = () => {
             position_y: position.y,
             width: 100,
             height: 100
-        })
+        }
+
+        if (type.startsWith('processor')) {
+            createProcessorWithWorkflowNode(nodeData)
+        } else if (type.startsWith('state')) {
+            createStateWithWorkflowNode(nodeData)
+        } else {
+            throw new Error('unsupported module type')
+        }
+
+
     };
 
     const onDragOver = (event: DragEvent) => {

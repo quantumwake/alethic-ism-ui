@@ -6,20 +6,18 @@ import CustomListbox from "./CustomListbox";
 function ProcessorConfigDialog({ isOpen, setIsOpen, providerName, nodeId }) {
 
     const {getNodeData, setNodeData} = useStore()
-    const {fetchProviders, getProviderByName, createProcessor} = useStore()
+    const {getProviderByName, createProcessor} = useStore()
     const [filteredProviders, setFilteredProviders] = useState([]);
     const [localNodeData, setLocalNodeData] = useState([])
 
     useEffect(() => {
-        const fetchProvidersData = async () => {
-            const availableProviders = await fetchProviders();
-            console.debug(`Available provider processors: ${availableProviders}`)
-            const filtered = getProviderByName(providerName);
-            setFilteredProviders(filtered);
-        };
+        if (!isOpen) {
+            return
+        }
 
-        fetchProvidersData().then(r => {});
-    }, [nodeId, providerName, fetchProviders, getProviderByName]);
+        const filteredProviders = getProviderByName(providerName)
+        setFilteredProviders(filteredProviders);
+    }, [isOpen]);
 
     const onProviderChange = (provider_id) => {
         // refresh the zustand node data state

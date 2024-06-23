@@ -231,7 +231,7 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
                                                         </div>
                                                         <div className="flex-1 w-1/2">
                                                             <CustomSwitch
-                                                                checked={nodeData?.config[flag]}
+                                                                checked={nodeData?.config[flag] && nodeData?.config[flag]}
                                                                 onChange={(checked) => onChangeConfigFlag(flag, checked)}
                                                             />
                                                         </div>

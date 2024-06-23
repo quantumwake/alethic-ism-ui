@@ -18,7 +18,7 @@ import {CogIcon} from "@heroicons/react/24/outline";
 function ProjectSelector() {
     const {userId} = useStore()
     const {projects, fetchProjects, addProject, selectedProjectId, setSelectedProjectId, fetchProjectProcessorStates} = useStore();
-    const {fetchWorkflowNodes, fetchWorkflowEdges, fetchTemplates} = useStore();
+    const {fetchWorkflowNodes, fetchWorkflowEdges, fetchTemplates, fetchProviders} = useStore();
     const [showAddProject, setShowAddProject] = useState(false);
     const [newProjectName, setNewProjectName] = useState('');
     const [isOpenInstructionTemplate, setIsOpenInstructionTemplate] = useState(false);
@@ -33,6 +33,7 @@ function ProjectSelector() {
         fetchWorkflowNodes(projectId);
         fetchWorkflowEdges(projectId);
         fetchTemplates(projectId)
+        fetchProviders()
         setSelectedProjectId(projectId)
         console.log('project selected: ' + projectId);
     };

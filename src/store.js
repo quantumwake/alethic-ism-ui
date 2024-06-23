@@ -193,15 +193,11 @@ const useStore = create(
             // manage provider processors (e.g. openai, anthropic, python, etc..)
             providers: [],
             fetchProviders: async () => {
-                try {
-                    const url = `${get().ISM_API_BASE_URL}/provider/processors`
-                    const response = await fetch(url)
-                    const providers = await response.json();
-                    set({providers});
-                    return providers
-                } catch (error) {
-                    console.error('Failed to fetch provider processors')
-                }
+                const url = `${get().ISM_API_BASE_URL}/provider/processors`
+                const response = await fetch(url)
+                const providers = await response.json();
+                set({providers});
+                return providers
             },
             getProviderByName: (name) => {
                 const { providers } = get()
@@ -588,9 +584,9 @@ const useStore = create(
                 const stateObject =
                     {
                         "id": node.id,
-                        "state_type": stateData.state_type,
+                        "state_type": stateData.state_type || 'StateConfig',
                         "project_id": get().selectedProjectId,
-                        "columns": stateData.columns,
+                        "columns": stateData.columns || {},
                         "config": {
                             ...stateData.config, // append existing nodeData.config to the new object
                             "storage_class": "database",
@@ -749,6 +745,8 @@ const useStore = create(
                     set((state) => ({
                         workflowNodes: [...state.workflowNodes, updatedNode],
                     }));
+
+                    return updatedNode
                 } catch (error) {
                     console.error('Failed to create new node:', error);
                 }
@@ -807,6 +805,19 @@ const useStore = create(
                     console.error('Failed to delete node:', error);
                 }
             },
+            createProcessorWithWorkflowNode: async (nodeData) => {
+                const newNode = await get().createNewNode(nodeData)
+                const newNodeData = await get().createProcessor(newNode.id)
+
+                get().setNodeData(newNodeData)
+            },
+
+            createStateWithWorkflowNode: async (nodeData) => {
+                const newNode = await get().createNewNode(nodeData)
+                const newNodeData = await get().createState(newNode.id)
+                get().setNodeData(newNodeData)
+            },
+
             createProcessorStateWithWorkflowEdge: async (connection) => {
                 // createProcessorState(connection.id, targetNode.id, sourceNode.id, "INPUT")
 
