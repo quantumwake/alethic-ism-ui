@@ -608,6 +608,7 @@ const useStore = create(
                 // reassign the new state data returned, this will provide an updated list of ids if any
                 stateData = await response.json();
                 get().setNodeData(nodeId, stateData)
+                return stateData
             },
 
             uploadState: async (stateId, file) => {
@@ -815,7 +816,6 @@ const useStore = create(
             createStateWithWorkflowNode: async (nodeData) => {
                 const newNode = await get().createNewNode(nodeData)
                 const newNodeData = await get().createState(newNode.id)
-                get().setNodeData(newNodeData)
             },
 
             createProcessorStateWithWorkflowEdge: async (connection) => {
