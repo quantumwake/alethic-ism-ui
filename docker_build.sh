@@ -1,26 +1,45 @@
 #!/bin/bash
 
-APP_NAME="alethic-ism-ui"
+# Function to print usage
+print_usage() {
+  echo "Usage: $0 [-t tag] [-a architecture]"
+  echo "  -t tag             Docker image tag"
+  echo "  -p platform        Target platform architecture (default: linux/amd64)"
+}
+
+# Default values
+APP_NAME=$(pwd | sed -e 's/^.*\///g')
 DOCKER_NAMESPACE="krasaee"
-GIT_COMMIT_ID=$(git rev-parse HEAD)
-TAG="$DOCKER_NAMESPACE/$APP_NAME:$GIT_COMMIT_ID"
+TAG=""
+ARCH="linux/amd64"
 
-ARCH=$1
-if [ -z "$ARCH" ];
-then
+# Parse command line arguments
+while getopts 't:a:' flag; do
+  case "${flag}" in
+    t) TAG="${OPTARG}" ;;
+    a) ARCH="${OPTARG}" ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+# Check if ARCH is set, if not default to linux/amd64
+if [ -z "$ARCH" ]; then
   ARCH="linux/amd64"
-  #TODO check operating system ARCH="linux/arm64"
-fi;
+  # TODO: Check operating system and set ARCH accordingly, e.g., ARCH="linux/arm64"
+fi
 
-echo "Using arch: $ARCH for image tag $TAG"
+# If TAG is not provided, generate it using GIT_COMMIT_ID
+if [ -z "$TAG" ]; then
+  GIT_COMMIT_ID=$(git rev-parse HEAD)
+  TAG="$DOCKER_NAMESPACE/$APP_NAME:$GIT_COMMIT_ID"
+fi
 
-echo "Starting docker build for alethic-ism-ui:$GIT_COMMIT_ID"
+## Display arguments
+echo "Platform: $ARCH"
+echo "Platform Docker Image Tag: $TAG"
 
-docker build \
- --platform $ARCH \
- --progress=plain -t $TAG \
- --no-cache .
-
-docker push $TAG
-
-echo "Use $TAG to deploy to kubernetes"
+# Build the Docker image which creates the package
+docker build --progress=plain \
+  --platform "$ARCH" -t "$TAG" \
+  --no-cache .
