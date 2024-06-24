@@ -18,11 +18,10 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/designer",
-                element: <div className="">
+                element:
                     <ReactFlowProvider>
                         <Designer/>
                     </ReactFlowProvider>
-                </div>,
             },
             {
                 path: "/login",

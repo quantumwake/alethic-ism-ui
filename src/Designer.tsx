@@ -8,7 +8,7 @@ import ReactFlow, {
     useReactFlow,
     OnConnect,
     NodeMouseHandler,
-    EdgeTypes,
+    EdgeTypes, ReactFlowProvider,
 } from 'reactflow';
 
 import CustomNode from './CustomNode';
@@ -148,25 +148,26 @@ const Designer = () => {
               <Sidebar/>
 
               {/* Main Body Area - for React Flow */}
-              <div className="flex-grow h-screen p-2 overflow-auto">
-                  <ReactFlow
-                      nodes={nodes}
-                      edges={edges}
-                      onNodeClick={onNodeClick}
-                      onNodesChange={onNodesChange}
-                      onEdgesChange={onEdgesChange}
-                      onConnect={onConnect}
-                      onInit={onInit}
-                      onDrop={onDrop}
-                      onDragOver={onDragOver}
-                      fitView
-                      attributionPosition="top-right"
-                      connectionLineComponent={CustomConnectionLine}
-                      proOptions={proOptions}
-                      edgeTypes={edgeTypes}
-                      nodeTypes={nodeTypes}>
-                      <Background color="#aaa" gap={12}/>
-                  </ReactFlow>
+              <div className="flex-grow p-2 overflow-auto">
+                      <ReactFlow
+                          nodes={nodes}
+                          edges={edges}
+                          onNodeClick={onNodeClick}
+                          onNodesChange={onNodesChange}
+                          onEdgesChange={onEdgesChange}
+                          onConnect={onConnect}
+                          onInit={onInit}
+                          onDrop={onDrop}
+                          onDragOver={onDragOver}
+                          fitView
+                          attributionPosition="top-right"
+                          connectionLineComponent={CustomConnectionLine}
+                          proOptions={proOptions}
+                          edgeTypes={edgeTypes}
+                          nodeTypes={nodeTypes}>
+                          <Background color="#aaa" gap={12}/>
+                      </ReactFlow>
+
                   {/*<Controls />*/}
                   {/*<Background gap={25} />*/}
                   {/*<WorkflowDownload />*/}

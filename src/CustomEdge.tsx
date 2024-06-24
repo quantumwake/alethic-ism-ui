@@ -125,8 +125,7 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
     return (
         <>
             {/*<BaseEdge path={edgePath} markerEnd={markerEnd} style={style}/>*/}
-                <svg>
-                    <g>
+
                         {/* Path to handle hover and click events */}
                         <path
                             id={id}
@@ -146,8 +145,7 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                                 strokeDasharray: 4,
                             }}
                         />
-                    </g>
-                </svg>
+
 
 
                 <EdgeLabelRenderer>
