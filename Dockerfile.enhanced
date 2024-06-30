@@ -16,7 +16,7 @@ COPY . ./
 # Build the application
 RUN npm run build
 
-# Stage 2: Serve the application with Node and serve
+# Stage 2: Serve the application with Node
 FROM node:22-alpine3.19
 
 # Set working directory
@@ -31,11 +31,11 @@ COPY package.json package-lock.json ./
 # Install only production dependencies
 RUN npm ci --only=production
 
-# Install serve globally
-RUN npm install -g serve
+# Copy the rest of the application source code (for server and configuration)
+COPY . ./
 
-# Set environment variables (if needed)
-ENV NODE_ENV=production
+# Set environment variables
+ENV NODE_ENV="production"
 ENV REACT_APP_DEVELOPMENT="LOCAL|DEV|TEST|PROD"
 ENV REACT_APP_ISM_API_BASE_URL=""
 ENV REACT_APP_FIREBASE_API_KEY=""
@@ -45,8 +45,8 @@ ENV REACT_APP_FIREBASE_STORAGE_BUCKET=""
 ENV REACT_APP_FIREBASE_MESSAGING_SENDER_ID=""
 ENV REACT_APP_FIREBASE_APP_ID=""
 
-# Expose port 5000 (serve's default port)
-EXPOSE 5000
+# Expose port (if your app runs on a specific port, e.g., 3000)
+EXPOSE 3000
 
-# Start the application using serve
-CMD ["serve", "-s", "build"]
+# Start the application
+CMD ["npm", "start"]
