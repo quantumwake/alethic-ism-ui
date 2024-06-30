@@ -5,7 +5,7 @@ import useStore from "./store";
 import ProcessorConfigDialog from "./ProcessorConfigDialog";
 import InfoButton from "./InfoButton";
 
-function BaseProcessorNode({ providerName, nodeId, renderAdditionalControls, renderAdditionalContent, theme }) {
+function BaseProcessorNode({ providerName, className, nodeId, renderAdditionalControls, renderAdditionalContent, theme }) {
     const [isOpenConfig, setIsOpenConfig] = useState(false);
     const {getProviderById, getNodeData} = useStore()
     const localNodeData = useStore(state => getNodeData(nodeId))
@@ -82,7 +82,7 @@ function BaseProcessorNode({ providerName, nodeId, renderAdditionalControls, ren
             theme={theme}/>
 
         {/*add additional components to the body here*/}
-        <ProcessorConfigDialog isOpen={isOpenConfig} setIsOpen={setIsOpenConfig} providerName={providerName} nodeId={nodeId} />
+        <ProcessorConfigDialog isOpen={isOpenConfig} setIsOpen={setIsOpenConfig} providerName={providerName} className={className} nodeId={nodeId} />
 
     </>);
 }

@@ -14,6 +14,7 @@ function ProcessorNodeOpenAI({ id, data }) {
     return (
         <BaseProcessorLanguageNode
             providerName="OpenAI"
+            className="NaturalLanguageProcessing"
             nodeId={id}
             renderAdditionalControls={renderAdditionalControls}
             renderAdditionalContent={renderAdditionalContent}

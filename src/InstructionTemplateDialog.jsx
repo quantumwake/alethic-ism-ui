@@ -137,6 +137,7 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
                                                         <option value="user_template">User Template</option>
                                                         <option value="system_template">System Template</option>
                                                         <option value="python_code">Python Code</option>
+                                                        <option value="template">Language to Visual</option>
                                                     </select>
                                                 </div>
                                                 {/* Template Content Textarea */}

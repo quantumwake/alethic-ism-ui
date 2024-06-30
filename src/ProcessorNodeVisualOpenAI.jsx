@@ -2,7 +2,7 @@ import React, {memo} from 'react';
 import BaseProcessorLanguageNode from "./BaseProcessorLanguageNode";
 import theme from "./theme";
 
-function ProcessorNodeOpenAI({ id, data }) {
+function ProcessorNodeVisualOpenAI({ id, data }) {
     const renderAdditionalControls = ({ setIsOpenConfig }) => (<>
 
     </>);
@@ -23,4 +23,4 @@ function ProcessorNodeOpenAI({ id, data }) {
     );
 }
 
-export default memo(ProcessorNodeOpenAI);
+export default memo(ProcessorNodeVisualOpenAI);

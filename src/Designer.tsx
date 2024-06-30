@@ -8,7 +8,7 @@ import ReactFlow, {
     useReactFlow,
     OnConnect,
     NodeMouseHandler,
-    EdgeTypes, ReactFlowProvider,
+    EdgeTypes,
 } from 'reactflow';
 
 import CustomNode from './CustomNode';
@@ -18,7 +18,9 @@ import ProcessorNodeLlama from "./ProcessorNodeLlama";
 import ProcessorNodeMistral from "./ProcessorNodeMistral";
 import ProcessorNodePython from "./ProcessorNodePython";
 import ProcessorNodeGemini from "./ProcessorNodeGemini";
-import ProcessorNodeEvaluatorEvaluator from "./ProcessorNodeAlethicEvalautor";
+import ProcessorNodeStateCoalescer from "./ProcessorNodeStateCoalescer";
+import ProcessorNodeVisualOpenAI from "./ProcessorNodeVisualOpenAI";
+
 import StateNode from './StateNode'
 import Sidebar from './Sidebar';
 
@@ -30,21 +32,19 @@ import useNodesStateSynced from "./useNodesStateSynced";
 import useEdgesStateSynced from "./useEdgesStateSynced";
 
 import useStore from './store';
-import ProcessorNodeStateCoalescer from "./ProcessorNodeStateCoalescer";
 import CustomConnectionLine from "./CustomConnectionLine";
 import CustomEdge from "./CustomEdge";
-import WorkflowDownload from "./WorkflowDownload";
 import WithAuth from "./WithAuth";
 
 const nodeTypes = {
     state: StateNode,
     processor_python: ProcessorNodePython,
     processor_openai: ProcessorNodeOpenAI,
+    processor_visual_openai: ProcessorNodeVisualOpenAI,
     processor_gemini: ProcessorNodeGemini,
     processor_anthropic: ProcessorNodeAnthropic,
     processor_llama: ProcessorNodeLlama,
     processor_mistral: ProcessorNodeMistral,
-    processor_alethic_evaluator: ProcessorNodeEvaluatorEvaluator,
     processor_state_coalescer: ProcessorNodeStateCoalescer,
     custom: CustomNode
 };
@@ -52,7 +52,6 @@ const nodeTypes = {
 const edgeTypes: EdgeTypes = {
     default: CustomEdge,
     state_auto_stream_playable_edge: CustomEdge,
-    // 'start-end': CustomEdgeStartEnd,
 };
 
 const proOptions = { hideAttribution: true };
@@ -60,15 +59,12 @@ const proOptions = { hideAttribution: true };
 const Designer = () => {
 
     const setSelectedNode = useStore((state) => state.setSelectedNode);
-    // const createNewNode = useStore((state) => state.createNewNode)
-    // const createNewEdge = useStore((state) => state.createNewEdge)
     const selectedProjectId = useStore((state) => state.selectedProjectId)
     const getNode = useStore((state) => state.getNode)
 
     const createStateWithWorkflowNode = useStore(state => state.createStateWithWorkflowNode)
     const createProcessorWithWorkflowNode = useStore(state => state.createProcessorWithWorkflowNode)
     const createProcessorStateWithWorkflowEdge = useStore(state => state.createProcessorStateWithWorkflowEdge)
-    // const createProcessorState = useStore((state) => state.createProcessorState)
 
     const {workflowEdges, setWorkflowEdges, workflowNodes, setWorkflowNodes} = useStore(state => ({
         workflowEdges: state.workflowEdges,

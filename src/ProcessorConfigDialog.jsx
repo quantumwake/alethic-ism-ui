@@ -3,10 +3,10 @@ import { Dialog, Transition } from "@headlessui/react";
 import useStore from "./store";
 import CustomListbox from "./CustomListbox";
 
-function ProcessorConfigDialog({ isOpen, setIsOpen, providerName, nodeId }) {
+function ProcessorConfigDialog({ isOpen, setIsOpen, providerName, className, nodeId }) {
 
     const {getNodeData, setNodeData} = useStore()
-    const {getProviderByName, createProcessor} = useStore()
+    const {getProviderByNameAndClass, createProcessor} = useStore()
     const [filteredProviders, setFilteredProviders] = useState([]);
     const [localNodeData, setLocalNodeData] = useState([])
 
@@ -15,7 +15,7 @@ function ProcessorConfigDialog({ isOpen, setIsOpen, providerName, nodeId }) {
             return
         }
 
-        const filteredProviders = getProviderByName(providerName)
+        const filteredProviders = getProviderByNameAndClass(providerName, className)
         setFilteredProviders(filteredProviders);
     }, [isOpen]);
 

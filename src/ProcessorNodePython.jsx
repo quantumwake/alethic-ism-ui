@@ -14,6 +14,7 @@ function ProcessorNodePython({ id, data }) {
     return (
         <BaseProcessorNode
             providerName="Python Executor"
+            className="CodeProcessing"
             nodeId={id}
             renderAdditionalControls={renderAdditionalControls}
             renderAdditionalContent={renderAdditionalContent}

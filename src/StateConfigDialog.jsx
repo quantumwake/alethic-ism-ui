@@ -11,6 +11,7 @@ const configOptions = [
     {config_type: 'StateConfig', config_name: 'Basic'},
     {config_type: 'StateConfigLM', config_name: 'Language'},
     {config_type: 'StateConfigDB', config_name: 'Database'},
+    {config_type: 'StateConfigVisual', config_name: 'Visual'},
     {config_type: 'StateConfigCode', config_name: 'Code'}
 ];
 
@@ -19,6 +20,10 @@ const codeOptions = [
     {config_type: 'rust', config_name: 'rust'},
     {config_type: 'golang', config_name: 'golang'},
 ];
+
+const imageSizeOptions = ['256x256', '512x512', '1024x1024', '1024x1792', '1792x1024']
+
+
 function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
 
     const { templates } = useStore();
@@ -53,11 +58,22 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
             case "system_template":
                 nodeData.config.system_template_id = value
                 break
+            // code template
             case "code_template":
                 nodeData.config.template_id = value
                 break
             case "code_language":
                 nodeData.config.language = value
+                break
+            // visual
+            case "template":
+                nodeData.config.template_id = value
+                break
+            // case "image_size":
+            //     image_dimension = value.split('x')
+            //     nodeData.config.width = image_dimension[0]
+            //     nodeData.config.height = image_dimension[1]
+            //     break
         }
 
         setNodeData(nodeId, nodeData)
@@ -83,6 +99,12 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
                 break;
             case "language":
                 nodeData.config.language = value
+                break;
+            case "width":
+                nodeData.config.width = value
+                break;
+            case "height":
+                nodeData.config.height = value
                 break;
             default:
                 break
@@ -185,16 +207,41 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
 
                                             )}
 
+                                            {/* Visual Configuration*/}
+                                            {nodeData?.state_type === "StateConfigVisual" && (
+                                                <tr>
+                                                    <td className="px-3 py-3">
+                                                        <CustomListbox
+                                                            placeholder="Select instruction"
+                                                            option_value_key="template_id"
+                                                            option_label_key="template_path"
+                                                            options={templates}
+                                                            onChange={(value) => onChangeDropDownSelection("template", value)}
+                                                            value={nodeData?.config?.template_id}>
+                                                        </CustomListbox>
+                                                    </td>
+                                                    <td className="w-1/2 px-3 py-3">
+                                                        <CustomInput placeholder="width" name="width"
+                                                                     value={nodeData?.config?.width || ''}
+                                                                     onChange={handleChange}/>
+                                                        <span> by </span>
+                                                        <CustomInput placeholder="height" name="height"
+                                                                     value={nodeData?.config?.height || ''}
+                                                                     onChange={handleChange}/>
+                                                    </td>
+                                                </tr>
+                                            )}
+
                                             {nodeData?.state_type === "StateConfigLM" && (
-                                            <tr>
-                                                <td className="px-3 py-3">
-                                                    <CustomListbox
-                                                        placeholder="Select code instruction"
-                                                        option_value_key="template_id"
-                                                        option_label_key="template_path"
-                                                        options={templates}
-                                                        onChange={(value) => onChangeDropDownSelection("user_template", value)}
-                                                        value={nodeData?.config?.user_template_id}>
+                                                <tr>
+                                                    <td className="px-3 py-3">
+                                                        <CustomListbox
+                                                            placeholder="Select code instruction"
+                                                            option_value_key="template_id"
+                                                            option_label_key="template_path"
+                                                            options={templates}
+                                                            onChange={(value) => onChangeDropDownSelection("user_template", value)}
+                                                            value={nodeData?.config?.user_template_id}>
                                                     </CustomListbox>
                                                 </td>
 

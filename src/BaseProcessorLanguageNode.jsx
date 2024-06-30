@@ -2,7 +2,7 @@ import React, {memo, useEffect} from 'react';
 import useStore from "./store";
 import BaseProcessorNode from "./BaseProcessorNode";
 
-function BaseProcessorLanguageNode({ providerName, nodeId, renderAdditionalControls, renderAdditionalContent, theme }) {
+function BaseProcessorLanguageNode({ providerName, className, nodeId, renderAdditionalControls, renderAdditionalContent, theme }) {
     const renderControls = () => (<>
         {/*add additional controls here*/}
         {renderAdditionalControls}
@@ -18,6 +18,7 @@ function BaseProcessorLanguageNode({ providerName, nodeId, renderAdditionalContr
     return (<>
         <BaseProcessorNode
             providerName={providerName}
+            className={className}
             nodeId={nodeId}
             renderAdditionalControls={renderControls}
             renderAdditionalContent={renderContent}

@@ -1,23 +1,21 @@
 import React from 'react';
-import { DragEvent } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faBrain,
-    faDatabase,
     faFileAlt,
-    faCloudUploadAlt,
     faNetworkWired,
     faObjectGroup,
     faObjectUngroup,
-    faSitemap,
+    faSitemap, faImage,
 } from '@fortawesome/free-solid-svg-icons';
 
 
 // Define a mapping for processor types to styles and icons
 const processorStyles = {
     Python: { type:"processor_python", name: "Python", color: 'text-fuchsia-400', icon: faBrain },
-    OpenAI: { type:"processor_openai", name: "OpenAI", color: 'text-blue-500', icon: faBrain },
+    OpenAI: { type:"processor_openai", name: "OpenAI (LM)", color: 'text-blue-500', icon: faBrain },
+    VisualOpenAI: { type:"processor_visual_openai", name: "OpenAI (IMG)", color: 'text-blue-500', icon: faImage },
     Anthropic: { type:"processor_anthropic", name: "Anthropic", color: 'text-red-500', icon: faBrain },
     Gemini: { type:"processor_gemini", name: "Gemini", color: 'text-green-500', icon: faBrain },
     Llama: { type:"processor_llama", name: "Llama", color: 'text-yellow-500', icon: faBrain },

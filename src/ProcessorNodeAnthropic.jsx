@@ -14,6 +14,7 @@ function ProcessorNodeAnthropic({ id, data }) {
     return (
         <BaseProcessorLanguageNode
             providerName="Anthropic"
+            className="NaturalLanguageProcessing"
             nodeId={id}
             renderAdditionalControls={renderAdditionalControls}
             renderAdditionalContent={renderAdditionalContent}

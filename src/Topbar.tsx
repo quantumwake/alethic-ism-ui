@@ -13,7 +13,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import InstructionTemplateDialog from "./InstructionTemplateDialog";
 import MonitorLogEventViewDialog from "./MonitorLogEventViewDialog";
-import {CogIcon} from "@heroicons/react/24/outline";
+import {ChatBubbleBottomCenterIcon, CogIcon} from "@heroicons/react/24/outline";
+import WebSocketChat from "./WebSocketChat";
+import WebSocketChatDialog from "./WebSocketChat";
 
 function ProjectSelector() {
     const {userId} = useStore()
@@ -23,6 +25,7 @@ function ProjectSelector() {
     const [newProjectName, setNewProjectName] = useState('');
     const [isOpenInstructionTemplate, setIsOpenInstructionTemplate] = useState(false);
     const [isOpenMonitorLogEvent, setIsOpenMonitorLogEvent] = useState(false);
+    const [isOpenChatDialog, setIsOpenChatDialog] = useState(false);
 
     useEffect(() => {
         fetchProjects(userId);
@@ -100,11 +103,18 @@ function ProjectSelector() {
                     className="ml-2 bg-red-200 hover:bg-red-700 text-white font-bold font-sans py-2 px-4 rounded">
                     <BellAlertIcon className="h-4 w-4 text-red-600 hover:text-white"/>
                 </button>
+
+                <button
+                    onClick={() => setIsOpenChatDialog(true)}
+                    className="ml-2 bg-red-200 hover:bg-red-700 text-white font-bold font-sans py-2 px-4 rounded">
+                    <ChatBubbleBottomCenterIcon className="h-4 w-4 text-red-600 hover:text-white"/>
+                </button>
             </div>
 
             {/*Manage of Instruction Templates (language, code, racketeer.. )*/}
             <InstructionTemplateDialog isOpen={isOpenInstructionTemplate} setIsOpen={setIsOpenInstructionTemplate}/>
             <MonitorLogEventViewDialog isOpen={isOpenMonitorLogEvent} setIsOpen={setIsOpenMonitorLogEvent} projectId={selectedProjectId}/>
+            <WebSocketChatDialog isOpen={isOpenChatDialog} setIsOpen={setIsOpenChatDialog} projectId={selectedProjectId}/>
 
             {/*Add new project name input and action*/}
             {showAddProject && (

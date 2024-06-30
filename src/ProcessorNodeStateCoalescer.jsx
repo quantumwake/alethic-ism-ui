@@ -14,6 +14,7 @@ function ProcessorNodeQuantumWakeStateFuser({ id, data }) {
     return (
         <BaseProcessorNode
             providerName="State Coalescer"
+            className="DataTransformation"
             nodeId={id}
             renderAdditionalControls={renderAdditionalControls}
             renderAdditionalContent={renderAdditionalContent}
