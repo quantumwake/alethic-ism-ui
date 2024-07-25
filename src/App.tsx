@@ -1,8 +1,8 @@
 // App.js
-import React from "react";
+import React, {useEffect} from "react";
 import {
     createBrowserRouter,
-    RouterProvider,
+    RouterProvider, useLocation, useNavigationType,
 } from "react-router-dom";
 import Designer from "./Designer";
 import {ReactFlowProvider} from "reactflow";
@@ -35,12 +35,28 @@ const router = createBrowserRouter([
     }
 ]);
 
+// const App = () => {
+//     return (
+//         <React.StrictMode>
+//             <RouterProvider router={router} />
+//         </React.StrictMode>
+//     )
+// }
+
 const App = () => {
+    const navigationType = useNavigationType();
+    const location = useLocation();
+
+    useEffect(() => {
+        console.log('Route changed:', location.pathname);
+        console.log('Navigation type:', navigationType);
+    }, [location, navigationType]);
+
     return (
         <React.StrictMode>
             <RouterProvider router={router} />
         </React.StrictMode>
-    )
+    );
 }
 
 export default App
