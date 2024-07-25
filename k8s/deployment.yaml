@@ -65,7 +65,7 @@ spec:
                 name: alethic-ism-ui-secret
                 key: REACT_APP_FIREBASE_APP_ID
         ports:
-        - containerPort: 3000
+        - containerPort: 80
         imagePullPolicy: Always
       imagePullSecrets:
       - name: regcred
