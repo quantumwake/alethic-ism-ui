@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: alethic-ism-ui
-        image: krasaee/alethic-ism-ui:1e23cf40add216b7e286815c5e1ab1dac9ac0e68
+        image: krasaee/alethic-ism-ui:245761d1c0a70ea4876f2473bee1dde242ef0729
         env:
           - name: REACT_APP_ENVIRONMENT
             valueFrom:
