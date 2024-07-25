@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: alethic-ism-ui
-        image: krasaee/alethic-ism-ui:245761d1c0a70ea4876f2473bee1dde242ef0729
+        image: krasaee/alethic-ism-ui:da465988f07a1375357927f723928596008c342a
         env:
           - name: REACT_APP_ENVIRONMENT
             valueFrom:
@@ -65,7 +65,7 @@ spec:
                 name: alethic-ism-ui-secret
                 key: REACT_APP_FIREBASE_APP_ID
         ports:
-        - containerPort: 3000
+        - containerPort: 80
         imagePullPolicy: Always
       imagePullSecrets:
       - name: regcred

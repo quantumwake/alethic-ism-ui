@@ -17,8 +17,8 @@ const useStore = create(
                 return Object.values(map);
             },
 
-            ENVIRONMENT: process.env.REACT_APP_ENVIRONMENT,
-            ISM_API_BASE_URL: process.env.REACT_APP_ISM_API_BASE_URL,
+            ENVIRONMENT: window.env.REACT_APP_ENVIRONMENT,
+            ISM_API_BASE_URL: window.env.REACT_APP_ISM_API_BASE_URL,
 
             //
             // // user profile (create account, fetch user id by auth)

@@ -28,8 +28,10 @@
     "zustand": "^4.5.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "sh env.sh .env-local && react-scripts start",
+    "build:dev": "sh env.sh .env-dev && react-scripts build",
+    "build:test": "sh env.sh .env-test && react-scripts build",
+    "build:prod": "sh env.sh .env-prod && react-scripts build",
     "serve": "serve -s build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

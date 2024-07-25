@@ -28,7 +28,13 @@ ENV REACT_APP_FIREBASE_STORAGE_BUCKET=$REACT_APP_FIREBASE_STORAGE_BUCKET
 ENV REACT_APP_FIREBASE_MESSAGING_SENDER_ID=$REACT_APP_FIREBASE_MESSAGING_SENDER_ID
 ENV REACT_APP_FIREBASE_APP_ID=$REACT_APP_FIREBASE_APP_ID
 
-RUN npm run build
+RUN if [ "$BUILD_ENV" = "dev" ]; then \
+        npm run build:dev; \
+    elif [ "$BUILD_ENV" = "test" ]; then \
+        npm run build:test; \
+    else \
+        npm run build:prod; \
+    fi
 
 # Stage 2: Serve the application with Nginx
 FROM nginx:alpine

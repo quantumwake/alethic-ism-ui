@@ -42,4 +42,5 @@ echo "Platform Docker Image Tag: $TAG"
 # Build the Docker image which creates the package
 docker build --progress=plain \
   --platform "$ARCH" -t "$TAG" \
+  --build-arg BUILD_ENV=prod \
   --no-cache .

@@ -1,7 +1,7 @@
 // App.js
 import React, {useEffect} from "react";
 import {
-    createBrowserRouter,
+    createBrowserRouter, Outlet,
     RouterProvider, useLocation, useNavigationType,
 } from "react-router-dom";
 import Designer from "./Designer";
@@ -10,10 +10,32 @@ import RootLayout from "./RootLayout";
 import Login from "./Login";
 import Signup from "./Signup";
 
+
+const RouteLogger = () => {
+    const navigationType = useNavigationType();
+    const location = useLocation();
+
+    useEffect(() => {
+        console.log('Route changed:', location.pathname);
+        console.log('Navigation type:', navigationType);
+    }, [location, navigationType]);
+
+    return null; // This component doesn't render anything
+};
+
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <RootLayout/>,
+        element: (
+            <>
+                <RouteLogger />
+                <RootLayout/>
+                {/*<RootLayout>*/}
+                {/*    <Outlet />*/}
+                {/*</RootLayout>*/}
+            </>
+        ),
+        // element: <RootLayout/>,
         // loader: () => ({}),
         children: [
             {
@@ -43,15 +65,8 @@ const router = createBrowserRouter([
 //     )
 // }
 
+
 const App = () => {
-    const navigationType = useNavigationType();
-    const location = useLocation();
-
-    useEffect(() => {
-        console.log('Route changed:', location.pathname);
-        console.log('Navigation type:', navigationType);
-    }, [location, navigationType]);
-
     return (
         <React.StrictMode>
             <RouterProvider router={router} />
