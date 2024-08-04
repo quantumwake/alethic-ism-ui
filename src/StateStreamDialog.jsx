@@ -1,24 +1,57 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import { Dialog, Transition } from "@headlessui/react";
+import sanitizeHtml from 'sanitize-html';
 
-function WebSocketChatDialog({ isOpen, setIsOpen, projectId }) {
-
+function StateStreamDialog({ isOpen, setIsOpen, nodeId }) {
     const [messages, setMessages] = useState([]);
     const [messageText, setMessageText] = useState('');
     const ws = useRef(null);
 
-    useEffect(() => {
-        if (!isOpen)  return
+    const chatContentRef = useRef(null);
+    const currentMessageRef = useRef('');
 
-        ws.current = new WebSocket('ws://localhost:8000/streams/ws');
+    const DONE_TOKEN = "<<>>DONE<<>>";
+
+    const appendMessage = (newMessage) => {
+        if (newMessage !== '') {
+            // setMessages([...messages, currentMessageRef.current])
+            setMessages(prevMessages => [...prevMessages, newMessage]);
+            currentMessageRef.current = '';
+        }
+    }
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        ws.current = new WebSocket(`ws://localhost:8080/ws/${nodeId}`);
         ws.current.onmessage = (event) => {
-            setMessages((prevMessages) => [...prevMessages, event.data]);
+            const newData = event.data;
+            if (newData.includes(DONE_TOKEN)) {
+                const msg = currentMessageRef.current
+                console.log("****" + msg)
+                if (!currentMessageRef.current.trim()) {
+                    return
+                }
+                appendMessage(msg)
+            } else {
+                currentMessageRef.current += newData;
+                console.log(">>>>" + currentMessageRef.current)
+            }
         };
 
         return () => {
-            ws.current.close();
-        }
+            if (ws.current) {
+                ws.current.close();
+                ws.current = null;
+            }
+        };
     }, [isOpen]);
+
+    useEffect(() => {
+        if (chatContentRef.current) {
+            chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
+        }
+    }, [messages]);
 
     const sendMessage = (event) => {
         event.preventDefault();
@@ -64,22 +97,54 @@ function WebSocketChatDialog({ isOpen, setIsOpen, projectId }) {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                            <Dialog.Panel className="w-full max-w-full transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                                     <h1 className="text-2xl font-bold p-4 bg-blue-600 text-white">
                                         Streaming Chat Test
                                     </h1>
                                 </Dialog.Title>
                                 <div className="flex flex-col h-full bg-gray-100">
-                                    <div className="flex flex-col flex-grow p-4 overflow-auto bg-white">
-                                        <ul className="space-y-2">
-                                            {messages.map((message, index) => (
-                                                <li key={index} className="p-2 bg-gray-200 rounded-lg">
+                                    {/*<div className="flex flex-col flex-grow p-4 overflow-auto bg-white">*/}
+                                    {/*    <div ref={chatContentRef}>*/}
+                                    {/*        {messages.map((message, index) => (*/}
+                                    {/*            <div*/}
+                                    {/*                key={index}*/}
+                                    {/*                className="whitespace-pre-wrap break-words bg-gray-200 rounded p-2 mb-3"*/}
+                                    {/*                dangerouslySetInnerHTML={{__html: message}}*/}
+                                    {/*            />*/}
+                                    {/*        ))}*/}
+                                    {/*        {currentMessageRef.current && (*/}
+                                    {/*            <div*/}
+                                    {/*                className="whitespace-pre-wrap break-words bg-gray-200 rounded p-2"*/}
+                                    {/*                dangerouslySetInnerHTML={{__html: currentMessageRef.current}}*/}
+                                    {/*            />*/}
+                                    {/*        )}*/}
+                                    {/*    </div>*/}
+                                    {/*</div>*/}
+                                    <div className="flex flex-col flex-grow p-4 overflow-auto bg-white, border-2 border-gray-300 rounded-m shadow-gray-900 shadow-sm p-2">
+                                        <div>***** MESSAGES ******</div>
+                                        {messages.map((message, index) => (
+                                            <div>
+                                                <div>MESSAGE {index}</div>
+                                                <div key={index} className="whitespace-pre-wrap break-words bg-gray-200 rounded p-2 mb-3 border-2 border-amber-700">
+                                                    {/*<sanitizedHTML html={message} />*/}
                                                     {message}
-                                                </li>
-                                            ))}
-                                        </ul>
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        <div ref={chatContentRef}>
+                                            <div>***** CURRENT ******</div>
+                                            {currentMessageRef.current && (
+                                                <div
+                                                    className="whitespace-pre-wrap break-words bg-gray-200 rounded p-2 border-green-500 border-2">
+                                                    {/*<sanitizeHtml html={currentMessageRef.current}/>*/}
+                                                    {currentMessageRef.current}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
+
                                     <form onSubmit={sendMessage} className="flex p-4 bg-gray-200">
                                         <input
                                             type="text"
@@ -120,4 +185,4 @@ function WebSocketChatDialog({ isOpen, setIsOpen, projectId }) {
     );
 }
 
-export default WebSocketChatDialog;
+export default StateStreamDialog;
