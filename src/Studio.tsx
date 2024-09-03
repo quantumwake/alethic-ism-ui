@@ -1,6 +1,6 @@
 import React, {
     DragEvent,
-    useCallback
+    useCallback, useState
 } from 'react';
 
 import ReactFlow, {
@@ -14,12 +14,12 @@ import ReactFlow, {
 import CustomNode from './CustomNode';
 import ProcessorNodeOpenAI from "./ProcessorNodeOpenAI";
 import ProcessorNodeAnthropic from "./ProcessorNodeAnthropic";
-import ProcessorNodeLlama from "./ProcessorNodeLlama";
 import ProcessorNodeMistral from "./ProcessorNodeMistral";
 import ProcessorNodePython from "./ProcessorNodePython";
 import ProcessorNodeGemini from "./ProcessorNodeGemini";
 import ProcessorNodeStateCoalescer from "./ProcessorNodeStateCoalescer";
 import ProcessorNodeVisualOpenAI from "./ProcessorNodeVisualOpenAI";
+import ProcessorNodeLLAMA from "./ProcessorNodeLlama";
 
 import StateNode from './StateNode'
 import Sidebar from './Sidebar';
@@ -35,6 +35,10 @@ import useStore from './store';
 import CustomConnectionLine from "./CustomConnectionLine";
 import CustomEdge from "./CustomEdge";
 import WithAuth from "./WithAuth";
+import {faChevronLeft, faChevronRight, faFilter} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import DiscourseChannel from "./DiscourseChannel";
+import ChannelObserver from "./DiscourseChannelSidebar";
 
 const nodeTypes = {
     state: StateNode,
@@ -43,7 +47,7 @@ const nodeTypes = {
     processor_visual_openai: ProcessorNodeVisualOpenAI,
     processor_gemini: ProcessorNodeGemini,
     processor_anthropic: ProcessorNodeAnthropic,
-    processor_llama: ProcessorNodeLlama,
+    processor_llama: ProcessorNodeLLAMA,
     processor_mistral: ProcessorNodeMistral,
     processor_state_coalescer: ProcessorNodeStateCoalescer,
     custom: CustomNode
@@ -73,6 +77,7 @@ const Designer = () => {
         setWorkflowNodes: state.setWorkflowNodes,
     }));
 
+    const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
     const [nodes, setNodes, onNodesChange] = useNodesStateSynced();
     const [edges, setEdges, onEdgesChange] = useEdgesStateSynced();
     const {screenToFlowPosition} = useReactFlow();
@@ -96,6 +101,10 @@ const Designer = () => {
         },
         [workflowEdges, setEdges, getNode]
     );
+
+    const toggleRightSidebar = () => {
+        setIsRightSidebarOpen(!isRightSidebarOpen);
+    };
 
 
     const onDrop = async (event: DragEvent) => {
@@ -139,40 +148,45 @@ const Designer = () => {
           <Topbar/>
 
         {/* Container for Side Menu, Main Body, and Properties Menu */}
-          <div className="flex ml-2 mt-2 overflow-hidden">
+          <div className="flex ml-2 overflow-hidden">
               {/* Side Menu */}
               <Sidebar/>
 
               {/* Main Body Area - for React Flow */}
-              <div className="flex-grow p-2 overflow-auto">
-                      <ReactFlow
-                          nodes={nodes}
-                          edges={edges}
-                          onNodeClick={onNodeClick}
-                          onNodesChange={onNodesChange}
-                          onEdgesChange={onEdgesChange}
-                          onConnect={onConnect}
-                          onInit={onInit}
-                          onDrop={onDrop}
-                          onDragOver={onDragOver}
-                          fitView
-                          attributionPosition="top-right"
-                          connectionLineComponent={CustomConnectionLine}
-                          proOptions={proOptions}
-                          edgeTypes={edgeTypes}
-                          nodeTypes={nodeTypes}>
-                          <Background color="#aaa" gap={12}/>
-                      </ReactFlow>
-
-                  {/*<Controls />*/}
-                  {/*<Background gap={25} />*/}
-                  {/*<WorkflowDownload />*/}
+              <div className="flex-grow p-2 h-full">
+                  <ReactFlow
+                      nodes={nodes}
+                      edges={edges}
+                      onNodeClick={onNodeClick}
+                      onNodesChange={onNodesChange}
+                      onEdgesChange={onEdgesChange}
+                      onConnect={onConnect}
+                      onInit={onInit}
+                      onDrop={onDrop}
+                      onDragOver={onDragOver}
+                      fitView
+                      attributionPosition="top-right"
+                      connectionLineComponent={CustomConnectionLine}
+                      proOptions={proOptions}
+                      edgeTypes={edgeTypes}
+                      nodeTypes={nodeTypes}>
+                      <Background color="#aaa" gap={12}/>
+                  </ReactFlow>
+                  <button
+                      onClick={toggleRightSidebar}
+                      className="absolute top-2 right-2 h-10 text-xs text-white bg-green-600 p-2 rounded-none shadow-lg">
+                      {isRightSidebarOpen ?
+                          <FontAwesomeIcon className="h-6 w-3" icon={faChevronLeft}/> :
+                          <FontAwesomeIcon className="h-6 w-3" icon={faChevronRight}/>}
+                  </button>
               </div>
-
-              {/* Right-most Properties Menu (Expandable/Collapsible) */}
-              {/*<div className="w-64 h-full bg-stone-50 shadow-lg p-0">*/}
-              {/*  <Properties/>*/}
-              {/*</div>*/}
+              <div
+                  className={`w-[350pt] h-full p-0 m-0 border-2 border-green-400 transition-all duration-300 ${
+                      isRightSidebarOpen ? 'hidden' : ''
+                  }`}
+              >
+                  <ChannelObserver/>
+              </div>
           </div>
       </div>
 
