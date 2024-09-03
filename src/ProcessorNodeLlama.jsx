@@ -1,38 +1,26 @@
-import React, { memo } from 'react';
-import { Handle, useReactFlow, useStoreApi, Position } from 'reactflow';
+import React, {memo} from 'react';
+import BaseProcessorLanguageNode from "./BaseProcessorLanguageNode";
+import theme from "./theme";
 
-const options = [
-    {
-        label: 'gpt-4-0125-preview',
-        value: 'gpt-4-0125-preview',
-    },
-    {
-        label: 'gpt-4-1106-preview',
-        value: 'gpt-4-1106-preview',
-    },
-    {
-        label: 'gpt-3.5-turbo-0125',
-        value: 'gpt-3.5-turbo-0125',
-    },
-];
+function ProcessorNodeLLAMA({ id, data }) {
+    const renderAdditionalControls = ({ setIsOpenConfig }) => (<>
 
+    </>);
 
-function ProcessorNodeLlama({ id, data }) {
+    const renderAdditionalContent = () => (<>
+
+    </>);
+
     return (
-        <div className="text-xs min-h-20 w-60 bg-gray-100 text-white shadow-lg rounded-sm border-2">
-            <div className="flex-auto">
-                <div className="h-10 text-left pt-3 pl-1.5 bg-stone-500 text-white font-bold">Processor (Llama)</div>
-                <div className="p-1.5 text-black font-light">{data.label}</div>
-            </div>
-
-            <Handle id="target-1" type="target" position={Position.Top} className="w-2 rounded-none"/>
-            <Handle id="target-2" type="target" position={Position.Left} className="w-2 rounded-none"/>
-
-            <Handle id="source-1" type="source" position={Position.Bottom} className="w-2 rounded-none"/>
-            <Handle id="source-2" type="source" position={Position.Right} className="w-2 rounded-none"/>
-
-        </div>
+        <BaseProcessorLanguageNode
+            providerName="Llama"
+            className="NaturalLanguageProcessing"
+            nodeId={id}
+            renderAdditionalControls={renderAdditionalControls}
+            renderAdditionalContent={renderAdditionalContent}
+            theme={theme.llama}
+        />
     );
 }
 
-export default memo(ProcessorNodeLlama);
+export default memo(ProcessorNodeLLAMA);

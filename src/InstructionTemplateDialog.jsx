@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import useStore from "./store";
 import {MinusCircleIcon} from "@heroicons/react/24/outline";
@@ -11,6 +11,7 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
     const [templateType, setTemplateType] = useState('');
     const [templateContent, setTemplateContent] = useState('');
     const {templates, createTemplate, getTemplate, selectedProjectId} = useStore();
+    const monacoRef = useRef(null);
 
     const resetContent = () => {
         setTemplateId('')
@@ -57,10 +58,52 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
         setTemplateContent(template.template_content)
     }
 
-    const onEditorMount = (editor, monaco) => {
-        // console.log('editorDidMount', editor);
-        editor.focus();
-    }
+    // const onEditorMount = (editor, monaco) => {
+    //     // console.log('editorDidMount', editor);
+    //     editor.focus();
+    // }
+
+
+    const createDependencyProposals = useCallback((range) => {
+        if (!monacoRef.current) return [];
+
+        // Define your attributes here
+        const attributes = [
+            'attribute1',
+            'attribute2',
+            'attribute3',
+            // ... add more attributes as needed
+        ];
+
+        return attributes.map(attr => ({
+            label: attr,
+            kind: monacoRef.current.languages.CompletionItemKind.Property,
+            documentation: `This is the ${attr} attribute`,
+            insertText: attr,
+            range: range
+        }));
+    }, []);
+
+    const onEditorMount = useCallback((editor, monaco) => {
+        monacoRef.current = monaco;
+
+        monaco.languages.registerCompletionItemProvider('python', {
+            provideCompletionItems: (model, position) => {
+                const wordInfo = model.getWordUntilPosition(position);
+                const wordRange = new monaco.Range(
+                    position.lineNumber,
+                    wordInfo.startColumn,
+                    position.lineNumber,
+                    wordInfo.endColumn
+                );
+
+                return {
+                    suggestions: createDependencyProposals(wordRange)
+                };
+            }
+        });
+    }, [createDependencyProposals]);
+
 
 
     return (
@@ -92,7 +135,7 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
                             <Dialog.Panel
                                 className="w-full max-w-screen-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                                    Instructions
+                                    Global Instructions (language prompts, visual prompts, audio prompts, runnable code, and more)
                                 </Dialog.Title>
                                 <div className="mt-2">
                                     <div className="shadow overflow-hidden sm:rounded-md">
@@ -134,10 +177,9 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
                                                         onChange={(e) => setTemplateType(e.target.value)}
                                                         className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                                                         <option value=""></option>
-                                                        <option value="user_template">User Template</option>
-                                                        <option value="system_template">System Template</option>
-                                                        <option value="python_code">Python Code</option>
-                                                        <option value="template">Language to Visual</option>
+                                                        <option value="simple">Simple</option>
+                                                        <option value="mako">Mako</option>
+                                                        <option value="python">Python</option>
                                                     </select>
                                                 </div>
                                                 {/* Template Content Textarea */}
@@ -146,9 +188,21 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
                                                         className="mt-1 block h-96 w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                                         defaultLanguage="python"
                                                         value={templateContent}
-                                                        onChange={(newValue, e) => setTemplateContent(newValue)}
+                                                        onChange={(newValue) => setTemplateContent(newValue)}
                                                         onMount={onEditorMount}
+                                                        options={{
+                                                            minimap: { enabled: false },
+                                                            scrollBeyondLastLine: false,
+                                                            // Add more options as needed
+                                                        }}
                                                     />
+                                                    {/*<Editor*/}
+                                                    {/*    className="mt-1 block h-96 w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"*/}
+                                                    {/*    defaultLanguage="python"*/}
+                                                    {/*    value={templateContent}*/}
+                                                    {/*    onChange={(newValue, e) => setTemplateContent(newValue)}*/}
+                                                    {/*    onMount={onEditorMount}*/}
+                                                    {/*/>*/}
                                                 </div>
                                             </div>
                                         </div>

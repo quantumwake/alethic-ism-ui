@@ -13,7 +13,6 @@ function StateNode({ id, data }) {
 
     return (
         <BaseStateNode
-            providerName="Python Executor"
             nodeId={id}
             renderAdditionalControls={renderAdditionalControls}
             renderAdditionalContent={renderAdditionalContent}

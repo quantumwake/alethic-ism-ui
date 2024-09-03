@@ -51,7 +51,7 @@ const Sidebar = () => {
     };
 
     return (
-        <aside className="p-1 bg-stone-50 max-h-[90%] flex flex-col overflow-y-auto shadow-md shadow-stone-200">
+        <aside className="mt-2 p-1 bg-stone-50 max-h-[90%] flex flex-col overflow-y-auto shadow-md shadow-stone-200">
             {Object.keys(processorStyles).map((id) => (
                 <ToolIcon
                     id={id}

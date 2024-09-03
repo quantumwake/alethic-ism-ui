@@ -1,176 +1,210 @@
 import React, {useState, useEffect, useRef, useCallback, memo} from 'react';
 import { Dialog, Transition } from "@headlessui/react";
+import useStore from "./store";
+import {useParams} from "react-router-dom";
 // import sanitizeHtml from 'sanitize-html';
 
-function StateStreamDialog({ isOpen, setIsOpen, nodeId }) {
+function DiscourseChannel( ) {
+
+    const {isid, osid, sid, uid} = useParams();
+
+    const messageRef2 = useRef('')
+    const messageRef = useRef(''); // Ref for accessing the DOM element
+    const [message, setMessage] = useState('');
+    // const currentMessageRef = useRef(''); // Ref for storing message data
+
     const [messages, setMessages] = useState([]);
     const [messageText, setMessageText] = useState('');
     const ws = useRef(null);
+    const {publishQueryState} = useStore()
+
 
     const chatContentRef = useRef(null);
-    const currentMessageRef = useRef('');
 
-    const DONE_TOKEN = "<<>>DONE<<>>";
+    const ASSISTANT_TOKEN = "<<>>ASSISTANT<<>>";
+    const SOURCE_TOKEN = "<<>>SOURCE<<>>";
+    const INPUT_TOKEN = "<<>>INPUT<<>>";
+    const ERROR_TOKEN = "<<>>ERROR<<>>";
+    // const DONE_TOKEN = "<<>>DONE<<>>";
     const ISM_STREAM_API_BASE_URL = window.env.REACT_APP_ISM_STREAM_API_BASE_URL
 
-
-    const appendMessage = (newMessage) => {
-        if (newMessage !== '') {
-            // setMessages([...messages, currentMessageRef.current])
-            setMessages(prevMessages => [...prevMessages, newMessage]);
-            currentMessageRef.current = '';
+    const appendMessage2 = (user, role, message) => {
+        if (message !== '') {
+            message = {
+                "content": message,
+                "role": role,
+                "user": user
+            }
+            setMessages(prevMessages => [...prevMessages, message]);
         }
     }
 
     useEffect(() => {
-        if (!isOpen) return;
+        if (ws.current) {
+            console.log("already connected to websocket")
+            return
+        }
 
-        const url = `${ISM_STREAM_API_BASE_URL}/ws/${nodeId}`
+        console.log('websocket ready to establish');
+        const URL = `${ISM_STREAM_API_BASE_URL}/ws/stream/${osid}/${sid}`
+        ws.current = new WebSocket(URL);
 
-        // ws.current = new WebSocket(`ws://localhost:8080/ws/${nodeId}`);
-        ws.current = new WebSocket(url);
-        ws.current.onmessage = (event) => {
-            const newData = event.data;
-            if (newData.includes(DONE_TOKEN)) {
-                const msg = currentMessageRef.current
-                console.log("****" + msg)
-                if (!currentMessageRef.current.trim()) {
-                    return
-                }
-                appendMessage(msg)
-            } else {
-                currentMessageRef.current += newData;
-                console.log(">>>>" + currentMessageRef.current)
-            }
+        ws.current.onopen = () => {
+            console.log('websocket connection established');
         };
 
-        return () => {
-            if (ws.current) {
+        ws.current.onclose = () => {
+            console.log('websocket connection closed');
+        }
+
+        const reader = new ReadableStream({
+            start(controller) {
+                ws.current.onmessage = (event) => {
+                    controller.enqueue(event.data);
+                };
+                ws.current.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    controller.error(error);
+                };
+            },
+            cancel() {
                 ws.current.close();
-                ws.current = null;
+            }
+        }).getReader();
+
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        const processStream = async () => {
+            try {
+                let previous_value = ""
+                let current_user = ""
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        break;
+                    }
+
+                    if (value.includes(SOURCE_TOKEN)) {
+                        current_user = previous_value
+                        setMessage('')
+                        messageRef.current = '';
+                    } else if (value.includes(INPUT_TOKEN)) {
+                        appendMessage2(current_user, "user", messageRef.current)
+                        setMessage('')
+                        messageRef.current = '';
+                    } else if (value.includes(ASSISTANT_TOKEN)) {
+                        appendMessage2("assistant", "assistant", messageRef.current)
+                        setMessage('')
+                        messageRef.current = '';
+                    } else if (value.includes(ERROR_TOKEN)) {
+                        appendMessage2("assistant", "assistant", messageRef.current + ' **ERROR**')
+                        setMessage('')
+                        messageRef.current = '';
+                    } else {
+                        setMessage(prev => prev + value);
+                        messageRef.current += value
+                    }
+                    await delay(1); // 100ms delay, adjust as needed
+                    previous_value = value  // store this for next iteration
+                }
+            } catch (error) {
+                console.error('Stream reading error:', error);
             }
         };
-    }, [isOpen]);
+
+        processStream();
+
+
+    }, []);
+
+    useEffect(() => {
+        // Scroll to the bottom whenever messages are updated
+        if (messageRef2) {
+            messageRef2.current.scrollIntoView({ behavior: 'smooth' });
+            // chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
+        }
+    }, [message]);
 
     useEffect(() => {
         if (chatContentRef.current) {
-            chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
+            chatContentRef.current.scrollIntoView({ behavior: 'smooth' });
+            // chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
         }
     }, [messages]);
 
-    const sendMessage = (event) => {
+    const sendMessage = async (event) => {
         event.preventDefault();
         if (messageText.trim()) {
-            ws.current.send(messageText);
+            const queryState = {
+                "input": messageText,
+                "session_id": sid,
+                "source": uid,
+            }
+
             setMessageText('');
+            await publishQueryState(isid, queryState)
         }
-    };
 
-    const handleDiscard = () => {
-        // Implement discard functionality here
-        setIsOpen(false);
-    };
-
-    const handleSave = () => {
-        // Implement save functionality here
-        setIsOpen(false);
+        // setIsOpen(false);
     };
 
     return (
-        <Transition appear show={isOpen} as={React.Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={() => setIsOpen(false)}>
-                <Transition.Child
-                    as={React.Fragment}
-                    enter="ease-out duration-300"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                >
-                    <div className="fixed inset-0 bg-black bg-opacity-25" />
-                </Transition.Child>
+        <div className="flex flex-col h-screen bg-black text-green-500 font-mono">
+            {/* Header */}
+            <header className="bg-black text-green-500 p-4 border-b border-green-500">
+                <div>
+                    <h1 className="text-xl">DISCOURSE CHANNEL</h1>
+                    <p>{isid}:{osid}:{sid}:{uid}</p>
+                </div>
+            </header>
 
-                <div className="fixed inset-0 overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-4 text-center">
-                        <Transition.Child
-                            as={React.Fragment}
-                            enter="ease-out duration-300"
-                            enterFrom="opacity-0 scale-95"
-                            enterTo="opacity-100 scale-100"
-                            leave="ease-in duration-200"
-                            leaveFrom="opacity-100 scale-100"
-                            leaveTo="opacity-0 scale-95"
-                        >
-                            <Dialog.Panel className="w-full max-w-full transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                                    <h1 className="text-2xl font-bold p-4 bg-blue-600 text-white">
-                                        Streaming Chat Test
-                                    </h1>
-                                </Dialog.Title>
-                                <div className="flex flex-col h-full bg-gray-100">
-                                    <div className="flex flex-col flex-grow p-4 overflow-auto bg-white, border-2 border-gray-300 rounded-m shadow-gray-900 shadow-sm p-2">
-                                        <div>***** MESSAGES ******</div>
-                                        {messages.map((message, index) => (
-                                            <div>
-                                                <div>MESSAGE {index}</div>
-                                                <div key={index} className="whitespace-pre-wrap break-words bg-gray-200 rounded p-2 mb-3 border-2 border-amber-700">
-                                                    {/*<sanitizedHTML html={message} />*/}
-                                                    {message}
-                                                </div>
-                                            </div>
-                                        ))}
+            {/* Chat Content */}
+            <div
+                className="flex flex-col flex-grow p-4 overflow-auto bg-black border border-green-500"
+            >
+                <div className="mb-4">***** MESSAGES *****</div>
+                <div ref={chatContentRef}>
+                    {messages.map((message, index) => (
+                        <div key={index} className="mb-4">
+                            <div>MESSAGE {index}</div>
+                            <div
+                                className="whitespace-pre-wrap break-words bg-blend-darken text-green-300 p-2 border border-green-500">
+                                <div className="font-bold">{message['user']}: </div>
+                                {/*{message['user']}: {message['content']}*/}
+                                <div dangerouslySetInnerHTML={{__html: message['content']}}/>
+                            </div>
+                        </div>
+                    ))}
 
-                                        <div ref={chatContentRef}>
-                                            <div>***** CURRENT ******</div>
-                                            {currentMessageRef.current && (
-                                                <div
-                                                    className="whitespace-pre-wrap break-words bg-gray-200 rounded p-2 border-green-500 border-2">
-                                                    {/*<sanitizeHtml html={currentMessageRef.current}/>*/}
-                                                    {currentMessageRef.current}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <form onSubmit={sendMessage} className="flex p-4 bg-gray-200">
-                                        <input
-                                            type="text"
-                                            value={messageText}
-                                            onChange={(e) => setMessageText(e.target.value)}
-                                            autoComplete="off"
-                                            className="flex-grow p-2 border rounded-lg"
-                                            placeholder="Type a message..."
-                                        />
-                                        <button type="submit"
-                                                className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-lg">Send
-                                        </button>
-                                    </form>
-                                </div>
-
-                                <div className="mt-4 flex justify-end">
-                                    <button
-                                        type="button"
-                                        className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-                                        onClick={handleDiscard}
-                                    >
-                                        Discard
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="ml-2 inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                        onClick={handleSave}
-                                    >
-                                        Save
-                                    </button>
-                                </div>
-                            </Dialog.Panel>
-                        </Transition.Child>
+                    <div className="mt-4 mb-2">***** CURRENT *****</div>
+                    <div
+                        // className="whitespace-pre-wrap break-words bg-blend-darken text-green-100 p-2 border border-green-500 min-h-[100px] max-h-[300px] overflow-y-auto"
+                    >
+                        <div ref={messageRef2}><div dangerouslySetInnerHTML={{ __html: message }} /></div>
                     </div>
                 </div>
-            </Dialog>
-        </Transition>
+            </div>
+
+            {/* Footer */}
+            <footer className="bg-black p-4 border-t border-green-500">
+                <form onSubmit={sendMessage} className="flex">
+                    <input
+                        type="text"
+                        value={messageText}
+                        onChange={(e) => setMessageText(e.target.value)}
+                        className="flex-grow p-2 bg-green-950 text-green-100 border border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                        placeholder="Type a message..."
+                    />
+                    <button
+                        type="submit"
+                        className="px-4 py-2 bg-green-500 text-black border border-green-500 hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500"
+                    >
+                        SEND
+                    </button>
+                </form>
+            </footer>
+        </div>
     );
 }
 
-export default memo(StateStreamDialog);
+export default memo(DiscourseChannel);

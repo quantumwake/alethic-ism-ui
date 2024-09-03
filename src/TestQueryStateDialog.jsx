@@ -5,14 +5,14 @@ import useStore from "./store";
 function TestQueryStateDialog({ nodeId, isOpen, setIsOpen }) {
 
     const [queryState, setQueryState] = useState()
-    const {testQueryState} = useStore()
+    const {publishQueryState} = useStore()
 
     const handleClose = () => {
         setIsOpen(false);
     };
 
     const handleTest = () => {
-        testQueryState(nodeId, queryState)
+        publishQueryState(nodeId, queryState)
         setIsOpen(false);
     };
 

@@ -1,6 +1,6 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import React, {useState, useEffect, useRef, useCallback, memo} from 'react';
 import { Dialog, Transition } from "@headlessui/react";
-import sanitizeHtml from 'sanitize-html';
+// import sanitizeHtml from 'sanitize-html';
 
 function StateStreamDialog({ isOpen, setIsOpen, nodeId }) {
     const [messages, setMessages] = useState([]);
@@ -11,6 +11,8 @@ function StateStreamDialog({ isOpen, setIsOpen, nodeId }) {
     const currentMessageRef = useRef('');
 
     const DONE_TOKEN = "<<>>DONE<<>>";
+    const ISM_STREAM_API_BASE_URL = window.env.REACT_APP_ISM_STREAM_API_BASE_URL
+
 
     const appendMessage = (newMessage) => {
         if (newMessage !== '') {
@@ -23,7 +25,10 @@ function StateStreamDialog({ isOpen, setIsOpen, nodeId }) {
     useEffect(() => {
         if (!isOpen) return;
 
-        ws.current = new WebSocket(`ws://localhost:8080/ws/${nodeId}`);
+        const url = `${ISM_STREAM_API_BASE_URL}/ws/${nodeId}`
+
+        // ws.current = new WebSocket(`ws://localhost:8080/ws/${nodeId}`);
+        ws.current = new WebSocket(url);
         ws.current.onmessage = (event) => {
             const newData = event.data;
             if (newData.includes(DONE_TOKEN)) {
@@ -104,23 +109,6 @@ function StateStreamDialog({ isOpen, setIsOpen, nodeId }) {
                                     </h1>
                                 </Dialog.Title>
                                 <div className="flex flex-col h-full bg-gray-100">
-                                    {/*<div className="flex flex-col flex-grow p-4 overflow-auto bg-white">*/}
-                                    {/*    <div ref={chatContentRef}>*/}
-                                    {/*        {messages.map((message, index) => (*/}
-                                    {/*            <div*/}
-                                    {/*                key={index}*/}
-                                    {/*                className="whitespace-pre-wrap break-words bg-gray-200 rounded p-2 mb-3"*/}
-                                    {/*                dangerouslySetInnerHTML={{__html: message}}*/}
-                                    {/*            />*/}
-                                    {/*        ))}*/}
-                                    {/*        {currentMessageRef.current && (*/}
-                                    {/*            <div*/}
-                                    {/*                className="whitespace-pre-wrap break-words bg-gray-200 rounded p-2"*/}
-                                    {/*                dangerouslySetInnerHTML={{__html: currentMessageRef.current}}*/}
-                                    {/*            />*/}
-                                    {/*        )}*/}
-                                    {/*    </div>*/}
-                                    {/*</div>*/}
                                     <div className="flex flex-col flex-grow p-4 overflow-auto bg-white, border-2 border-gray-300 rounded-m shadow-gray-900 shadow-sm p-2">
                                         <div>***** MESSAGES ******</div>
                                         {messages.map((message, index) => (
@@ -185,4 +173,4 @@ function StateStreamDialog({ isOpen, setIsOpen, nodeId }) {
     );
 }
 
-export default StateStreamDialog;
+export default memo(StateStreamDialog);

@@ -60,7 +60,7 @@ const edgeTypes: EdgeTypes = {
 
 const proOptions = { hideAttribution: true };
 
-const Designer = () => {
+const Studio = () => {
 
     const setSelectedNode = useStore((state) => state.setSelectedNode);
     const selectedProjectId = useStore((state) => state.selectedProjectId)
@@ -194,4 +194,4 @@ const Designer = () => {
   );
 };
 
-export default WithAuth(Designer)
+export default WithAuth(Studio)

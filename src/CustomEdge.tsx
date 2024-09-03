@@ -8,8 +8,9 @@ import {
 } from 'reactflow';
 
 import useStore from "./store";
-import {faPlay, faRemove} from "@fortawesome/free-solid-svg-icons";
+import {faFilter, faPlay, faRemove} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import StateDataFilterDialog from "./StateDataFilterDialog";
 
 function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                                                         sourcePosition, targetPosition,
@@ -24,6 +25,8 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
     const {workflowEdges, findWorkflowEdgeById, deleteProcessorStateWithWorkflowEdge, executeProcessorStateRoute} = useStore()
     const {selectedEdgeId, setSelectedEdgeId} = useStore()
     const isSelected = selectedEdgeId === id;
+    const [isOpenStateDataFilterDialog, setIsOpenStateDataFilterDialog] = useState(false);
+    const arrowId = `arrow-${id}`;
 
     const getEdgeType = () => {
         if (edge) {
@@ -48,15 +51,12 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
         }
     }, [workflowEdges])
 
-
     useEffect(() => {
-
         if (id in processorStates) {
             const ps = processorStates[id]
             setStatus(ps.status)
             console.info(`processor state found ${id} with ${processorStates}`)
         }
-
     }, [processorStates])
 
     // const onEdgeClick = (edgeId: string) => {
@@ -75,6 +75,10 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
     const onEdgeDelete = (edgeId: string) => {
         deleteProcessorStateWithWorkflowEdge(edgeId)
         // deleteProcessorState(edgeId)
+    }
+
+    const onFilterClick = (edgeId: string) => {
+
     }
 
     const onEdgePlayClick = (edgeId: string) => {
@@ -122,68 +126,72 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
     // const t = statusColors(status_2)
 
 
-    return (
-        <>
-            {/*<BaseEdge path={edgePath} markerEnd={markerEnd} style={style}/>*/}
-
-                        {/* Path to handle hover and click events */}
-                        <path
-                            id={id}
-                            fill="none"
-                            strokeWidth="3"
-                            d={edgePath}
-                            className={`${
-                                isSelected ? 'stroke-red-500' :
-                                    isHovered ? 'stroke-gray-800' :
-                                        'stroke-blue-700'
-                            }`}
-                            onClick={() => setSelectedEdgeId(id)}
-                            onMouseEnter={() => setIsHovered(true)}
-                            onMouseLeave={() => setIsHovered(false)}
-                            style={{
-                                cursor: 'pointer',
-                                strokeDasharray: 4,
-                            }}
-                        />
-
-
-
-                <EdgeLabelRenderer>
+    return (<>
+        {/* Path to handle hover and click events */}
+        <path
+            id={id}
+            fill="none"
+            strokeWidth="2"
+            d={edgePath}
+            className={`${
+                isSelected ? 'stroke-red-700' :
+                    isHovered ? 'stroke-gray-800' :
+                        'stroke-blue-300'
+            }`}
+            onClick={() => setSelectedEdgeId(id)}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            style={{
+                cursor: 'pointer',
+                strokeDasharray: 4,
+            }}
+        />
+        <EdgeLabelRenderer>
+            <div
+                style={{
+                    position: 'absolute',
+                    transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+                    fontSize: 8,
+                    // everything inside EdgeLabelRenderer has no pointer events by default
+                    // if you have an interactive element, set pointer-events: all
+                    pointerEvents: 'all',
+                }}
+                className="nodrag nopan"
+            >
+                <div className="flex flex-row p-0.5 bg-blue-100 border-black rounded-sm">
                     <div
-                        style={{
-                            position: 'absolute',
-                            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-                            fontSize: 12,
-                            // everything inside EdgeLabelRenderer has no pointer events by default
-                            // if you have an interactive element, set pointer-events: all
-                            pointerEvents: 'all',
-                        }}
-                        className="nodrag nopan"
-                    >
-                        <div className="flex flex-row">
-                            <div
-                                className={statusColors(status) + " p-1 border-black shadow-md shadow-gray-200 align-middle text-gray-700"}>
-                                {status}
-                            </div>
-
-                            {getEdgeType() === "state_auto_stream_playable_edge" && (
-                                <button
-                                    onClick={() => onEdgePlayClick(id)}
-                                    className="ml-1 px-1.5 py-0.5 bg-emerald-500 text-white rounded-sm hover:bg-emerald-200 focus:outline-none">
-                                    <FontAwesomeIcon icon={faPlay}/>
-                                </button>
-                            )}
-
-                            <button
-                                onClick={() => onEdgeDelete(id)}
-                                className="ml-1 px-1.5 py-0.5 bg-red-500 text-white rounded-sm hover:bg-pink-700 focus:outline-none">
-                                <FontAwesomeIcon icon={faRemove}/>
-                            </button>
-                        </div>
+                        className={statusColors(status) + " p-0.5 border-black align-middle text-gray-700"}>
+                        {status}
                     </div>
-                </EdgeLabelRenderer>
-        </>
-    );
+
+                    {getEdgeType() === "state_auto_stream_playable_edge" && (
+                        <button
+                            onClick={() => onEdgePlayClick(id)}
+                            className="ml-0.5 px-1.5 py-0.5 bg-emerald-500 text-white rounded-sm hover:bg-emerald-200 focus:outline-none">
+                            <FontAwesomeIcon icon={faPlay}/>
+                        </button>
+                    )}
+                    {/*{getEdgeType() === "state_auto_stream_playable_edge" && (*/}
+                    <button
+                        onClick={() => setIsOpenStateDataFilterDialog(true)}
+                        className="ml-0.5 px-1.5 py-0.5 bg-emerald-500 text-white rounded-sm hover:bg-emerald-200 focus:outline-none">
+                        <FontAwesomeIcon icon={faFilter}/>
+                    </button>
+                    {/*)}*/}
+
+                    <button
+                        onClick={() => onEdgeDelete(id)}
+                        // onClick={() => onEdgeDelete(id)}
+                        className="ml-0.5 px-1.5 py-0.5 bg-red-500 text-white rounded-sm hover:bg-pink-700 focus:outline-none">
+                        <FontAwesomeIcon icon={faRemove}/>
+                    </button>
+                </div>
+            </div>
+        </EdgeLabelRenderer>
+
+        <StateDataFilterDialog isOpen={isOpenStateDataFilterDialog} setIsOpen={setIsOpenStateDataFilterDialog}
+                               filterId={id}/>
+    </>);
 }
 
 export default CustomEdge

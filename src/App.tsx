@@ -1,14 +1,17 @@
 // App.js
 import React, {useEffect} from "react";
 import {
-    createBrowserRouter, Outlet,
+    createBrowserRouter, Outlet, Route,
     RouterProvider, useLocation, useNavigationType,
 } from "react-router-dom";
-import Designer from "./Designer";
 import {ReactFlowProvider} from "reactflow";
 import RootLayout from "./RootLayout";
 import Login from "./Login";
 import Signup from "./Signup";
+import DiscourseChannel from "./DiscourseChannel";
+import WebSocketMessageDisplay from "./WebSocketMessageDisplay";
+import useStore from "./store";
+import Studio from "./Studio";
 
 
 const RouteLogger = () => {
@@ -39,10 +42,10 @@ const router = createBrowserRouter([
         // loader: () => ({}),
         children: [
             {
-                path: "/designer",
+                path: "/studio",
                 element:
                     <ReactFlowProvider>
-                        <Designer/>
+                        <Studio/>
                     </ReactFlowProvider>
             },
             {
@@ -52,7 +55,19 @@ const router = createBrowserRouter([
             {
                 path: "/signup",
                 element: <Signup />
-            }
+            },
+            // {
+                // path: "/discourse/:isid/:osid/:sid/:uid",
+                // element: <DiscourseChannel />
+            // },
+            // {
+            //     path: "/stream/analyzer",
+            //     element: <WebSocketMessageDisplay />
+            // },
+            // {
+            //     path: "/filter",
+            //     element: <StateDataFilterDialog />
+            // }
         ]
     }
 ]);
@@ -67,6 +82,15 @@ const router = createBrowserRouter([
 
 
 const App = () => {
+    const setJwtToken = useStore(state => state.setJwtToken);
+
+    useEffect(() => {
+        const jwtToken = localStorage.getItem('jwtToken');
+        if (jwtToken) {
+            setJwtToken(jwtToken);
+        }
+    }, [setJwtToken]);
+
     return (
         <React.StrictMode>
             <RouterProvider router={router} />

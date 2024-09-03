@@ -9,7 +9,7 @@ const withAuth = (Component) => {
 
         useEffect(() => {
             if (!userId) {
-                navigate('/login'); // Redirect to login if userId is not set
+                navigate('/signup'); // Redirect to login if userId is not set
             }
         }, [userId, navigate]);
 

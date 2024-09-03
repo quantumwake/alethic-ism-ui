@@ -19,31 +19,26 @@ const Signup = () => {
     const signupWithGoogle = async () => {
         try {
             const result = await signInWithPopup(auth, provider);
-
-            // This gives you a Google Access Token used by the API to validate and create the user profile
-            // const credential = GoogleAuthProvider.credentialFromResult(result);
-            // const token = credential.accessToken
             const user = result.user;
 
-            const token = await user.getIdToken()
-            const userDetails = {
-                token: token,
-                user: user
-            };
+            const token = await user.getIdToken();
+            const userDetails = { token: token, user: user };
 
-            await createUserProfile(userDetails)
-            navigate('/designer')
+            // Send the user details to the backend and get the JWT
+            const response = await createUserProfile(userDetails);
+
+            // Store the JWT from the response header
+            const jwtToken = response.headers.get('Authorization').split(' ')[1];
+
+            // Save JWT in localStorage
+            localStorage.setItem('jwtToken', jwtToken);
+
+            // Save JWT in Zustand store
+            useStore.setState({ jwtToken });
+
+            navigate('/studio');
         } catch (error) {
-            // Handle Errors here.
             console.error('Error signing in with Google:', error);
-            const errorCode = error.code;
-            const errorMessage = error.message;
-
-            // The email of the user's account used.
-            const email = error.customData?.email;
-
-            // The AuthCredential type that was used.
-            const credential = GoogleAuthProvider.credentialFromError(error);
         }
     };
 
@@ -75,76 +70,71 @@ const Signup = () => {
     };
 
     return (
-        <div className="container mx-auto">
-            <div className="flex justify-center">
-                <form className="w-full max-w-md mt-6 p-6 bg-white shadow-md rounded">
+        <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Welcome
+                </h2>
+                <p className="mt-2 text-center text-sm text-gray-600">
+                    Sign in or create an account to get started
+                </p>
+            </div>
+
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                     {notice && (
                         <div className="mb-4 p-4 bg-yellow-100 text-yellow-700 rounded" role="alert">
                             {notice}
                         </div>
                     )}
 
-                    <div className="mb-4">
-                        <CustomButton value="Google" icon="fa-google" onClick={signupWithGoogle} />
-                    </div>
+                    <div className="space-y-6">
+                        <div>
+                            <CustomButton
+                                value="Sign in with Google"
+                                icon="fa-google"
+                                onClick={signupWithGoogle}
+                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            />
+                        </div>
 
+                        <div className="mt-6">
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-gray-300"></div>
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">
+                    Why use Google Sign-In?
+                  </span>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div className="mt-6 text-center text-sm text-gray-500">
+                            <ul className="list-disc list-inside">
+                                <li>Quick and easy access</li>
+                                <li>No need to remember another password</li>
+                                <li>Secure authentication process</li>
+                                <li>Access to Google-connected features</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                    <div className="mb-4">
-                        <label htmlFor="signupEmail" className="block text-gray-700 text-sm font-bold mb-2">Enter an
-                            email address for your username</label>
-                        <input
-                            id="signupEmail"
-                            type="email"
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            aria-describedby="emailHelp"
-                            placeholder="name@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="signupPassword"
-                               className="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                        <input
-                            id="signupPassword"
-                            type="password"
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="confirmPassword" className="block text-gray-700 text-sm font-bold mb-2">Confirm
-                            Password</label>
-                        <input
-                            id="confirmPassword"
-                            type="password"
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Confirm Password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <button
-                            type="submit"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                            onClick={signupWithUsernameAndPassword}
-                        >
-                            Signup
-                        </button>
-                    </div>
-                    <div className="mt-4 text-center">
-                <span>
-                    Go back to login? <Link to="/" className="text-blue-500 hover:text-blue-700">Click here.</Link>
-                </span>
-                    </div>
-                </form>
+            <div className="mt-8 text-center text-sm text-gray-500">
+                By signing in, you agree to our{' '}
+                <a href="/terms" className="font-medium text-blue-600 hover:text-blue-500">
+                    Terms of Service
+                </a>{' '}
+                and{' '}
+                <a href="/privacy" className="font-medium text-blue-600 hover:text-blue-500">
+                    Privacy Policy
+                </a>
+                .
             </div>
         </div>
-
     )
 }
 

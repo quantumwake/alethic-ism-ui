@@ -1,6 +1,85 @@
 // store.js
 import {create} from 'zustand';
 import {persist} from "zustand/middleware";
+import {useNavigate} from "react-router-dom";
+// import { useNavigate } from 'react-router-dom';
+// import useStore from './path-to-your-store';  // Import your Zustand store
+//
+// const authRequest = async (url, options = {}) => {
+//     const navigate = useNavigate();  // Initialize the navigate function
+//
+//     try {
+//         // Retrieve the JWT directly from Zustand store
+//         const jwtToken = useStore.getState().jwtToken;  // Get the JWT from Zustand
+//
+//         // Add Authorization header with the JWT
+//         options.headers = {
+//             ...options.headers,
+//             'Authorization': `Bearer ${jwtToken}`,
+//             'Content-Type': 'application/json', // Ensure content type is JSON
+//         };
+//
+//         // Ensure credentials are included if needed
+//         options.credentials = options.credentials || 'include';
+//
+//         const response = await fetch(url, options);
+//
+//         // Handle non-OK responses
+//         if (!response.ok) {
+//             if (response.status === 401) {
+//                 // Unauthorized, navigate to the login page
+//                 navigate('/login');
+//             } else if (response.status === 403) {
+//                 // Forbidden, navigate to an error page
+//                 navigate('/forbidden');
+//             } else if (response.status === 404) {
+//                 // Not found, navigate to a 404 page
+//                 navigate('/not-found');
+//             } else {
+//                 // Generic error handling, navigate to a generic error page
+//                 navigate('/error');
+//             }
+//             return null;  // Return null or an appropriate value for failed requests
+//         }
+//
+//         return response.json();  // Return the parsed JSON response for successful requests
+//     } catch (error) {
+//         console.error('Network or other error:', error);
+//         // Navigate to an error page if a network error occurs
+//         navigate('/error');
+//         throw error;  // Re-throw the error so that it can be handled elsewhere if needed
+//     }
+// };
+
+const authFetch = (set, get) => async (url, options = {}) => {
+    const { jwtToken } = get();
+    // const navigate = useNavigate();
+
+    // Inject the JWT token into the request headers
+    const headers = {
+        ...options.headers,
+        'Authorization': `Bearer ${jwtToken}`,
+    };
+
+    try {
+        // const response = await fetch(url, options);
+        const response = await fetch(url, { ...options, headers });
+        if (response.status === 401) {
+            // Handle 401 Unauthorized
+            set({ jwtToken: null });
+            localStorage.removeItem('jwtToken');
+
+            // Handle 401 Unauthorized
+            // navigate('/signup');
+            window.location.href = '/signup';
+        }
+
+        return response;
+    } catch (error) {
+        console.error('Fetch error:', error);
+        throw error;
+    }
+};
 
 
 const useStore = create(
@@ -17,17 +96,54 @@ const useStore = create(
                 return Object.values(map);
             },
 
+            // Authenticated fetch function
+            authenticatedFetch: authFetch(set, get),
+
             ENVIRONMENT: window.env.REACT_APP_ENVIRONMENT,
             ISM_API_BASE_URL: window.env.REACT_APP_ISM_API_BASE_URL,
 
-            //
-            // // user profile (create account, fetch user id by auth)
-            // // userId: "f401db9b-50fd-4960-8661-de3e7c2f9092",
+            // channel selectors
+            channelInputId: null,
+            setChannelInputId: (channelInputId) => set({channelInputId: channelInputId}),
+
+            channelOutputId: null,
+            setChannelOutputId: (channelOutputId) => set({channelOutputId: channelOutputId}),
+
+            channelSubscriberId: null,
+            setChannelSubscriberId: (channelSubscriberId) => set({channelSubscriberId: channelSubscriberId}),
+
+            jwtToken: null,
+
+            // Set JWT token
+            setJwtToken: (token) => {
+                set({ jwtToken: token});
+                localStorage.setItem('jwtToken', token);
+            },
+
+            // Clear JWT token (for logout)
+            clearJwtToken: () => {
+                set({ jwtToken: null});
+                localStorage.removeItem('jwtToken');
+            },
+
+            // user profile (create account, fetch user id by auth)
             userId: null,
             setUserId: (userId) => set({ userId: userId }),
 
             selectedEdgeId: null,
             setSelectedEdgeId: (selectedEdgeId) => set({ selectedEdgeId: selectedEdgeId }),
+
+
+            // usage reports
+            userUsageReport: {},
+            setUserUsageReport: (userUsageReport) => set({ userUsageReport: userUsageReport }),
+
+            // usage reports
+            chartsUsageReport: [],
+            setChartsUsageReport: (chartsUsageReport) => set({ chartsUsageReport: chartsUsageReport }),
+
+            projectUsageReport: {},
+            setProjectUsageReport: (projectUsageReport) => set({ projectUsageReport: projectUsageReport }),
 
             //
             createUserProfile: async(userDetails) => {
@@ -50,11 +166,32 @@ const useStore = create(
 
                 // assign the new user id
                 get().setUserId(data['user_id'])
-                return data
+                return response
             },
 
+            //
+            createSession: async() => {
+                const { authenticatedFetch } = get();
+                const response = await authenticatedFetch(`${get().ISM_API_BASE_URL}/session/create`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    redirect: 'follow', // Explicitly follow redirects
+                });
+
+                if (!response.ok) {
+                    throw new Error('network response error when trying create new session');
+                }
+
+                const data = await response.json();
+                return data['session_id']
+            },
+
+
             // test query state
-            testQueryState: async(stateId, queryState) => {
+            publishQueryState: async(stateId, queryState) => {
                 const response = await fetch(`${get().ISM_API_BASE_URL}/state/${stateId}/forward/entry`, {
                     method: 'POST',
                     credentials: 'include',
@@ -62,7 +199,7 @@ const useStore = create(
                         'Content-Type': 'application/json',
                     },
                     // body: JSON.stringify(queryState),
-                    body: queryState,
+                    body: JSON.stringify(queryState),
                 });
 
                 if (!response.ok) {
@@ -109,6 +246,7 @@ const useStore = create(
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${get().jwtToken}`,
                     },
                 });
 
@@ -121,6 +259,39 @@ const useStore = create(
 
                 return response.json()
             },
+
+            fetchUsageReportGroupByUser: async() => {
+                const user_id = get().userId
+                const { authenticatedFetch } = get();
+                const response = await authenticatedFetch(`${get().ISM_API_BASE_URL}/usage/user/${user_id}`);
+                let usage = []
+                // TODO check to make sure it is a not found error
+                if (!response.ok) {
+                    console.error('Network response error when trying to fetch usage report')
+                } else {
+                    usage = await response.json()
+                }
+
+                get().setUserUsageReport(usage[0])
+                return usage[0]
+            },
+
+            fetchUsageReportGroupForCharts: async() => {
+                const user_id = get().userId
+                const response = await fetch(`${get().ISM_API_BASE_URL}/usage/user/${user_id}/charts`);
+                let usage = []
+                // TODO check to make sure it is a not found error
+                if (!response.ok) {
+                    console.error('Network response error when trying to fetch usage report')
+                } else {
+                    usage = await response.json()
+                }
+
+                get().setChartsUsageReport(usage)
+                return usage
+            },
+
+
 
             insertOrUpdateTemplate: async (instructionTemplate) => {
                 set((state) => {
@@ -205,8 +376,8 @@ const useStore = create(
             getProviderByNameAndClass: (providerName, className) => {
                 const { providers } = get()
                 return providers.filter(provider =>
-                    provider.name === providerName &&
-                    provider.class_name === className
+                    provider.name.toLowerCase() === providerName.toLowerCase() &&
+                    provider.class_name.toLowerCase() === className.toLowerCase()
                 )
             },
             getProviderById: (id) => {
@@ -245,6 +416,7 @@ const useStore = create(
                 processorData = await response.json();
                 get().setNodeData(nodeId, processorData)
             },
+
             fetchProcessor: async (processorId, set_data = true) => {
                 if (!processorId) {
                     return
@@ -260,6 +432,23 @@ const useStore = create(
                 } catch (error) {
                     console.warn(`Warning, unable to fetch data for processor id: ${processorId} with error`, error);
                 }
+            },
+            changeProcessorStatus: async (processorId, statusCode) => {
+                const response = await fetch(`${get().ISM_API_BASE_URL}/processor/${processorId}/status/${statusCode}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // body: {},
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const changed = await response.json();
+                await get().fetchProcessor(processorId, true)
+                return changed
             },
             fetchProcessors: async (project_id) => {
                 try {
@@ -386,7 +575,17 @@ const useStore = create(
             selectedProjectId: null,
             setSelectedProjectId: (projectId) => set({ selectedProjectId: projectId }),
             fetchProjects: async (userId) => {
-                const response = await fetch(`${get().ISM_API_BASE_URL}/user/${userId}/projects`);
+                // const response = await fetch(`${get().ISM_API_BASE_URL}/user/${userId}/projects`, {
+                // const response = await fetch(`${get().ISM_API_BASE_URL}/monitor/project/${projectId}`, {
+                const { authenticatedFetch } = get();
+                const response = await authenticatedFetch(`${get().ISM_API_BASE_URL}/user/${userId}/projects`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${get().jwtToken}`,
+                    },
+                });
 
                 if (response.ok) {
                     const projects = await response.json();

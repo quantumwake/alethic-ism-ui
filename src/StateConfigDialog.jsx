@@ -12,7 +12,8 @@ const configOptions = [
     {config_type: 'StateConfigLM', config_name: 'Language'},
     {config_type: 'StateConfigDB', config_name: 'Database'},
     {config_type: 'StateConfigVisual', config_name: 'Visual'},
-    {config_type: 'StateConfigCode', config_name: 'Code'}
+    {config_type: 'StateConfigCode', config_name: 'Code'},
+    {config_type: 'StateConfigStream', config_name: 'Stream'}
 ];
 
 const codeOptions = [
@@ -58,17 +59,11 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
             case "system_template":
                 nodeData.config.system_template_id = value
                 break
-            // code template
-            case "code_template":
-                nodeData.config.template_id = value
-                break
-            case "code_language":
-                nodeData.config.language = value
-                break
-            // visual
+            // general single template state configurations (e.g. stream, code, visual
             case "template":
                 nodeData.config.template_id = value
                 break
+
             // case "image_size":
             //     image_dimension = value.split('x')
             //     nodeData.config.width = image_dimension[0]
@@ -180,39 +175,15 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
 
                                     <table className="min-w-full divide-y divide-gray-300">
                                         <tbody className="bg-white divide-y divide-gray-200">
-                                            {nodeData?.state_type === "StateConfigCode" && (
-                                            <tr>
-                                                <td className="px-3 py-3">
-                                                    <CustomListbox
-                                                        placeholder="Select language"
-                                                        option_value_key="config_type"
-                                                        option_label_key="config_name"
-                                                        options={codeOptions}
-                                                        onChange={(value) => onChangeDropDownSelection("code_language", value)}
-                                                        value={nodeData?.config?.language}>
-                                                    </CustomListbox>
-                                                </td>
 
-                                                <td className="px-3 py-3">
-                                                    <CustomListbox
-                                                        placeholder="Select code template"
-                                                        option_value_key="template_id"
-                                                        option_label_key="template_path"
-                                                        options={templates}
-                                                        onChange={(value) => onChangeDropDownSelection("code_template", value)}
-                                                        value={nodeData?.config?.template_id}>
-                                                    </CustomListbox>
-                                                </td>
-                                            </tr>
-
-                                            )}
-
-                                            {/* Visual Configuration*/}
-                                            {nodeData?.state_type === "StateConfigVisual" && (
+                                            {(nodeData?.state_type === "StateConfigStream" ||
+                                              nodeData?.state_type === "StateConfigCode" ||
+                                              nodeData?.state_type === "StateConfigVisual" ||
+                                              nodeData?.state_type === "StateConfigDB") && (<>
                                                 <tr>
                                                     <td className="px-3 py-3">
                                                         <CustomListbox
-                                                            placeholder="Select instruction"
+                                                            placeholder="Select template"
                                                             option_value_key="template_id"
                                                             option_label_key="template_path"
                                                             options={templates}
@@ -220,6 +191,10 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
                                                             value={nodeData?.config?.template_id}>
                                                         </CustomListbox>
                                                     </td>
+                                                </tr>
+
+                                                <tr>
+                                                    {nodeData?.state_type === "StateConfigVisual" && (
                                                     <td className="w-1/2 px-3 py-3">
                                                         <CustomInput placeholder="width" name="width"
                                                                      value={nodeData?.config?.width || ''}
@@ -229,14 +204,16 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
                                                                      value={nodeData?.config?.height || ''}
                                                                      onChange={handleChange}/>
                                                     </td>
+                                                    )}
+
                                                 </tr>
-                                            )}
+                                            </>)}
 
                                             {nodeData?.state_type === "StateConfigLM" && (
                                                 <tr>
                                                     <td className="px-3 py-3">
                                                         <CustomListbox
-                                                            placeholder="Select code instruction"
+                                                            placeholder="Select user template"
                                                             option_value_key="template_id"
                                                             option_label_key="template_path"
                                                             options={templates}
@@ -247,7 +224,7 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
 
                                                 <td className="px-3 py-3">
                                                     <CustomListbox
-                                                        placeholder="Select system instruction template"
+                                                        placeholder="Select system template"
                                                         option_value_key="template_id"
                                                         option_label_key="template_path"
                                                         options={templates}
@@ -261,11 +238,13 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
                                     </table>
                                 </div>
 
+                                {/* disable any of the values for streams and code states*/}
                                 <div className="mt-5 p-4 border-2 border-gray-200 rounded-lg shadow-sm">
                                     <label>State flags</label>
                                     <p>
                                         Enable or disable state options
                                     </p>
+
                                     <table className="w-full border-collapse">
                                         <tbody>
                                         {flags.map((flag, index) => (
@@ -290,6 +269,8 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
                                     </table>
                                 </div>
 
+                                {(nodeData?.state_type === "StateConfig" ||
+                                  nodeData?.state_type === "StateConfigLM") && (<>
                                 <div className="mt-5 p-4 border-2 border-gray-200 rounded-lg shadow-sm">
                                     <label>
                                         Definition of Columns
@@ -326,7 +307,6 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
                                     </div>
                                 </div>
 
-
                                 <div className="mt-5 p-2 border-2 border-gray-100">
                                     <div className="mt-2">
                                         <label className="pr-2 font-medium">Definition of Primary Key Columns</label>
@@ -355,8 +335,8 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
                                                                              definition_name="template_columns"
                                                                              onStateChange={onKeyDefinitionChanged}/>
                                     </div>
-
                                 </div>
+                                </>)}
 
                                 <div className="mt-4 flex justify-end">
                                     <button
@@ -373,6 +353,7 @@ function StateConfigDialog({ isOpen, setIsOpen, nodeId }) {
                                         Save
                                     </button>
                                 </div>
+
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>
