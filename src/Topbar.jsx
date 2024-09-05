@@ -1,17 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import useStore from './store';
-import {PlusIcon, BellAlertIcon} from "@heroicons/react/24/solid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Adjust the path as necessary
-
-import {
-    MenubarMenu,
-    MenubarTrigger,
-    MenubarContent,
-    MenubarItem,
-    MenubarSeparator,
-    MenubarShortcut,
-    Menubar,
-} from "@/components/ui/menubar"
 
 import {
     faBoxOpen,
@@ -234,6 +223,28 @@ function ProjectSelector() {
     );
 }
 
+const MenuItem = ({ label, children }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div className="relative inline-block text-left">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+            >
+                {label}
+            </button>
+            {isOpen && (
+                <div className="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                    <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                        {children}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 const Topbar = () => {
     return (
         <div className="flex flex-col">
@@ -241,56 +252,7 @@ const Topbar = () => {
                 <h1 className="flex-row flex"><FontAwesomeIcon icon={faDiagramProject} className="w-5 h-5 mr-2 mt-0.5"/>AGENTIC STUDIO</h1>
             </div>
             <div className="w-full h-14 bg-stone-50 p-2 shadow-sm drop-shadow-lg shadow-blue-300">
-                <Menubar className="rounded-none border-b border-none px-2 lg:px-4">
-                    <MenubarMenu>
-                        <MenubarTrigger className="font-bold">File</MenubarTrigger>
-                        <MenubarContent>
-                            <MenubarItem className="hover:bg-blue-100">
-                                New <MenubarShortcut>⌘N</MenubarShortcut>
-                            </MenubarItem>
-                            <MenubarItem className="hover:bg-blue-100">
-                                Open <MenubarShortcut>⌘O</MenubarShortcut>
-                            </MenubarItem>
-                            <MenubarItem disabled>Save</MenubarItem>
-                            <MenubarSeparator />
-                            <MenubarItem className="text-red-600 hover:bg-red-100">Exit</MenubarItem>
-                        </MenubarContent>
-                    </MenubarMenu>
-                    <MenubarMenu>
-                        <MenubarTrigger className="font-bold">Edit</MenubarTrigger>
-                        <MenubarContent>
-                            <MenubarItem className="hover:bg-green-100">
-                                Undo <MenubarShortcut>⌘Z</MenubarShortcut>
-                            </MenubarItem>
-                            <MenubarItem className="hover:bg-green-100">
-                                Redo <MenubarShortcut>⇧⌘Z</MenubarShortcut>
-                            </MenubarItem>
-                            <MenubarSeparator />
-                            <MenubarItem className="hover:bg-green-100">
-                                Cut <MenubarShortcut>⌘X</MenubarShortcut>
-                            </MenubarItem>
-                            <MenubarItem className="hover:bg-green-100">
-                                Copy <MenubarShortcut>⌘C</MenubarShortcut>
-                            </MenubarItem>
-                            <MenubarItem className="hover:bg-green-100">
-                                Paste <MenubarShortcut>⌘V</MenubarShortcut>
-                            </MenubarItem>
-                        </MenubarContent>
-                    </MenubarMenu>
-                    <MenubarMenu>
-                        <MenubarTrigger className="font-bold">View</MenubarTrigger>
-                        <MenubarContent>
-                            <MenubarItem className="hover:bg-yellow-100">
-                                Zoom In <MenubarShortcut>⌘+</MenubarShortcut>
-                            </MenubarItem>
-                            <MenubarItem className="hover:bg-yellow-100">
-                                Zoom Out <MenubarShortcut>⌘-</MenubarShortcut>
-                            </MenubarItem>
-                            <MenubarSeparator />
-                            <MenubarItem className="hover:bg-yellow-100">Toggle Fullscreen</MenubarItem>
-                        </MenubarContent>
-                    </MenubarMenu>
-                </Menubar>
+
 
                 {/*<div className="flex flex-col items-start">*/}
                 {/*    /!*Listing of projects and fetch from backend event*!/*/}
