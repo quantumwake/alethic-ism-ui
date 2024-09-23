@@ -1,13 +1,15 @@
+import {useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faInfo} from "@fortawesome/free-solid-svg-icons/faInfo";
 
-const TemplateInfo = () => {
+const CustomExpandInfo = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="max-w-md mx-auto mt-4 p-4 bg-white shadow rounded-lg">
-            <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Template Information</h2>
+        // <div className="max-w-md mx-auto mt-4 p-4 bg-white shadow rounded-lg">
+        <div>
+            {/*<div className="flex items-center justify-between">*/}
+                {/*<h2 className="text-lg font-semibold">Template Information</h2>*/}
                 <button
                     onClick={() => setIsOpen(!isOpen)}
                     className="text-blue-500 hover:text-blue-700 focus:outline-none"
@@ -15,7 +17,7 @@ const TemplateInfo = () => {
                 >
                     <FontAwesomeIcon icon={faInfo} />
                 </button>
-            </div>
+            {/*</div>*/}
             {isOpen && (
                 <div className="mt-2 text-sm text-gray-600">
                     <p>Templates define how input data maps to structured output. Types include:</p>
@@ -36,3 +38,5 @@ const TemplateInfo = () => {
         </div>
     );
 };
+
+export default CustomExpandInfo;

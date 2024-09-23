@@ -5,8 +5,13 @@ import CustomList from "./CustomList";
 import CustomListbox from "./CustomListbox";
 import CustomInput from "./CustomInput";
 import {Editor} from "@monaco-editor/react";
-import CustomExpandInfo from "./CustomExpandInfo";
-import InfoButton from "./InfoButton";
+import ProjectTemplateInfo from "./ProjectTemplateInfo";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faAngleDoubleRight, faDiagramNext} from "@fortawesome/free-solid-svg-icons";
+import Tippy from "@tippyjs/react";
+import 'tippy.js/dist/tippy.css';
+import {Tooltip} from "chart.js";
+import {ClipboardIcon} from "@heroicons/react/24/outline"; // Import the styles
 
 const templateTypes = [
     {type: 'mako', value: 'mako'},
@@ -105,9 +110,17 @@ const templateSample = {
 ////////////////////
 // mako templates //
 ////////////////////
+    'mako': [
+        // mako template 1
+{ "template_path": "simple chat input template", content:`Given input: "\${input}", provide brief response in the following json format.
 
-    'mako': [{ "template_path": "mako based template that can be used on language models", "content": `
-DO NOT CHANGE ANYTHING JUST DISPLAY THIS
+\`\`\`json {
+    "answer": "[answer]",
+    "justification": "[justification for answer]",
+    "alignment_score": "[from 1 to 100 score how well does the answer and justification align with the input]"
+}\`\`\``},
+    // mako template 2
+{ "template_path": "mako based template that can be used on language models", "content": `DO NOT CHANGE ANYTHING JUST DISPLAY THIS
 <%!
     def format_phone_numbers(phone_numbers):
         return ", ".join(phone_numbers)
@@ -138,7 +151,7 @@ given the following {input} provide a short and concise answer. output in the fo
 `
 }]}
 
-function InstructionTemplateDialog({ isOpen, setIsOpen }) {
+function ProjectTemplateDialog({ isOpen, setIsOpen }) {
 
     const [templateId, setTemplateId] = useState('');
     const [templatePath, setTemplatePath] = useState('');
@@ -199,7 +212,7 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
             return
         }
         setTemplateType(template_type)
-        rotate(template_type, 0 )
+        rotate(template_type, 0)
     }
 
     const onClose = () => {
@@ -299,6 +312,7 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
     // });
 
 
+
     const renderTemplate = (value) => <>
         <div className="flex items-center space-x-4">
             <div className="flex-shrink-0">
@@ -337,7 +351,7 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-black bg-opacity-25" />
+                    <div className="fixed inset-0 bg-black bg-opacity-25"/>
                 </Transition.Child>
 
                 <div className="fixed inset-0 overflow-y-auto">
@@ -351,17 +365,10 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            {/*<Dialog.Panel*/}
-                            {/*    className="w-full max-w-screen-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">*/}
-                            {/*    <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">*/}
-                            {/*        PROJECT TEMPLATES (mako templates for prompts, code)*/}
-                            {/*    </Dialog.Title>*/}
-                            <Dialog.Panel
-                                className="w-2/3 rounded-lg bg-stone-100 h-[520pt] p-3 text-left align-middle shadow-xl transition-all">
-                                <Dialog.Title as="h3" className="-m-3 mb-4 p-4 flex text-2xl font-medium leading-6 bg-stone-300 text-stone-800 shadow-stone-950">
-                                    Project Templates
-                                    <InfoButton id={} details={nodeData?.state_type}></InfoButton>
-                                    {/*<CustomExpandInfo />*/}
+                            <Dialog.Panel className="w-2/3 rounded-lg bg-stone-100 h-[520pt] p-3 text-left align-middle shadow-xl transition-all">
+                                <Dialog.Title as="h3"
+                                              className="-m-3 mb-4 p-4 flex text-2xl font-medium leading-6 bg-stone-300 text-stone-800 shadow-stone-950">
+                                    Project Templates&nbsp;<ProjectTemplateInfo details=""></ProjectTemplateInfo>
                                 </Dialog.Title>
 
                                 <div className="flex h-[400pt] flex-col sm:flex-row gap-4">
@@ -375,7 +382,7 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
                                     <div className="w-full h-12 sm:w-3/4">
                                         {/* First Row */}
                                         <div className="flex w-full h-10">
-                                            <div className="w-1/3 pr-3">
+                                            <div className="w-1/4 pr-2">
                                                 <input id="template_id" name="template_id" type="hidden"
                                                        value={templateId}/>
                                                 <CustomListbox
@@ -387,7 +394,17 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
                                                     value={templateType}>
                                                 </CustomListbox>
                                             </div>
-                                            <div className="w-2/3">
+                                            <div className="pr-2">
+                                                <Tippy content="Get next sample">
+                                                    <button
+                                                        type="button"
+                                                        className="rounded-none h-10 p-1 border border-transparent bg-blue-300 text-sm font-medium text-white hover:bg-blue-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                                                        onClick={chooseNextSample}><FontAwesomeIcon
+                                                        icon={faAngleDoubleRight}/>
+                                                    </button>
+                                                </Tippy>
+                                            </div>
+                                            <div className="w-3/4">
                                                 <CustomInput
                                                     placeholder="specify template name..."
                                                     name="template_path"
@@ -396,13 +413,7 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
                                                 />
                                             </div>
                                         </div>
-                                        <div className="mt-4 flex h-8 bg-none w-1/3 ">
-                                            <button
-                                                type="button"
-                                                className="rounded-none p-1 w-full  mr-2.5 border border-transparent bg-blue-300 text-sm font-medium text-white hover:bg-blue-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-                                                onClick={chooseNextSample}>next template sample
-                                            </button>
-                                        </div>
+
 
                                         {/* Second Row */}
                                         <div className="mt-2 flex h-[320pt] bg-white w-full border-2 border-blue-600">
@@ -463,4 +474,4 @@ function InstructionTemplateDialog({ isOpen, setIsOpen }) {
     );
 }
 
-export default InstructionTemplateDialog;
+export default ProjectTemplateDialog;

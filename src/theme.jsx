@@ -35,6 +35,12 @@ const theme = {
         headerColor: 'text-red-800',
         width: 'w-60'
     },
+    trainer: {
+        headerBackground: 'bg-red-800',
+        headerHoverBackground: 'bg-red-200',
+        headerColor: 'text-white',
+        width: 'w-60'
+    },
     // Add more color definitions for other processors
 };
 

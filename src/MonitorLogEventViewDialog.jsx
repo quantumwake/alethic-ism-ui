@@ -2,10 +2,10 @@ import React, {memo, useEffect, useState} from "react";
 import {Dialog, Transition} from "@headlessui/react";
 import useStore from "./store";
 
-function MonitorLogEventViewDialog({ isOpen, setIsOpen, projectId }) {
+function MonitorLogEventViewDialog({ isOpen, setIsOpen }) {
 
     const fetchMonitorLogEvent = useStore(state => state.fetchMonitorLogEvents);
-
+    const {selectedProjectId} = useStore()
     // const [expanded, setExpanded] = useState({})
     // const [isExpanded, setExpanded] = useState({})
 
@@ -28,7 +28,7 @@ function MonitorLogEventViewDialog({ isOpen, setIsOpen, projectId }) {
             setLoading(true);
             setError(null);
             try {
-                const result = await fetchMonitorLogEvent(projectId);
+                const result = await fetchMonitorLogEvent(selectedProjectId);
                 setData(result);
             } catch (error) {
                 setError(error.message);
@@ -41,7 +41,7 @@ function MonitorLogEventViewDialog({ isOpen, setIsOpen, projectId }) {
         if (isOpen)
             getData().then(r => {});
 
-    }, [isOpen, projectId, fetchMonitorLogEvent]);
+    }, [isOpen, selectedProjectId, fetchMonitorLogEvent]);
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;

@@ -58,7 +58,7 @@ function UsageReportDialog({ isOpen, setIsOpen }) {
     );
 
     const chartLabels = filteredData.map((data) => data.day);
-    const chartData = filteredData.map((data) => data.total);
+    // const chartData = filteredData.map((data) => data.total);
 
     const data = {
         labels: chartLabels,

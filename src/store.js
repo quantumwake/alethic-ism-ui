@@ -265,6 +265,7 @@ const useStore = create(
                 const { authenticatedFetch } = get();
                 const response = await authenticatedFetch(`${get().ISM_API_BASE_URL}/usage/user/${user_id}`);
                 let usage = []
+
                 // TODO check to make sure it is a not found error
                 if (!response.ok) {
                     console.error('Network response error when trying to fetch usage report')
@@ -589,6 +590,7 @@ const useStore = create(
 
                 if (response.ok) {
                     const projects = await response.json();
+                    projects.sort((b, a) => new Date(a['created_date']) - new Date(b['created_date']));
                     set({projects});
                     return
                 }
@@ -1021,6 +1023,11 @@ const useStore = create(
             createStateWithWorkflowNode: async (nodeData) => {
                 const newNode = await get().createNewNode(nodeData)
                 const newNodeData = await get().createState(newNode.id)
+            },
+
+            createTrainerWithWorkflowNode: async (nodeData) => {
+                const newNode = await get().createNewNode(nodeData)
+                // const newNodeData = await get().createState(newNode.id)
             },
 
             createProcessorStateWithWorkflowEdge: async (connection) => {

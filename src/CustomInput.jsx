@@ -8,7 +8,7 @@ const CustomInput = ({ name, value, placeholder, onChange }) => {
         <input
             type="text"
             name={name}
-            className="w-full ring-2 ring-black ring-opacity-5 rounded-lg text-gray-600 h-10 pl-5 pr-10 bg-white hover:border-gray-400 focus:outline-none appearance-none"
+            className="w-full ring-2 ring-gray-300 rounded-sm text-gray-600 h-10 pl-5 pr-10 bg-white"
             placeholder={placeholder}
             value={value}
             onChange={onChange}

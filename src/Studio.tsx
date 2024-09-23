@@ -39,6 +39,7 @@ import {faChevronLeft, faChevronRight, faFilter} from "@fortawesome/free-solid-s
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import DiscourseChannel from "./DiscourseChannel";
 import ChannelObserver from "./DiscourseChannelSidebar";
+import TrainerNode from "./TrainerNode";
 
 const nodeTypes = {
     state: StateNode,
@@ -50,6 +51,7 @@ const nodeTypes = {
     processor_llama: ProcessorNodeLLAMA,
     processor_mistral: ProcessorNodeMistral,
     processor_state_coalescer: ProcessorNodeStateCoalescer,
+    trainer: TrainerNode,
     custom: CustomNode
 };
 
@@ -67,6 +69,7 @@ const Studio = () => {
     const getNode = useStore((state) => state.getNode)
 
     const createStateWithWorkflowNode = useStore(state => state.createStateWithWorkflowNode)
+    const createTrainerWithWorkflowNode = useStore(state => state.createTrainerWithWorkflowNode)
     const createProcessorWithWorkflowNode = useStore(state => state.createProcessorWithWorkflowNode)
     const createProcessorStateWithWorkflowEdge = useStore(state => state.createProcessorStateWithWorkflowEdge)
 
@@ -130,6 +133,8 @@ const Studio = () => {
             createProcessorWithWorkflowNode(nodeData)
         } else if (type.startsWith('state')) {
             createStateWithWorkflowNode(nodeData)
+        } else if (type.startsWith('trainer')) {
+            createTrainerWithWorkflowNode(nodeData)
         } else {
             throw new Error('unsupported module type')
         }

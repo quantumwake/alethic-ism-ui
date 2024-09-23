@@ -46,6 +46,7 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
             {nodeData?.state_type}
         </>
     )
+
     const renderControls = () => (<>
         <button
             onClick={() => setIsOpenProp(true)}

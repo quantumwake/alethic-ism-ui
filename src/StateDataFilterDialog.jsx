@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef} from 'react';
 // import {loader} from "@monaco-editor/react";
-import Editor from '@monaco-editor/react';
+// import Editor from '@monaco-editor/react';
 import {Dialog, Transition} from "@headlessui/react";
 
 
@@ -185,13 +185,13 @@ const StateDataFilterDialog = ({isOpen, setIsOpen, filterId, direction = "input"
                                     Filter Definition ({direction})
                                 </Dialog.Title>
 
-                                <Editor
-                                    height="90vh"
-                                    defaultLanguage="json"
-                                    defaultValue={initialValue}
-                                    beforeMount={handleEditorWillMount}
-                                    onMount={handleEditorDidMount}
-                                />
+                                {/*<Editor*/}
+                                {/*    height="90vh"*/}
+                                {/*    defaultLanguage="json"*/}
+                                {/*    defaultValue={initialValue}*/}
+                                {/*    beforeMount={handleEditorWillMount}*/}
+                                {/*    onMount={handleEditorDidMount}*/}
+                                {/*/>*/}
 
                                 {/*<div id="filter-editor-container" style={{width: '100%', height: '400px'}}/>*/}
                                 {/*<Editor*/}

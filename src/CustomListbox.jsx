@@ -9,13 +9,15 @@ const CustomListbox = ({ option_value_key, option_label_key, options, value, pla
 
     return (
         <Listbox onChange={onChange}>
-            <div className="min-w-[300pt] min-h-10 relative ring-2 ring-black ring-opacity-5 rounded-lg">
+            {/*<div className="min-w-[300pt] min-h-10 relative ring-2 ring-black ring-opacity-5 rounded-lg">*/}
+            <div className="min-h-10 relative ring-2 ring-gray-300 rounded-sm">
 
                 <Listbox.Button
-                    className="min-w-[300pt] w-full relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left focus:outline-none focus-visible:border-indigo-800 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-500 sm:text-sm">
-                    <span className="block truncate">{option_object ? option_object[option_label_key] : (placeholder || "")}</span>
+                    className="w-full rounded-sm bg-white p-2.5 text-left sm:text-sm">
+                    <span
+                        className="block truncate">{option_object ? option_object[option_label_key] : (placeholder || "")}</span>
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                        <ChevronUpDownIcon className="h-5 w-5 text-gray-600" aria-hidden="true" />
+                        <ChevronUpDownIcon className="h-5 w-5 text-gray-600" aria-hidden="true"/>
                     </span>
                 </Listbox.Button>
 
@@ -43,7 +45,8 @@ const CustomListbox = ({ option_value_key, option_label_key, options, value, pla
                                         }`}>{option[option_label_key]}
                                         </span>
                                         {selected ? (
-                                            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
+                                            <span
+                                                className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
                                                 <CheckIcon className="h-5 w-5" aria-hidden="true"/>
                                             </span>
                                         ) : null}

@@ -1,44 +1,22 @@
-import React, {useState, useEffect, useRef, useCallback, memo} from 'react';
-import { Dialog, Transition } from "@headlessui/react";
+import React, {useState, useEffect, useRef, memo} from 'react';
 import useStore from "./store";
-import {useParams} from "react-router-dom";
-import InfoButton from "./InfoButton";
-import CustomListbox from "./CustomListbox";
-import CustomButton from "./CustomButton";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {create} from "zustand";
 import uuidv4 from "./utils";
-// import sanitizeHtml from 'sanitize-html';
-const configOptions = [
-    {config_type: 'StateConfig', config_name: 'Basic'},
-    {config_type: 'StateConfigLM', config_name: 'Language'},
-    {config_type: 'StateConfigDB', config_name: 'Database'},
-    {config_type: 'StateConfigVisual', config_name: 'Visual'},
-    {config_type: 'StateConfigCode', config_name: 'Code'},
-    {config_type: 'StateConfigStream', config_name: 'Stream'}
-];
 
 function ChannelObserver( ) {
-
-    // const {isid, osid, sid, uid} = useParams();
-
     const [connected, setConnected] = useState(false);
     const [channelSessionId, setChannelSessionId] = useState("");
     const [channelCompositeKey, setChannelCompositeKey] = useState("");
 
-    // channelSessionId: null,
-    //     setChannelSessionId: (channelSessionId) => set({channelSessionId: channelSessionId}),
-
     const messageRef2 = useRef('')
     const messageRef = useRef(''); // Ref for accessing the DOM element
+    const chatContentRef = useRef(null);
+    const ws = useRef(null);
+
     const [message, setMessage] = useState('');
     const {userId} = useStore()
 
-    // const currentMessageRef = useRef(''); // Ref for storing message data
-
     const [messages, setMessages] = useState([]);
     const [messageText, setMessageText] = useState('');
-    const ws = useRef(null);
     const {publishQueryState} = useStore()
 
     const {
@@ -49,10 +27,6 @@ function ChannelObserver( ) {
         createSession
     } = useStore()
 
-    // const channelSessionId = "hello-world"
-    // const channelSubscriberId = userId
-
-    const chatContentRef = useRef(null);
 
     const ASSISTANT_TOKEN = "<<>>ASSISTANT<<>>";
     const SOURCE_TOKEN = "<<>>SOURCE<<>>";

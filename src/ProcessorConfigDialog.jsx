@@ -2,6 +2,7 @@ import React, {memo, useEffect, useState} from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import useStore from "./store";
 import CustomListbox from "./CustomListbox";
+import ProjectTemplateInfo from "./ProjectTemplateInfo";
 
 function ProcessorConfigDialog({ isOpen, setIsOpen, providerName, className, nodeId }) {
 
@@ -65,16 +66,16 @@ function ProcessorConfigDialog({ isOpen, setIsOpen, providerName, className, nod
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel
-                                className="min-w-[300pt] max-w-full transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                                    {/*{localNodeData?.id}*/}
-                                    {/*{localNodeData?.provider_id}*/}
+                            <Dialog.Panel className="w-1/3 rounded-lg bg-stone-100 h-[320pt] p-3 text-left align-middle shadow-xl transition-all">
+                                <Dialog.Title as="h3"
+                                              className="-m-3 mb-4 p-4 flex text-2xl font-medium leading-6 bg-stone-300 text-stone-800 shadow-stone-950">
+                                    Function Settings
                                 </Dialog.Title>
 
-                                <div className="flex flex-wrap -m-2 min-h-28">
-                                    <div className="p-2 w-full sm:w-1/3">
-                                        <div className="relative inline-block w-full text-gray-700">
+
+                                {/*<div className="flex flex-wrap -m-2 min-h-28">*/}
+                                    {/*<div className="p-2 w-full sm:w-1/3">*/}
+                                    {/*    <div className="relative inline-block w-full text-gray-700">*/}
                                             <CustomListbox
                                                 placeholder="Select provider..."
                                                 option_value_key="id"
@@ -83,9 +84,9 @@ function ProcessorConfigDialog({ isOpen, setIsOpen, providerName, className, nod
                                                 onChange={onProviderChange}
                                                 value={localNodeData?.provider_id}>
                                             </CustomListbox>
-                                        </div>
-                                    </div>
-                                </div>
+                                        {/*</div>*/}
+                                    {/*</div>*/}
+                                {/*</div>*/}
 
                                 <div className="mt-4 flex justify-end">
                                     <button

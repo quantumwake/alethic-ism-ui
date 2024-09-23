@@ -39,36 +39,7 @@ function BaseNode({ nodeId, data, renderHeader, renderContent, renderControls, o
                     {renderControls()}
                 </div>
             </div>
-            {/*<div className="pl-3 pr-3">*/}
             {renderContent()}
-            {/*</div>*/}
-            {/*<Handle id="target-1" type="target" position={Position.Top} className="mr-3.5 border-red-300 w-3 h-3 bg-red-100 bg-none border-1.5 rounded-none">*/}
-            {/*    <FontAwesomeIcon icon={faArrowDown} className="text-red-300" />*/}
-            {/*</Handle>*/}
-            {/*<Handle id="source-1" type="source" position={Position.Top} className="ml-3.5border-blue-300 w-3 h-3 bg-blue-100 bg-none border-1.5 rounded-none">*/}
-            {/*    <FontAwesomeIcon icon={faArrowUp} className="w-2 h-2 -btext-blue-300" />*/}
-            {/*</Handle>*/}
-
-            {/*<Handle id="target-2" type="target" position={Position.Left} className="mb-3.5 border-red-300 w-2 h-3 bg-red-100 bg-none border-1.5 rounded-none">*/}
-            {/*    <FontAwesomeIcon icon={faArrowRight} className="text-red-300" />*/}
-            {/*</Handle>*/}
-            {/*<Handle id="source-2" type="source" position={Position.Left} className="mt-3.5 border-blue-300 w-2 h-3 bg-blue-100 bg-none border-1.5 rounded-none">*/}
-            {/*    <FontAwesomeIcon icon={faArrowLeft} className="text-blue-300" />*/}
-            {/*</Handle>*/}
-
-            {/*<Handle id="target-3" type="target" position={Position.Right} className="mt-3.5 border-red-300 w-2 h-3 bg-red-100 bg-none border-1.5 rounded-none">*/}
-            {/*    <FontAwesomeIcon icon={faArrowLeft} className="text-red-300" />*/}
-            {/*</Handle>*/}
-            {/*<Handle id="source-3" type="source" position={Position.Right} className="mb-3.5 border-blue-300 w-2 h-3 bg-blue-100 bg-none border-1.5 rounded-none">*/}
-            {/*    <FontAwesomeIcon icon={faArrowRight} className="text-blue-300" />*/}
-            {/*</Handle>*/}
-
-            {/*<Handle id="target-4" type="target" position={Position.Bottom} className="ml-3.5 border-red-300 w-3 h-3 bg-red-100 bg-none border-1.5 rounded-none">*/}
-            {/*    <FontAwesomeIcon icon={faArrowUp} className="text-red-300" />*/}
-            {/*</Handle>*/}
-            {/*<Handle id="source-4" type="source" position={Position.Bottom} className="mr-3.5 border-blue-300 w-3 h-3 bg-blue-100 bg-none border-1.5 rounded-none">*/}
-            {/*    <FontAwesomeIcon icon={faArrowDown} className="text-blue-300" />*/}
-            {/*</Handle>*/}
 
             <Handle id="target-1" type="target" position={Position.Top}
                     className="-top-3.5 mr-3.5 border-red-300 w-3.5 h-3.5 bg-red-100 bg-none border-1.5 rounded-none">
@@ -125,8 +96,6 @@ function BaseNode({ nodeId, data, renderHeader, renderContent, renderControls, o
                     <FontAwesomeIcon icon={faArrowDown} className="w-2 h-2 text-blue-300"/>
                 </div>
             </Handle>
-
-
         </div>
     );
 }
