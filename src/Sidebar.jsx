@@ -102,13 +102,13 @@ const processorStyles = {
         icon: faDove,
         enabled: true
     },
-    Gemini: {
-        type: "processor_gemini",
-        name: "Gemini",
+    GoogleAI: {
+        type: "processor_google_ai",
+        name: "Google AI",
         tooltip: "Generate text or analyze images using Google's Gemini AI",
-        color: 'text-green-500',
+        color: 'text-orange-500',
         icon: faRobot,
-        enabled: false
+        enabled: true
     },
     Mistral: {
         type: "processor_mistral",

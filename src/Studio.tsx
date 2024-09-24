@@ -16,11 +16,12 @@ import ProcessorNodeOpenAI from "./ProcessorNodeOpenAI";
 import ProcessorNodeAnthropic from "./ProcessorNodeAnthropic";
 import ProcessorNodeMistral from "./ProcessorNodeMistral";
 import ProcessorNodePython from "./ProcessorNodePython";
-import ProcessorNodeGemini from "./ProcessorNodeGemini";
 import ProcessorNodeStateCoalescer from "./ProcessorNodeStateCoalescer";
 import ProcessorNodeVisualOpenAI from "./ProcessorNodeVisualOpenAI";
 import ProcessorNodeLLAMA from "./ProcessorNodeLlama";
+import ProcessorNodeGoogleAI from "./ProcessorNodeGoogleAI";
 
+import TrainerNode from "./TrainerNode";
 import StateNode from './StateNode'
 import Sidebar from './Sidebar';
 
@@ -37,16 +38,14 @@ import CustomEdge from "./CustomEdge";
 import WithAuth from "./WithAuth";
 import {faChevronLeft, faChevronRight, faFilter} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import DiscourseChannel from "./DiscourseChannel";
 import ChannelObserver from "./DiscourseChannelSidebar";
-import TrainerNode from "./TrainerNode";
 
 const nodeTypes = {
     state: StateNode,
     processor_python: ProcessorNodePython,
     processor_openai: ProcessorNodeOpenAI,
     processor_visual_openai: ProcessorNodeVisualOpenAI,
-    processor_gemini: ProcessorNodeGemini,
+    processor_google_ai: ProcessorNodeGoogleAI,
     processor_anthropic: ProcessorNodeAnthropic,
     processor_llama: ProcessorNodeLLAMA,
     processor_mistral: ProcessorNodeMistral,

@@ -18,6 +18,12 @@ const theme = {
         headerColor: 'text-purple-800',
         width: 'w-60'
     },
+    google_ai: {
+        headerBackground: 'bg-orange-100',
+        headerHoverBackground: 'bg-orange-200',
+        headerColor: 'text-orange-800',
+        width: 'w-60'
+    },
     quantumwake: {
         headerBackground: 'bg-pink-100',
         headerHoverBackground: 'bg-pink-200',
