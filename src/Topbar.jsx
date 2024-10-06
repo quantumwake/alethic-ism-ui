@@ -4,21 +4,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Adjust the 
 
 import {
     faCodeBranch, faDiagramProject, faFileCode,
-    faFolderOpen, faPlusSquare, faSyncAlt, faWarning
+    faFolderOpen, faPlusSquare, faSyncAlt, faTools, faWarning
 } from '@fortawesome/free-solid-svg-icons'
 
 import ProjectTemplateDialog from "./ProjectTemplateDialog";
 import MonitorLogEventViewDialog from "./MonitorLogEventViewDialog";
-// import UsageReportDialog from "./UsageCharts";
 import NewProjectDialog from "./NewProjectDialog";
 import ProjectDialog from "./ProjectDialog";
-import InfoButton from "./InfoButton";
+import {faToolbox} from "@fortawesome/free-solid-svg-icons/faToolbox";
+import {faStream} from "@fortawesome/free-solid-svg-icons/faStream";
 
 function OtherMenuItems() {
     const [isOpenProjectTemplate, setIsOpenProjectTemplate] = useState(false);
-    const [isOpenUsageReportDialog, setIsOpenUsageReportDialog] = useState(false);
-    // const {jwtToken} = useStore()
-
 
     return (<>
         {/* Open Instruction Template Button */}
@@ -35,6 +32,7 @@ function OtherMenuItems() {
 
 function UsageReport() {
     const {jwtToken} = useStore()
+    const {userProfile} = useStore()
     const {userUsageReport, fetchUsageReportGroupByUser} = useStore()
     const [isUsageRefreshing, setIsUsageRefreshing] = useState(true)
     const [usageTimeoutId, setUsageTimeoutId] = useState(null)
@@ -61,14 +59,19 @@ function UsageReport() {
         })
     }, [jwtToken]); // Fetch projects when userId changes
 
-    return (<div className="text-white bg-black mr-10">
-        Platform Units: {userUsageReport && userUsageReport['total']}
+    const calculateUsage = () => {
+        if (!userUsageReport) {
+            return "Pending"
+        }
+        return userUsageReport['total'] / userProfile?.max_agentic_units
+    }
+
+    return (<div className={calculateUsage() > 1.0 ? 'text-red-600 animate-fade-in-out mr-10' : 'text-white mr-10'}>
+        AUN: {calculateUsage()}
     </div>)
 }
 
-function Notifications() {
-    const {selectedProjectId} = useStore()
-
+function Tools({callback}) {
     const [isOpenMonitorLogEvent, setIsOpenMonitorLogEvent] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false)
     const {fetchProjectProcessorStates} = useStore()
@@ -87,7 +90,7 @@ function Notifications() {
 
     useEffect(() => {
         if (isRefreshing) {
-            refreshProcessorStates()
+            refreshProcessorStates().then(r => {})
         }
     }, [isRefreshing, setIsRefreshing]);
 
@@ -97,13 +100,57 @@ function Notifications() {
     }
 
     return (<>
+        <button
+            onClick={callback("analyzer")}
+            className="bg-green-100 hover:bg-green-500 hover:text-white text-green-800 font-bold py-2 px-4 rounded">
+            <FontAwesomeIcon
+                icon={faStream}
+                className={isRefreshing ? 'animate-[spin_3s_linear_infinite]' : ''}
+            />
+        </button>
 
-        {/*<InfoButton id={selectedProjectId} details={selectedProjectId}></InfoButton>*/}
+        {/* Monitor Log Event Button */}
+        <button
+            onClick={callback("config")}
+            className="bg-red-100 hover:bg-red-500 hover:text-white text-red-600 font-bold py-2 px-4 rounded">
+            <FontAwesomeIcon icon={faTools}/>
+        </button>
 
+    </>)
+}
+
+function Notifications() {
+    const [isOpenMonitorLogEvent, setIsOpenMonitorLogEvent] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false)
+    const {fetchProjectProcessorStates} = useStore()
+    const timeoutId = useState(null)
+
+    const refreshProcessorStates = async () => {
+        if (isRefreshing) {
+            console.info('refreshing processor states store, this includes workflow node and edge status information')
+            await fetchProjectProcessorStates()
+            setTimeout(refreshProcessorStates, 1000);
+        } else if (timeoutId) {
+            clearTimeout(timeoutId)
+            setTimeout(null)
+        }
+    }
+
+    useEffect(() => {
+        if (isRefreshing) {
+            refreshProcessorStates().then(r => {})
+        }
+    }, [isRefreshing, setIsRefreshing]);
+
+
+    const toggleIsRefreshing = () => {
+        setIsRefreshing(prev => !prev);
+    }
+
+    return (<>
         <button
             onClick={toggleIsRefreshing}
             className="bg-green-100 hover:bg-green-500 hover:text-white text-green-800 font-bold py-2 px-4 rounded">
-            {/*className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">*/}
             <FontAwesomeIcon
                 icon={faSyncAlt}
                 className={isRefreshing ? 'animate-[spin_3s_linear_infinite]' : ''}
@@ -113,73 +160,18 @@ function Notifications() {
         {/* Monitor Log Event Button */}
         <button
             onClick={() => setIsOpenMonitorLogEvent(true)}
-            // className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
             className="bg-red-100 hover:bg-red-500 hover:text-white text-red-600 font-bold py-2 px-4 rounded">
-            {/*className="bg-orange-400 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded">*/}
             <FontAwesomeIcon icon={faWarning}/>
         </button>
 
         <MonitorLogEventViewDialog isOpen={isOpenMonitorLogEvent} setIsOpen={setIsOpenMonitorLogEvent} />
-
-        {/*<div>Usage: {userUsageReport?.total || 0}</div>*/}
-        {/*<button*/}
-        {/*    onClick={() => setIsOpenUsageReportDialog(true)}*/}
-        {/*    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">*/}
-        {/*    <FontAwesomeIcon icon={faBlog}/>*/}
-        {/*</button>*/}
     </>)
 }
 
 function ProjectSelector() {
-    const {userId, jwtToken} = useStore()
+    // const {userId, jwtToken} = useStore()
     const [isOpenNewProjectDialog, setIsOpenNewProjectDialog] = useState(false);
     const [isOpenProjectDialog, setIsOpenProjectDialog] = useState(false);
-
-    // const [isRefreshing, setIsRefreshing] = useState(false)
-    // const [isUsageRefreshing, setIsUsageRefreshing] = useState(true)
-    //
-    // let timeoutId: string | number | NodeJS.Timeout | undefined
-    // let usageTimeoutId: string | number | NodeJS.Timeout | undefined
-
-    // const refreshUsage = () => {
-    //     if (isUsageRefreshing) {
-    //         console.info('refreshing processor states store, this includes workflow node and edge status information')
-    //         fetchUsageReportGroupByUser()
-    //         usageTimeoutId = setTimeout(refreshUsage, 10000);
-    //     } else if (usageTimeoutId) {
-    //         clearTimeout(usageTimeoutId)
-    //     }
-    // }
-    //
-    //
-    // useEffect(() => {
-    //     if (!jwtToken) {
-    //         return
-    //     }
-    //     fetchProjects(userId);
-    //     // refreshUsage()
-    // }, [jwtToken]); // Fetch projects when userId changes
-
-    //
-    // useEffect(() => {
-    //     if (isRefreshing) {
-    //         refreshProcessorStates()
-    //     }
-    // }, [isRefreshing, setIsRefreshing]);
-
-    // useEffect(() => {
-    //
-    // }, [])
-    //
-    // const refreshProcessorStates = () => {
-    //     if (isRefreshing) {
-    //         console.info('refreshing processor states store, this includes workflow node and edge status information')
-    //         const projectStates = fetchProjectProcessorStates()
-    //         timeoutId = setTimeout(refreshProcessorStates, 1000);
-    //     } else if (timeoutId) {
-    //         clearTimeout(timeoutId)
-    //     }
-    // }
 
     return (<>
         {/* Add Project Button */}
@@ -208,7 +200,7 @@ function ProjectSelector() {
     </>);
 }
 
-const Topbar = () => {
+const Topbar = ({callback}) => {
 
     return (
         <div className="flex flex-col">
@@ -242,8 +234,12 @@ const Topbar = () => {
 
                         {/* Right-aligned usage display */}
                         <div className="text-gray-600 font-bold space-x-2 ">
-                            <Notifications/>
+                            <Tools callback={callback} />
+                        </div>
 
+                        {/* Right-aligned usage display */}
+                        <div className="text-gray-600 font-bold space-x-2 ">
+                            <Notifications/>
                         </div>
                     </div>
                 </div>

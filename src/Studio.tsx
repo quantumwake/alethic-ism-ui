@@ -1,6 +1,6 @@
 import React, {
     DragEvent,
-    useCallback, useState
+    useCallback, useEffect, useState
 } from 'react';
 
 import ReactFlow, {
@@ -36,9 +36,10 @@ import useStore from './store';
 import CustomConnectionLine from "./CustomConnectionLine";
 import CustomEdge from "./CustomEdge";
 import WithAuth from "./WithAuth";
-import {faChevronLeft, faChevronRight, faFilter} from "@fortawesome/free-solid-svg-icons";
+import {faChevronLeft, faChevronRight, faDiagramProject, faFilter} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ChannelObserver from "./DiscourseChannelSidebar";
+import ConfigurationView from "./ConfigurationView";
 
 const nodeTypes = {
     state: StateNode,
@@ -61,12 +62,39 @@ const edgeTypes: EdgeTypes = {
 
 const proOptions = { hideAttribution: true };
 
+
+const ManagementSection = () => {
+
+    return (
+        <div className="flex flex-col">
+            <div className="w-full h-10 p-2 bg-black mb-0.5">
+                <div className="flex flex-col items-start">
+                    <div className="flex items-center justify-between w-full">
+                        {/* Left-aligned buttons and dropdown */}
+                        <div className="flex items-center">
+                            <h1 className="flex-row flex">
+                                <FontAwesomeIcon icon={faDiagramProject} className="w-5 h-5 mr-2 mt-0.5"/>
+                                HELLO WORLD
+                            </h1>
+                        </div>
+
+                        <div className="text-gray-600 font-bold space-x-2 ">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const Studio = () => {
 
     const setSelectedNode = useStore((state) => state.setSelectedNode);
     const selectedProjectId = useStore((state) => state.selectedProjectId)
     const getNode = useStore((state) => state.getNode)
 
+    const {userId, fetchUserProfile, setUserProfile} = useStore()
     const createStateWithWorkflowNode = useStore(state => state.createStateWithWorkflowNode)
     const createTrainerWithWorkflowNode = useStore(state => state.createTrainerWithWorkflowNode)
     const createProcessorWithWorkflowNode = useStore(state => state.createProcessorWithWorkflowNode)
@@ -79,6 +107,7 @@ const Studio = () => {
         setWorkflowNodes: state.setWorkflowNodes,
     }));
 
+    const [isConfigViewOpen, setIsConfigViewOpen] = useState(false)
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
     const [nodes, setNodes, onNodesChange] = useNodesStateSynced();
     const [edges, setEdges, onEdgesChange] = useEdgesStateSynced();
@@ -146,10 +175,23 @@ const Studio = () => {
         event.dataTransfer.dropEffect = 'move';
     };
 
+    const callback = (value: any) => {
+        console.log(value)
+    }
+
+    useEffect(() => {
+        if (!userId) {
+            setUserProfile(null)
+            return
+        }
+        fetchUserProfile()
+    }, [userId]);
+
   return (
       <div className="flex flex-col h-screen w-full">
         {/* Top Menu */}
-          <Topbar/>
+          <Topbar callback={callback}/>
+          {/*<ManagementSection />*/}
 
         {/* Container for Side Menu, Main Body, and Properties Menu */}
           <div className="flex ml-2 overflow-hidden">
@@ -176,25 +218,25 @@ const Studio = () => {
                       nodeTypes={nodeTypes}>
                       <Background color="#aaa" gap={12}/>
                   </ReactFlow>
+
                   <button
-                      onClick={toggleRightSidebar}
-                      className="absolute top-2 right-2 h-10 text-xs text-white bg-green-600 p-2 rounded-none shadow-lg">
-                      {isRightSidebarOpen ?
+                      onClick={() => setIsConfigViewOpen(!isConfigViewOpen)}
+                      className="absolute top-2 z-0 right-0 h-10 text-xs text-white bg-orange-400 p-2 rounded-none shadow-lg">
+                      {isConfigViewOpen ?
                           <FontAwesomeIcon className="h-6 w-3" icon={faChevronLeft}/> :
                           <FontAwesomeIcon className="h-6 w-3" icon={faChevronRight}/>}
                   </button>
               </div>
               <div
-                  className={`w-[350pt] h-full p-0 m-0 border-2 border-green-400 transition-all duration-300 ${
-                      isRightSidebarOpen ? 'hidden' : ''
-                  }`}
-              >
+                  className={`w-[350pt] h-full p-0 m-0 border-2 border-green-400 transition-all duration-300 ${isRightSidebarOpen ? 'hidden' : ''}`}>
                   <ChannelObserver/>
+              </div>
+              <div
+                  className={`w-[350pt] h-full p-0 m-0 border-2 border-green-400 transition-all duration-300 ${isConfigViewOpen ? 'hidden' : ''}`}>
+                  <ConfigurationView/>
               </div>
           </div>
       </div>
-
-
   );
 };
 
