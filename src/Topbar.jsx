@@ -3,8 +3,10 @@ import useStore from './store';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Adjust the path as necessary
 
 import {
-    faCodeBranch, faDiagramProject, faFileCode,
-    faFolderOpen, faPlusSquare, faSyncAlt, faTools, faWarning
+    faBackward,
+    faBackwardStep, faChartArea,
+    faCodeBranch, faDashboard, faDesktop, faDiagramProject, faFastBackward, faFileCode,
+    faFolderOpen, faHandBackFist, faPlusSquare, faRandom, faStepBackward, faSyncAlt, faTools, faWarning
 } from '@fortawesome/free-solid-svg-icons'
 
 import ProjectTemplateDialog from "./ProjectTemplateDialog";
@@ -15,18 +17,23 @@ import {faToolbox} from "@fortawesome/free-solid-svg-icons/faToolbox";
 import {faStream} from "@fortawesome/free-solid-svg-icons/faStream";
 
 function OtherMenuItems() {
+    const {currentView, setCurrentView} = useStore()
     const [isOpenProjectTemplate, setIsOpenProjectTemplate] = useState(false);
+
+    const displayFunction = (e) => {
+        setCurrentView("functions")
+    }
 
     return (<>
         {/* Open Instruction Template Button */}
         <button
-            onClick={() => setIsOpenProjectTemplate(true)}
+            // onClick={(e) => setIsOpenProjectTemplate(true)}
+            onClick={(e) => displayFunction(e)}
             className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded">
-            <FontAwesomeIcon icon={faFileCode}/> Function Templates
+            <FontAwesomeIcon icon={faFileCode}/> Functions
         </button>
 
-        {/*<UsageReportDialog isOpen={isOpenUsageReportDialog} setIsOpen={setIsOpenUsageReportDialog} />*/}
-        <ProjectTemplateDialog isOpen={isOpenProjectTemplate} setIsOpen={setIsOpenProjectTemplate}/>
+        {/*<ProjectTemplateDialog isOpen={isOpenProjectTemplate} setIsOpen={setIsOpenProjectTemplate}/>*/}
     </>)
 }
 
@@ -72,6 +79,8 @@ function UsageReport() {
 }
 
 function Tools({callback}) {
+
+    const {currentView, setCurrentView} = useStore()
     const [isOpenMonitorLogEvent, setIsOpenMonitorLogEvent] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false)
     const {fetchProjectProcessorStates} = useStore()
@@ -170,6 +179,7 @@ function Notifications() {
 
 function ProjectSelector() {
     // const {userId, jwtToken} = useStore()
+
     const [isOpenNewProjectDialog, setIsOpenNewProjectDialog] = useState(false);
     const [isOpenProjectDialog, setIsOpenProjectDialog] = useState(false);
 
@@ -200,7 +210,22 @@ function ProjectSelector() {
     </>);
 }
 
+
+function StudioMenu() {
+    const {setCurrentView} = useStore()
+
+    return (<>
+        {/* Add Project Button */}
+        <button
+            onClick={() => setCurrentView("studio")}
+            className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+            <FontAwesomeIcon icon={faDesktop}/> Studio
+        </button>
+    </>);
+}
+
 const Topbar = ({callback}) => {
+    const {currentView, setCurrentView} = useStore()
 
     return (
         <div className="flex flex-col">
@@ -228,14 +253,17 @@ const Topbar = ({callback}) => {
                     <div className="flex items-center justify-between w-full">
                         {/* Left-aligned buttons and dropdown */}
                         <div className="flex items-center space-x-2">
+                            {currentView !== "studio" && (<>
+                                <StudioMenu />
+                            </>)}
                             <ProjectSelector/>
                             <OtherMenuItems/>
                         </div>
 
                         {/* Right-aligned usage display */}
-                        <div className="text-gray-600 font-bold space-x-2 ">
-                            <Tools callback={callback} />
-                        </div>
+                        {/*<div className="text-gray-600 font-bold space-x-2 ">*/}
+                        {/*    <Tools callback={callback} />*/}
+                        {/*</div>*/}
 
                         {/* Right-aligned usage display */}
                         <div className="text-gray-600 font-bold space-x-2 ">

@@ -102,6 +102,10 @@ const useStore = create(
             ENVIRONMENT: window.env.REACT_APP_ENVIRONMENT,
             ISM_API_BASE_URL: window.env.REACT_APP_ISM_API_BASE_URL,
 
+            // current view
+            currentView: null,
+            setCurrentView: (currentView) => set({currentView: currentView}),
+
             // channel selectors
             channelInputId: null,
             setChannelInputId: (channelInputId) => set({channelInputId: channelInputId}),
@@ -113,6 +117,7 @@ const useStore = create(
             setChannelSubscriberId: (channelSubscriberId) => set({channelSubscriberId: channelSubscriberId}),
 
             jwtToken: null,
+
 
             // Set JWT token
             setJwtToken: (token) => {
@@ -366,6 +371,32 @@ const useStore = create(
                 }
             },
             templates: [],
+            workspaceFiles: [],
+            fetchWorkspaceFiles: async (projectId) => {
+                // TODO: going to rename TEMPLATES this to FUNCTIONS
+                const functions = await get().fetchTemplates(projectId)
+                if (!functions) {
+                    return []
+                }
+
+                const functionFiles = functions.map(t => ({
+                    id: t.template_id,
+                    name: t.template_path,
+                    type: t.template_type,
+                    children: []  // This can be populated further as needed
+                }));
+
+                const rootNode = {
+                    id: 1,
+                    name: '/',
+                    children: [{
+                        id: 'functions',
+                        name: '/functions',
+                        children: functionFiles
+                    }]
+                }
+                return rootNode
+            },
             getTemplate: (templateId) => {
                 const { templates } = get(); // Get the current state of workflowNodes
                 return templates.find(t => t.template_id === templateId); // This will be the node map if found, or undefined if not
@@ -1149,12 +1180,70 @@ const useStore = create(
                 return updatedEdge
             },
             setWorkflowEdges: (edges) => set({ workflowEdges: edges }),
+
+            //
+            // Test Code Example
+            // codeContent = `class Runnable(BaseSecureRunnable):
+            //     def init(self):
+            //         self.context['counter'] = 0
+            //
+            //     def process(self, queries: List[Any]) -> List[Any]:
+            //         return queries
+            // #         c = self.context['counter']
+            // #         self.context['counter'] = c + 1
+            // #         self.context['other'] = f"other_{c}"
+            //
+            // #         return [{
+            // #             'index': self.context['counter'],
+            // #             **query
+            // #         } for query in queries]
+            //
+            //     def process_stream(self, queries: List[Any]) -> Any:
+            //         # yield from (self.process(query) for query in queries)
+            //         pass
+            //                 `
+            abc: async(codeContent, queries)=> {
+
+                try {
+                    queries = JSON.parse(queries);
+                } catch (error) {
+                    // do nothing pass queries as is.
+                    // console.debug(`warning, tried to parse passed in code validation input queries failed, passing queries input, as is, to validation endpoint: ${queries}`)
+                }
+
+                // Send the POST request
+                try {
+                    const response = await fetch("http://localhost:8000/validate/python", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            code_content: codeContent,
+                            queries: queries,
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        return response.text()
+                    }
+
+                    return await response.json()
+                } catch (error) {
+                    // console.error("Error:", error);
+                }
+
+                return null
+            },
         }),
+
+
         {
             name: 'user-id-storage', // unique name for the storage
             getStorage: () => localStorage, // specify localStorage
             partialize: (state) => ({ userId: state.userId }), // only persist the userId field
-        }
+        },
+
     )
 )
 

@@ -40,6 +40,7 @@ import {faChevronLeft, faChevronRight, faDiagramProject, faFilter} from "@fortaw
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ChannelObserver from "./DiscourseChannelSidebar";
 import ConfigurationView from "./ConfigurationView";
+import Workspace from "./Workspace";
 
 const nodeTypes = {
     state: StateNode,
@@ -94,6 +95,7 @@ const Studio = () => {
     const selectedProjectId = useStore((state) => state.selectedProjectId)
     const getNode = useStore((state) => state.getNode)
 
+    const {currentView, setCurrentView} = useStore()
     const {userId, fetchUserProfile, setUserProfile} = useStore()
     const createStateWithWorkflowNode = useStore(state => state.createStateWithWorkflowNode)
     const createTrainerWithWorkflowNode = useStore(state => state.createTrainerWithWorkflowNode)
@@ -193,7 +195,16 @@ const Studio = () => {
           <Topbar callback={callback}/>
           {/*<ManagementSection />*/}
 
-        {/* Container for Side Menu, Main Body, and Properties Menu */}
+          {currentView === "functions" && (
+          <div className="flex ml-2 overflow-hidden">
+              <div className="flex-grow p-4">
+                  <Workspace />
+              </div>
+          </div>
+          )}
+
+          {/* Container for Side Menu, Main Body, and Properties Menu */}
+          {currentView === "studio" && (
           <div className="flex ml-2 overflow-hidden">
               {/* Side Menu */}
               <Sidebar/>
@@ -231,11 +242,11 @@ const Studio = () => {
                   className={`w-[350pt] h-full p-0 m-0 border-2 border-green-400 transition-all duration-300 ${isRightSidebarOpen ? 'hidden' : ''}`}>
                   <ChannelObserver/>
               </div>
-              <div
-                  className={`w-[350pt] h-full p-0 m-0 border-2 border-green-400 transition-all duration-300 ${isConfigViewOpen ? 'hidden' : ''}`}>
-                  <ConfigurationView/>
-              </div>
-          </div>
+              {/*<div*/}
+              {/*    className={`w-[350pt] h-full p-0 m-0 border-2 border-green-400 transition-all duration-300 ${isConfigViewOpen ? 'hidden' : ''}`}>*/}
+              {/*    <ConfigurationView/>*/}
+              {/*</div>*/}
+          </div>)}
       </div>
   );
 };

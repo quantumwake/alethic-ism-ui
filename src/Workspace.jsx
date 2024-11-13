@@ -12,7 +12,8 @@ import Tippy from "@tippyjs/react";
 import 'tippy.js/dist/tippy.css';
 import {Tooltip} from "chart.js";
 import {ClipboardIcon} from "@heroicons/react/24/outline";
-import JsonView from "@uiw/react-json-view"; // Import the styles
+import JsonView from "@uiw/react-json-view";
+import CustomTreeView from "./CustomTreeView"; // Import the styles
 
 const templateTypes = [
     {type: 'mako', value: 'mako'},
@@ -29,8 +30,8 @@ const templateSample = {
 
     "python": [
 // python 1
-{ "template_path": "simple runnable python instruction (restricted)", "content":
-`class Runnable(BaseRunnable):
+        { "template_path": "simple runnable python instruction (restricted)", "content":
+                `class Runnable(BaseRunnable):
 
     # initialize any variables here
     def init(self, **kwargs):
@@ -58,7 +59,7 @@ const templateSample = {
  
 `},
 // python 2
-{ "template_path": "simple runnable python (with api call)", "content": `class Runnable(BaseRunnable):
+        { "template_path": "simple runnable python (with api call)", "content": `class Runnable(BaseRunnable):
     
     # initialize any variables here
     def init(self, **kwargs):
@@ -113,15 +114,15 @@ const templateSample = {
 ////////////////////
     'mako': [
         // mako template 1
-{ "template_path": "simple chat input template", content:`Given input: "\${input}", provide brief response in the following json format.
+        { "template_path": "simple chat input template", content:`Given input: "\${input}", provide brief response in the following json format.
 
 \`\`\`json {
     "answer": "[answer]",
     "justification": "[justification for answer]",
     "alignment_score": "[from 1 to 100 score how well does the answer and justification align with the input]"
 }\`\`\``},
-    // mako template 2
-{ "template_path": "mako based template that can be used on language models", "content": `DO NOT CHANGE ANYTHING JUST DISPLAY THIS
+        // mako template 2
+        { "template_path": "mako based template that can be used on language models", "content": `DO NOT CHANGE ANYTHING JUST DISPLAY THIS
 <%!
     def format_phone_numbers(phone_numbers):
         return ", ".join(phone_numbers)
@@ -150,20 +151,26 @@ given the following {input} provide a short and concise answer. output in the fo
 }
 \`\`\`
 `
-}]}
+    }]}
 
-function ProjectTemplateDialog({ isOpen, setIsOpen }) {
-
+function Workspace() {
     const [templateId, setTemplateId] = useState('');
     const [templatePath, setTemplatePath] = useState('');
     const [templateType, setTemplateType] = useState('mako');
     const [templateContent, setTemplateContent] = useState('');
     const [validationResult, setValidationResult] = useState({});
-    const {templates, createTemplate, getTemplate, selectedProjectId} = useStore();
+    const {templates, createTemplate, selectedProjectId} = useStore();
+    const {workspaceFiles, fetchWorkspaceFiles} = useStore();
     const {abc} = useStore();
 
     const monacoRef = useRef(null);
     const [currentChoiceIndex, setCurrentChoiceIndex] = useState(0)
+
+    useEffect(() => {
+        fetchWorkspaceFiles(selectedProjectId).then(() => {
+            console.log("fetched workspace files")
+        })
+    }, [selectedProjectId])
 
     const resetContent = () => {
         setTemplateId('')
@@ -221,7 +228,6 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
 
     const onClose = () => {
         resetContent()
-        setIsOpen(false)
     }
 
 
@@ -240,7 +246,7 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
 
     useEffect(() => {
         resetContent()
-    }, [isOpen])
+    }, [])
 
     const onAddTemplate = (e) => {
         // Create a new item object with the current form values and the selected project ID
@@ -322,15 +328,6 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
         return template['template_path'].toLowerCase().includes(term.toLowerCase());
     };
 
-    // Hover on each property to see its docs!
-    // const myEditor = monaco.editor.create(document.getElementById("container"), {
-    //     value,
-    //     language: "javascript",
-    //     automaticLayout: true,
-    // });
-
-
-
     const renderTemplate = (value) => <>
         <div className="flex items-center space-x-4">
             <div className="flex-shrink-0">
@@ -357,158 +354,121 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
         </div>
     </>
 
-    return (
-        <Transition appear show={isOpen} as={React.Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={() => setIsOpen(false)}>
-                <Transition.Child
-                    as={React.Fragment}
-                    enter="ease-out duration-300"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                >
-                    <div className="fixed inset-0 bg-black bg-opacity-25"/>
-                </Transition.Child>
+    // onClick handler
+    const handleNodeClick = (node) => {
+        console.log('Clicked node:', node);
+    };
 
-                <div className="fixed inset-0 overflow-y-auto">
-                    <div className="flex items-center justify-center text-center">
-                        <Transition.Child
-                            as={React.Fragment}
-                            enter="ease-out duration-300"
-                            enterFrom="opacity-0 scale-95"
-                            enterTo="opacity-100 scale-100"
-                            leave="ease-in duration-200"
-                            leaveFrom="opacity-100 scale-100"
-                            leaveTo="opacity-0 scale-95"
-                        >
-                            <Dialog.Panel className="w-2/3 rounded-lg bg-stone-100 p-2 text-left align-middle shadow-xl transition-all">
-                                <Dialog.Title as="h3"
-                                              className="-m-3 mb-4 p-4 flex text-2xl font-medium leading-6 bg-stone-300 text-stone-800 shadow-stone-950">
-                                    Project Templates&nbsp;<ProjectTemplateInfo details=""></ProjectTemplateInfo>
-                                </Dialog.Title>
+    return (<>
+        <div className="flex flex-col sm:flex-row gap-4 h-screen">
+            <div className="w-full sm:w-1/4 border-2 border-gray-100">
+                {/*<CustomList values={templates}*/}
+                {/*            searchFunction={searchTemplate}*/}
+                {/*            renderItem={renderTemplate}*/}
+                {/*            onItemClick={onEditTemplate} numOfColumns={1}/>*/}
+                <CustomTreeView rootNode={workspaceFiles} onClick={handleNodeClick} />
+            </div>
+            <div className="w-full h-12 sm:w-3/4">
+                <div className="flex-col w-full">
 
-                                <div className="flex flex-col sm:flex-row gap-4">
-                                    <div className="w-full sm:w-1/4">
-                                        <CustomList values={templates}
-                                                    searchFunction={searchTemplate}
-                                                    renderItem={renderTemplate}
-                                                    onItemClick={onEditTemplate} numOfColumns={1}/>
+                    {/* FIRST ROW -- TEMPLATE DETAILS SECTION*/}
+                    <div className="flex w-full h-14">
+                        <div className="w-1/4 pr-2">
+                            <input id="template_id" name="template_id" type="hidden"
+                                   value={templateId}/>
+                            <CustomListbox
+                                placeholder="choose template type..."
+                                option_value_key="value"
+                                option_label_key="type"
+                                options={templateTypes}
+                                onChange={chooseSample}
+                                value={templateType}>
+                            </CustomListbox>
+                        </div>
+                        <div className="pr-2">
+                            <Tippy content="Get next sample">
+                                <button
+                                    type="button"
+                                    className="rounded-none h-10 p-1 border border-transparent bg-blue-300 text-sm font-medium text-white hover:bg-blue-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                                    onClick={chooseNextSample}><FontAwesomeIcon
+                                    icon={faAngleDoubleRight}/>
+                                </button>
+                            </Tippy>
+                        </div>
+                        <div className="w-3/4">
+                            <CustomInput
+                                placeholder="specify template name..."
+                                name="template_path"
+                                value={templatePath}
+                                onChange={(e) => setTemplatePath(e.target.value)}
+                            />
+                        </div>
+                    </div>
 
-                                    </div>
-                                    <div className="w-full h-12 sm:w-3/4">
-                                        {/* FIRST ROW -- TEMPLATE DETAILS SECTION*/}
-                                        <div className="flex w-full h-10">
-                                            <div className="w-1/4 pr-2">
-                                                <input id="template_id" name="template_id" type="hidden"
-                                                       value={templateId}/>
-                                                <CustomListbox
-                                                    placeholder="choose template type..."
-                                                    option_value_key="value"
-                                                    option_label_key="type"
-                                                    options={templateTypes}
-                                                    onChange={chooseSample}
-                                                    value={templateType}>
-                                                </CustomListbox>
-                                            </div>
-                                            <div className="pr-2">
-                                                <Tippy content="Get next sample">
-                                                    <button
-                                                        type="button"
-                                                        className="rounded-none h-10 p-1 border border-transparent bg-blue-300 text-sm font-medium text-white hover:bg-blue-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-                                                        onClick={chooseNextSample}><FontAwesomeIcon
-                                                        icon={faAngleDoubleRight}/>
-                                                    </button>
-                                                </Tippy>
-                                            </div>
-                                            <div className="w-3/4">
-                                                <CustomInput
-                                                    placeholder="specify template name..."
-                                                    name="template_path"
-                                                    value={templatePath}
-                                                    onChange={(e) => setTemplatePath(e.target.value)}
-                                                />
-                                            </div>
-                                        </div>
+                    {/* SECOND ROW -- INSTRUCTION / FUNCTION EDITOR SECTION*/}
+                    <div className="flex w-full h-max">
+                        <Editor
+                            className="p-2"
+                            onChange={(newValue) => setTemplateContent(newValue)}
+                            defaultLanguage="python"
+                            value={templateContent}
+                            onMount={onEditorMount}
+                            options={{
+                                lineNumbers: 'on',
+                                // lineNumbersMinChars: 3,
+                                minimap: {
+                                    enabled: false
+                                },
+                                scrollBeyondLastLine: false,
+                                // Add more options as needed
+                            }}
+                        />
+                    </div>
+
+                </div>
+
+                <div className="flex w-full">
+                    <div className="flex w-1/2 justify-start">
+                        {/*<button*/}
+                        {/*    type="button"*/}
+                        {/*    className="inline-flex justify-center rounded-md border border-transparent bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"*/}
+                        {/*    onClick={onClose}>*/}
+                        {/*    Next Sample*/}
+                        {/*</button>*/}
+                    </div>
+                    <div className="flex w-1/2 justify-end">
+                        <button
+                            type="button"
+                            className={`ml-2 inline-flex rounded-md border border-transparent bg-green-100 px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                                (!templateContent) && "opacity-50 cursor-not-allowed"
+                            }`}
+                            onClick={(e) => onValidate(e)}
+                            disabled={!templateContent}>
+                            Validate
+                        </button>
+
+                        <button
+                            type="button"
+                            className={`ml-2 inline-flex rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                                (!templatePath || !templateType || !templateContent) && "opacity-50 cursor-not-allowed"
+                            }`}
+                            onClick={(e) => onAddTemplate(e)}
+                            disabled={!templatePath || !templateType || !templateContent}>
+                            Save Template
+                        </button>
 
 
-                                        {/* SECOND ROW -- INSTRUCTION / FUNCTION EDITOR SECTION*/}
-                                        <div className="mt-2 flex bg-white w-full border-2 border-blue-600">
-                                            <Editor
-                                                className="p-2"
-                                                onChange={(newValue) => setTemplateContent(newValue)}
-                                                defaultLanguage="python"
-                                                value={templateContent}
-                                                onMount={onEditorMount}
-                                                options={{
-                                                    lineNumbers: 'on',
-                                                    // lineNumbersMinChars: 3,
-                                                    minimap: {
-                                                        enabled: false
-                                                    },
-                                                    scrollBeyondLastLine: false,
-                                                    // Add more options as needed
-                                                }}
-                                            />
-                                        </div>
-
-                                        {/* THIRD ROW -- VALIDATION OUTPUT SECTION */}
-                                        {/*{validationResult && (*/}
-                                            <div className="mt-4 p-2 bg-gray-100 border-2 border-green-500 rounded-lg w-3/4">
-                                                <pre className="mt-2 whitespace-pre-wrap text-sm text-gray-800">
-                                                  <JsonView collapsed={true} value={validationResult}/>
-                                                </pre>
-                                            </div>
-                                        {/*)}*/}
-                                    </div>
-                                </div>
-
-                                <div className="flex w-full">
-                                    <div className="flex w-1/2 justify-start">
-                                        {/*<button*/}
-                                        {/*    type="button"*/}
-                                        {/*    className="inline-flex justify-center rounded-md border border-transparent bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"*/}
-                                        {/*    onClick={onClose}>*/}
-                                        {/*    Next Sample*/}
-                                        {/*</button>*/}
-                                    </div>
-                                    <div className="flex w-1/2 justify-end">
-                                        <button
-                                            type="button"
-                                            className={`ml-2 inline-flex rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
-                                                (!templatePath || !templateType || !templateContent) && "opacity-50 cursor-not-allowed"
-                                            }`}
-                                            onClick={(e) => onAddTemplate(e)}
-                                            disabled={!templatePath || !templateType || !templateContent}>
-                                            Save Template
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            className={`ml-2 inline-flex rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
-                                                (!templateContent) && "opacity-50 cursor-not-allowed"
-                                            }`}
-                                            onClick={(e) => onValidate(e)}
-                                            disabled={!templateContent}>
-                                            Validate
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            className="ml-2 inline-flex rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-                                            onClick={onClose}>
-                                            Discard
-                                        </button>
-                                    </div>
-                                </div>
-                            </Dialog.Panel>
-                        </Transition.Child>
+                        {/*<button*/}
+                        {/*    type="button"*/}
+                        {/*    className="ml-2 inline-flex rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"*/}
+                        {/*    onClick={onClose}>*/}
+                        {/*    Discard*/}
+                        {/*</button>*/}
                     </div>
                 </div>
-            </Dialog>
-        </Transition>
-    );
+            </div>
+        </div>
+    </>);
 }
 
-export default ProjectTemplateDialog;
+export default Workspace;
