@@ -4,7 +4,6 @@ import useStore from "./store";
 import CustomList from "./CustomList";
 import CustomListbox from "./CustomListbox";
 import CustomInput from "./CustomInput";
-import {Editor} from "@monaco-editor/react";
 import ProjectTemplateInfo from "./ProjectTemplateInfo";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleDoubleRight, faDiagramNext} from "@fortawesome/free-solid-svg-icons";
@@ -435,22 +434,22 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
 
                                         {/* SECOND ROW -- INSTRUCTION / FUNCTION EDITOR SECTION*/}
                                         <div className="mt-2 flex bg-white w-full border-2 border-blue-600">
-                                            <Editor
-                                                className="p-2"
-                                                onChange={(newValue) => setTemplateContent(newValue)}
-                                                defaultLanguage="python"
-                                                value={templateContent}
-                                                onMount={onEditorMount}
-                                                options={{
-                                                    lineNumbers: 'on',
-                                                    // lineNumbersMinChars: 3,
-                                                    minimap: {
-                                                        enabled: false
-                                                    },
-                                                    scrollBeyondLastLine: false,
-                                                    // Add more options as needed
-                                                }}
-                                            />
+                                            {/*<Editor*/}
+                                            {/*    className="p-2"*/}
+                                            {/*    onChange={(newValue) => setTemplateContent(newValue)}*/}
+                                            {/*    defaultLanguage="python"*/}
+                                            {/*    value={templateContent}*/}
+                                            {/*    onMount={onEditorMount}*/}
+                                            {/*    options={{*/}
+                                            {/*        lineNumbers: 'on',*/}
+                                            {/*        // lineNumbersMinChars: 3,*/}
+                                            {/*        minimap: {*/}
+                                            {/*            enabled: false*/}
+                                            {/*        },*/}
+                                            {/*        scrollBeyondLastLine: false,*/}
+                                            {/*        // Add more options as needed*/}
+                                            {/*    }}*/}
+                                            {/*/>*/}
                                         </div>
 
                                         {/* THIRD ROW -- VALIDATION OUTPUT SECTION */}
