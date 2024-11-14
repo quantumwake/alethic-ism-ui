@@ -220,21 +220,28 @@ const Studio = () => {
                   </ReactFlow>
 
                   <button
-                      onClick={() => setIsConfigViewOpen(!isConfigViewOpen)}
+                      onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
                       className="absolute top-2 z-0 right-0 h-10 text-xs text-white bg-orange-400 p-2 rounded-none shadow-lg">
-                      {isConfigViewOpen ?
+                      {isRightSidebarOpen ?
                           <FontAwesomeIcon className="h-6 w-3" icon={faChevronLeft}/> :
                           <FontAwesomeIcon className="h-6 w-3" icon={faChevronRight}/>}
                   </button>
+                  {/*<button*/}
+                  {/*    onClick={() => setIsConfigViewOpen(!isConfigViewOpen)}*/}
+                  {/*    className="absolute top-2 z-0 right-0 h-10 text-xs text-white bg-orange-400 p-2 rounded-none shadow-lg">*/}
+                  {/*    {isConfigViewOpen ?*/}
+                  {/*        <FontAwesomeIcon className="h-6 w-3" icon={faChevronLeft}/> :*/}
+                  {/*        <FontAwesomeIcon className="h-6 w-3" icon={faChevronRight}/>}*/}
+                  {/*</button>*/}
               </div>
               <div
                   className={`w-[350pt] h-full p-0 m-0 border-2 border-green-400 transition-all duration-300 ${isRightSidebarOpen ? 'hidden' : ''}`}>
                   <ChannelObserver/>
               </div>
-              <div
-                  className={`w-[350pt] h-full p-0 m-0 border-2 border-green-400 transition-all duration-300 ${isConfigViewOpen ? 'hidden' : ''}`}>
-                  <ConfigurationView/>
-              </div>
+              {/*<div*/}
+              {/*    className={`w-[350pt] h-full p-0 m-0 border-2 border-green-400 transition-all duration-300 ${isConfigViewOpen ? 'hidden' : ''}`}>*/}
+              {/*    <ConfigurationView/>*/}
+              {/*</div>*/}
           </div>
       </div>
   );

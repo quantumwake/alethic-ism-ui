@@ -27,7 +27,7 @@ const CustomerList = ({ values, renderItem, onItemClick, searchFunction, numOfCo
                 <div className={gridClasses}>
                     {filteredValues.map((value, index) => (
                         <div key={index}
-                             className="p-3 cursor-pointer bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg shadow-sm"
+                             className="p-2 cursor-pointer bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg shadow-md"
                              onClick={() => onItemClick(value)}>
                             {renderItem(value)}
                         </div>

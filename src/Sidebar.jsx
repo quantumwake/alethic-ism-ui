@@ -38,6 +38,14 @@ const processorStyles = {
         icon: faDatabase,
         enabled: true
     },
+    Trainer: {
+        type: "trainer",
+        name: "Model Trainer",
+        tooltip: "Basic Model Trainer",
+        color: 'text-orange-500',
+        icon: faDove,
+        enabled: true
+    },
     Python: {
         type: "processor_python",
         name: "Python Function",
@@ -86,28 +94,20 @@ const processorStyles = {
         icon: faFlask,
         enabled: true
     },
-    StateMerge: {
-        type: "processor_state_coalescer",
-        name: "Coalescer",
-        tooltip: "Function to combine multiple inputs into a single coherent value used as another input into a function.",
-        color: 'text-indigo-500',
-        icon: faObjectGroup,
-        enabled: true
-    },
-    Trainer: {
-        type: "trainer",
-        name: "Model Trainer",
-        tooltip: "Basic Model Trainer",
-        color: 'text-orange-500',
-        icon: faDove,
-        enabled: true
-    },
     GoogleAI: {
         type: "processor_google_ai",
         name: "Google AI",
         tooltip: "Generate text or analyze images using Google's Gemini AI",
         color: 'text-orange-500',
         icon: faRobot,
+        enabled: true
+    },
+    StateMerge: {
+        type: "processor_state_coalescer",
+        name: "Coalescer",
+        tooltip: "Function to combine multiple inputs into a single coherent value used as another input into a function.",
+        color: 'text-indigo-500',
+        icon: faObjectGroup,
         enabled: true
     },
     Mistral: {

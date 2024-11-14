@@ -76,22 +76,22 @@ function BaseProcessorNode({ providerName, className, nodeId, renderAdditionalCo
 
             <button
                 onClick={() => setIsOpenConfig(true)}
-                className="px-1.5 py-0.5 bg-sky-500 text-white rounded-sm hover:bg-sky-900 focus:outline-none">
-                <FontAwesomeIcon className="h-6 w-3" icon={faEdit}/>
+                className="ml-0 px-1.5 py-0.5 h-6 bg-sky-500 text-white rounded-sm hover:bg-sky-900 focus:outline-none">
+                <FontAwesomeIcon className="h-4 w-3" icon={faEdit}/>
             </button>
 
             <button
                 onClick={startOrStopProcessor}
-                className={`ml-1 px-1.5 py-0.5 text-white rounded-sm focus:outline-none transition-colors duration-200 ${
+                className={`ml-1 px-1.5 py-0.5 h-6 text-white rounded-sm focus:outline-none transition-colors duration-200 ${
                     isStopped
                         ? "bg-green-500 hover:bg-green-700"
                         : "bg-red-500 hover:bg-red-700"
                 }`}
             >
                 {isStopped ? (
-                    <FontAwesomeIcon className="h-4 w-3" icon={faPlay}/>
+                    <FontAwesomeIcon className="h-4 w-2" icon={faPlay}/>
                 ) : (
-                    <FontAwesomeIcon className="h-4 w-3" icon={faPause}/>
+                    <FontAwesomeIcon className="h-4 w-2" icon={faPause}/>
                     // <PauseIcon className="h-6 w-4" />
                 )}
             </button>

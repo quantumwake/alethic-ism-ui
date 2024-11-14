@@ -342,36 +342,17 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
     return (
         <Transition appear show={isOpen} as={React.Fragment}>
             <Dialog as="div" className="relative z-10" onClose={() => setIsOpen(false)}>
-                <Transition.Child
-                    as={React.Fragment}
-                    enter="ease-out duration-300"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                >
-                    <div className="fixed inset-0 bg-black bg-opacity-25"/>
-                </Transition.Child>
 
                 <div className="fixed inset-0 overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-4 text-center">
-                        <Transition.Child
-                            as={React.Fragment}
-                            enter="ease-out duration-300"
-                            enterFrom="opacity-0 scale-95"
-                            enterTo="opacity-100 scale-100"
-                            leave="ease-in duration-200"
-                            leaveFrom="opacity-100 scale-100"
-                            leaveTo="opacity-0 scale-95"
-                        >
-                            <Dialog.Panel className="w-2/3 rounded-lg bg-stone-100 h-[520pt] p-3 text-left align-middle shadow-xl transition-all">
+                    <div className="flex items-center justify-center p-4 text-center">
+
+                            <Dialog.Panel className="w-2/3 rounded-lg bg-stone-100 p-3 text-left align-middle shadow-xl transition-all">
                                 <Dialog.Title as="h3"
                                               className="-m-3 mb-4 p-4 flex text-2xl font-medium leading-6 bg-stone-300 text-stone-800 shadow-stone-950">
                                     Project Templates&nbsp;<ProjectTemplateInfo details=""></ProjectTemplateInfo>
                                 </Dialog.Title>
 
-                                <div className="flex h-[400pt] flex-col sm:flex-row gap-4">
+                                <div className="flex flex-col sm:flex-row gap-4">
                                     <div className="w-full sm:w-1/4">
                                         <CustomList values={templates}
                                                     searchFunction={searchTemplate}
@@ -379,7 +360,7 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
                                                     onItemClick={onEditTemplate} numOfColumns={1}/>
 
                                     </div>
-                                    <div className="w-full h-12 sm:w-3/4">
+                                    <div className="sm:w-3/4">
                                         {/* First Row */}
                                         <div className="flex w-full h-10">
                                             <div className="w-1/4 pr-2">
@@ -414,11 +395,9 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
                                             </div>
                                         </div>
 
-
                                         {/* Second Row */}
-                                        <div className="mt-2 flex h-[320pt] bg-white w-full border-2 border-blue-600">
+                                        <div className="mt-2 flex h-[500pt] bg-white w-full border-2 border-blue-600">
                                             <Editor
-                                                className="p-2"
                                                 onChange={(newValue) => setTemplateContent(newValue)}
                                                 defaultLanguage="python"
                                                 value={templateContent}
@@ -466,7 +445,6 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
                                     </div>
                                 </div>
                             </Dialog.Panel>
-                        </Transition.Child>
                     </div>
                 </div>
             </Dialog>

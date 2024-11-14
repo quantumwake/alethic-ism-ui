@@ -33,7 +33,7 @@ const theme = {
         headerBackground: 'bg-amber-100',
         headerHoverBackground: 'bg-gray-200',
         headerColor: 'text-gray-800',
-        width: 'w-60'
+        width: 'w-64'
     },
     python: {
         headerBackground: 'bg-red-100',

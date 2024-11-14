@@ -160,7 +160,7 @@ const useStore = create(
                 });
 
                 if (!response.ok) {
-                    throw new Error('Network response error when trying create or update user profile');
+                    // TODO proper error handling -- throw new Error('Network response error when trying create or update user profile');
                 }
 
                 const data = await response.json();
@@ -193,7 +193,7 @@ const useStore = create(
                     return
                 }
 
-                throw new Error('Network response was not ok');
+                // TODO proper error handling -- throw new Error('Network response was not ok');
             },
 
             //
@@ -209,7 +209,7 @@ const useStore = create(
                 });
 
                 if (!response.ok) {
-                    throw new Error('network response error when trying create new session');
+                    // TODO proper error handling -- throw new Error('network response error when trying create new session');
                 }
 
                 const data = await response.json();
@@ -230,7 +230,7 @@ const useStore = create(
                 });
 
                 if (!response.ok) {
-                    throw new Error('Network response error when trying to submit test query state for routing');
+                    // TODO proper error handling -- throw new Error('Network response error when trying to submit test query state for routing');
                 }
             },
 
@@ -252,7 +252,7 @@ const useStore = create(
                     });
 
                     if (!response.ok) {
-                        throw new Error('Network response error when trying to submit test query state for routing');
+                        // TODO proper error handling -- throw new Error('Network response error when trying to submit test query state for routing');
                     }
 
                     return true
@@ -281,7 +281,7 @@ const useStore = create(
                 if (response.status === 404) {
                     return []
                 } else if (!response.ok) {
-                    throw new Error('Network response error when trying to fetch monitor log events')
+                    // TODO proper error handling -- throw new Error('Network response error when trying to fetch monitor log events')
                 }
 
                 return response.json()
@@ -353,7 +353,7 @@ const useStore = create(
 
                     // ensure the response is ok 20x
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        // TODO proper error handling -- throw new Error('Network response was not ok');
                     }
 
                     // update the project state
@@ -437,7 +437,7 @@ const useStore = create(
                 });
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    // TODO proper error handling -- throw new Error('Network response was not ok');
                 }
 
                 // reassign the new state data returned, this will provide an updated list of ids if any
@@ -471,7 +471,7 @@ const useStore = create(
                 });
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    // TODO proper error handling -- throw new Error('Network response was not ok');
                 }
 
                 const changed = await response.json();
@@ -509,7 +509,7 @@ const useStore = create(
                     });
 
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        // TODO proper error handling -- throw new Error('Network response was not ok');
                     }
                 } catch (error) {
                     console.error(`Failed to delete state node configuration definition key  with id ${routeId}: `, error);
@@ -527,7 +527,7 @@ const useStore = create(
                 });
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    // TODO proper error handling -- throw new Error('Network response was not ok');
                 }
 
                 // set only if the processor state is ok
@@ -577,7 +577,7 @@ const useStore = create(
                 if (response.status === 404) {
                     get().setProcessorStates({})
                 } else if (!response.ok) {
-                    throw new Error('error fetching processor states by project')
+                    // TODO proper error handling -- throw new Error('error fetching processor states by project')
                 }
 
                 // parse the data
@@ -627,7 +627,7 @@ const useStore = create(
                     return
                 }
 
-                throw new Error('Network response was not ok');
+                // TODO proper error handling -- throw new Error('Network response was not ok');
             },
 
             addProject: async (userId, projectName) => {
@@ -647,7 +647,7 @@ const useStore = create(
 
                     // ensure the response is ok 20x
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        // TODO proper error handling -- throw new Error('Network response was not ok');
                     }
 
                     // update the project state
@@ -752,7 +752,7 @@ const useStore = create(
                     });
 
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        // TODO proper error handling -- throw new Error('Network response was not ok');
                     }
                 } catch (error) {
                     console.error(`Failed to delete state node configuration definition key ${definition_type} with id ${id}: `, error);
@@ -777,11 +777,32 @@ const useStore = create(
                 });
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    // TODO proper error handling -- throw new Error('Network response was not ok');
                 }
             },
 
-            // State Object Updates
+            // State Object Updates, Deletes, ...
+            deleteState: async (stateId) => {
+                if (!stateId) {
+                    return {}
+                }
+
+                const response = await fetch(`${get().ISM_API_BASE_URL}/state/${stateId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${get().jwtToken}`,
+                    }
+                });
+
+                if (!response.ok) {
+                    // TODO proper error handling -- throw new Error('Network response was not ok');
+                    return {}
+                }
+                const projectId = get().selectedProjectId
+                await get().fetchWorkflowNodes(projectId);
+                await get().fetchWorkflowEdges(projectId);
+            },
             fetchState: async (stateId, load_state = false, setNodeData = true) => {
                 if (!stateId) {
                     return
@@ -836,7 +857,7 @@ const useStore = create(
                 });
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    // TODO proper error handling -- throw new Error('Network response was not ok');
                 }
 
                 // reassign the new state data returned, this will provide an updated list of ids if any
@@ -847,7 +868,7 @@ const useStore = create(
 
             uploadState: async (stateId, file) => {
                 if (!stateId) {
-                    throw new Error('warning: no state id specified')
+                    // TODO proper error handling -- throw new Error('warning: no state id specified')
                 }
 
                 // const node = get().getNode(nodeId);
@@ -865,7 +886,7 @@ const useStore = create(
                         const data = await response.json();
                         console.log(data);
                     } else {
-                        throw new Error("Upload of state dataset failed");
+                        // TODO proper error handling -- throw new Error("Upload of state dataset failed");
                     }
                 } catch (error) {
                     console.error(error);
@@ -902,7 +923,7 @@ const useStore = create(
                     });
 
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        // TODO proper error handling -- throw new Error('Network response was not ok');
                     }
                 } catch (error) {
                     console.error('Failed to delete node:', error);
@@ -933,7 +954,7 @@ const useStore = create(
                     });
 
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        // TODO proper error handling -- throw new Error('Network response was not ok');
                     }
                 } catch (error) {
                     console.error('Failed to create new node:', error);
@@ -951,7 +972,7 @@ const useStore = create(
                     });
 
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        // TODO proper error handling -- throw new Error('Network response was not ok');
                     }
 
                     const createdNode = await response.json();
@@ -1034,7 +1055,7 @@ const useStore = create(
                     });
 
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        // TODO proper error handling -- throw new Error('Network response was not ok');
                     }
                 } catch (error) {
                     console.error('Failed to delete node:', error);
@@ -1125,7 +1146,7 @@ const useStore = create(
                 });
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    // TODO proper error handling -- throw new Error('Network response was not ok');
                 }
 
                 const newEdge = await response.json();

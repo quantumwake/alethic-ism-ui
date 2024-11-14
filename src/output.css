@@ -709,10 +709,6 @@ li {
   top: 0.5rem;
 }
 
-.right-2 {
-  right: 0.5rem;
-}
-
 .z-0 {
   z-index: 0;
 }
@@ -843,6 +839,10 @@ li {
   margin-top: 2rem;
 }
 
+.ml-0 {
+  margin-left: 0px;
+}
+
 .block {
   display: block;
 }
@@ -927,16 +927,32 @@ li {
   height: 500pt;
 }
 
-.h-\[520pt\] {
-  height: 520pt;
-}
-
 .h-full {
   height: 100%;
 }
 
 .h-screen {
   height: 100vh;
+}
+
+.h-auto {
+  height: auto;
+}
+
+.h-fit {
+  height: fit-content;
+}
+
+.h-\[180pt\] {
+  height: 180pt;
+}
+
+.h-\[380pt\] {
+  height: 380pt;
+}
+
+.h-3 {
+  height: 0.75rem;
 }
 
 .max-h-60 {
@@ -963,6 +979,10 @@ li {
   min-height: 7rem;
 }
 
+.min-h-96 {
+  min-height: 24rem;
+}
+
 .min-h-\[100px\] {
   min-height: 100px;
 }
@@ -973,6 +993,10 @@ li {
 
 .min-h-screen {
   min-height: 100vh;
+}
+
+.min-h-svh {
+  min-height: 100svh;
 }
 
 .w-0\.5 {
@@ -1065,6 +1089,10 @@ li {
 
 .w-max {
   width: max-content;
+}
+
+.w-64 {
+  width: 16rem;
 }
 
 .min-w-0 {
@@ -1170,19 +1198,6 @@ li {
 
 .animate-\[spin_3s_linear_infinite\] {
   animation: spin 3s linear infinite;
-}
-
-@keyframes fadeInOut {
-  0%, 100% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.animate-fade-in-out {
-  animation: fadeInOut 3s ease-in-out infinite;
 }
 
 .cursor-default {
@@ -1779,6 +1794,21 @@ li {
   padding-bottom: 2rem;
 }
 
+.px-0\.5 {
+  padding-left: 0.125rem;
+  padding-right: 0.125rem;
+}
+
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+.py-0 {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
 .pl-10 {
   padding-left: 2.5rem;
 }
@@ -2048,11 +2078,6 @@ li {
 .text-red-300 {
   --tw-text-opacity: 1;
   color: rgb(252 165 165 / var(--tw-text-opacity));
-}
-
-.text-red-400 {
-  --tw-text-opacity: 1;
-  color: rgb(248 113 113 / var(--tw-text-opacity));
 }
 
 .text-red-500 {

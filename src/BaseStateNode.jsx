@@ -16,7 +16,14 @@ import ConfirmationDialog from "./ConfirmationDialog";
 import {faChevronRight} from "@fortawesome/free-solid-svg-icons/faChevronRight";
 import StateStreamDialog from "./StateStreamDialog";
 import StateDataFilterDialog from "./StateDataFilterDialog";
-import {faArrowRight, faChevronLeft, faFileUpload, faFilter} from "@fortawesome/free-solid-svg-icons";
+import {
+    faArrowRight,
+    faChevronLeft,
+    faDeleteLeft,
+    faFileUpload,
+    faFilter,
+    faTrashCan
+} from "@fortawesome/free-solid-svg-icons";
 import {faInbox} from "@fortawesome/free-solid-svg-icons/faInbox";
 import {faAnchor} from "@fortawesome/free-solid-svg-icons/faAnchor";
 import {faArrowLeft} from "@fortawesome/free-solid-svg-icons/faArrowLeft";
@@ -28,11 +35,13 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
     const [isOpenUpload, setIsOpenUpload] = useState(false)
     const [isOpenView, setIsOpenView] = useState(false)
     const [isConfirmation, setIsConfirmation] = useState(false)
+    const [isDeleteConfirmation, setIsDeleteConfirmation] = useState(false)
     const [isOpenTestQueryState, setIsOpenTestQueryState] = useState(false)
     const [isOpenStateStreamDialog, setIsOpenStateStreamDialog] = useState(false);
     const [isOpenStateDataFilterDialog, setIsOpenStateDataFilterDialog] = useState(false);
     const nodeData = useStore(state => state.getNodeData(nodeId))
     const purgeStateData = useStore(state => state.purgeStateData)
+    const deleteState = useStore(state => state.deleteState)
 
     const {setChannelInputId, setChannelOutputId} = useStore()
 
@@ -50,22 +59,22 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
     const renderControls = () => (<>
         <button
             onClick={() => setIsOpenProp(true)}
-            className="px-1.5 py-0.5 bg-sky-500 text-white rounded-sm hover:bg-sky-900 focus:outline-none">
+            className="ml-1 px-1.5 py-0.5 h-6 bg-sky-500 text-white rounded-sm hover:bg-sky-900 focus:outline-none">
             {/*<PencilIcon className="h-6 w-3"/>*/}
-            <FontAwesomeIcon className="h-6 w-3" icon={faEdit}/>
+            <FontAwesomeIcon className="h-4 w-2" icon={faEdit}/>
         </button>
         <button
             onClick={() => setIsOpenUpload(true)}
-            className="ml-1 px-1.5 py-0.5 bg-red-500 text-white rounded-sm hover:bg-red-900 focus:outline-none">
+            className="ml-1 px-1.5 py-0.5 h-6 bg-red-500 text-white rounded-sm hover:bg-red-900 focus:outline-none">
             {/*<ArrowUpOnSquareStackIcon className="h-6 w-3"/>*/}
-            <FontAwesomeIcon className="h-6 w-3" icon={faFileUpload}/>
+            <FontAwesomeIcon className="h-4 w-2" icon={faFileUpload}/>
 
         </button>
         <button
             onClick={() => setIsOpenView(true)}
-            className="ml-1 px-1.5 py-0.5 bg-amber-500 text-white rounded-sm hover:bg-amber-900 focus:outline-none">
+            className="ml-1 px-1.5 py-0.5 h-6 bg-amber-500 text-white rounded-sm hover:bg-amber-900 focus:outline-none">
             {/*<ArrowDownOnSquareIcon className="h-6 w-3"/>*/}
-            <FontAwesomeIcon className="h-6 w-3" icon={faDownload}/>
+            <FontAwesomeIcon className="h-4 w-2" icon={faDownload}/>
 
         </button>
         {/*<button*/}
@@ -75,8 +84,14 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
         {/*</button>*/}
         <button
             onClick={() => setIsConfirmation(true)}
-            className="ml-1 px-1.5 py-0.5 bg-orange-600 text-white rounded-sm hover:bg-orange-400 focus:outline-none">
-            <FontAwesomeIcon className="h-6 w-3" icon={faBroomBall}/>
+            className="ml-1 px-1.5 py-0.5 h-6 bg-orange-600 text-white rounded-sm hover:bg-orange-400 focus:outline-none">
+            <FontAwesomeIcon className="h-4 w-2" icon={faBroomBall}/>
+            {/*<i class="fa-solid fa-broom"></i>*/}
+        </button>
+        <button
+            onClick={() => setIsDeleteConfirmation(true)}
+            className="ml-1 px-1.5 py-0.5 h-6 bg-orange-600 text-white rounded-sm hover:bg-orange-400 focus:outline-none">
+            <FontAwesomeIcon className="h-4 w-2" icon={faTrashCan}/>
             {/*<i class="fa-solid fa-broom"></i>*/}
         </button>
         {/*<button*/}
@@ -120,6 +135,10 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
         purgeStateData(nodeId)
     }
 
+    const onDeleteStateData = () => {
+        deleteState(nodeId)
+    }
+
     return (<>
         <BaseNode
             nodeId={nodeId}
@@ -129,8 +148,11 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
             theme={theme}/>
 
         <ConfirmationDialog isOpen={isConfirmation} setIsOpen={setIsConfirmation} onAccept={onPurgeStateData}
-                            title="Purge complete state data"
-                            content="this process is not reversable... are you sure you wish to delete all data within the selected state."/>
+                            title="Purge State Data!"
+                            content="this process is irreversible... are you sure you wish to delete all data within the selected state."/>
+        <ConfirmationDialog isOpen={isDeleteConfirmation} setIsOpen={setIsDeleteConfirmation} onAccept={onDeleteStateData}
+                            title="Permanently Delete State!"
+                            content="this process is irreversible... are you sure you wish to delete all data within the selected state."/>
         <StateConfigDialog isOpen={isOpenProp} setIsOpen={setIsOpenProp} nodeId={nodeId}/>
         <StateDataUploadDialog isOpen={isOpenUpload} setIsOpen={setIsOpenUpload} nodeId={nodeId}/>
         <StateDataViewDialog isOpen={isOpenView} setIsOpen={setIsOpenView} nodeId={nodeId}/>

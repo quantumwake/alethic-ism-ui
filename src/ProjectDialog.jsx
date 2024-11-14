@@ -51,11 +51,11 @@ function ProjectDialog({ isOpen, setIsOpen,}) {
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
                     {/*onClick={onSelectProject(value['project_id'])}*/}
-                    Name: {value['project_name']}
+                    <span className="font-bold">{value['project_name']}</span>
                 </p>
                 <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
                     {/*onClick={onSelectProject(value['project_id'])}*/}
-                    Created: {value['created_date'].substring(0,10)} {value['created_date'].substring(11,19)}
+                    {value['created_date'].substring(0,10)} {value['created_date'].substring(11,19)}
                 </p>
             </div>
         </div>
