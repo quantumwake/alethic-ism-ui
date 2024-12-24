@@ -2,6 +2,8 @@
 import {create} from 'zustand';
 import {persist} from "zustand/middleware";
 import {useNavigate} from "react-router-dom";
+import themes from "./themes";
+import extendTheme from "./themes/extendedTheme";
 // import { useNavigate } from 'react-router-dom';
 // import useStore from './path-to-your-store';  // Import your Zustand store
 //
@@ -96,6 +98,7 @@ const useStore = create(
                 return Object.values(map);
             },
 
+
             // Authenticated fetch function
             authenticatedFetch: authFetch(set, get),
 
@@ -118,6 +121,8 @@ const useStore = create(
             setJwtToken: (token) => {
                 set({ jwtToken: token});
                 localStorage.setItem('jwtToken', token);
+
+                // localStorage.setItem('jwtToken', "testtoken");   // TODO NOTE: login bypass
             },
 
             // Clear JWT token (for logout)
@@ -128,12 +133,19 @@ const useStore = create(
 
             // user profile (create account, fetch user id by auth)
             userId: null,
+            // userId: "77c17315-3013-5bb8-8c42-32c28618101f",  // TODO NOTE: login bypass
             userProfile: null,
             setUserId: (userId) => set({ userId: userId }),
 
             selectedEdgeId: null,
             setSelectedEdgeId: (selectedEdgeId) => set({ selectedEdgeId: selectedEdgeId }),
 
+            // selectedNodeId: null,
+            // selectedNodeType: null,
+            // setSelectedNode: async (type, id) => {
+            //     set( { selectedNodeId: id })
+            //     set( { selectedNodeType: type })
+            // },
 
             // usage reports
             userUsageReport: {},
@@ -146,7 +158,12 @@ const useStore = create(
             projectUsageReport: {},
             setProjectUsageReport: (projectUsageReport) => set({ projectUsageReport: projectUsageReport }),
 
-            //
+            // Theme management
+            activeTheme: 'matrix',  // default theme
+            setActiveTheme: (activeTheme) => set({ activeTheme: activeTheme }),
+            getCurrentTheme: () => extendTheme(get().activeTheme),
+
+            // create user profile
             createUserProfile: async(userDetails) => {
 
                 const response = await fetch(`${get().ISM_API_BASE_URL}/user`, {
@@ -196,7 +213,7 @@ const useStore = create(
                 // TODO proper error handling -- throw new Error('Network response was not ok');
             },
 
-            //
+            // create a new session used to hold relevant information (mainly for chat dialogue)
             createSession: async() => {
                 const { authenticatedFetch } = get();
                 const response = await authenticatedFetch(`${get().ISM_API_BASE_URL}/session/create`, {
@@ -216,8 +233,6 @@ const useStore = create(
                 return data['session_id']
             },
 
-
-            // test query state
             publishQueryState: async(stateId, queryState) => {
                 const response = await fetch(`${get().ISM_API_BASE_URL}/state/${stateId}/forward/entry`, {
                     method: 'POST',
@@ -234,9 +249,6 @@ const useStore = create(
                 }
             },
 
-
-            // test query state
-            // forwardState: async(stateId, processorId) => {
             executeProcessorStateRoute: async(route_id) => {
                 try {
 
@@ -319,8 +331,6 @@ const useStore = create(
                 return usage
             },
 
-
-
             insertOrUpdateTemplate: async (instructionTemplate) => {
                 set((state) => {
                     // Check if the template already exists in the state store
@@ -338,6 +348,7 @@ const useStore = create(
                     }
                 });
             },
+
             // manage templates (e.g. language templates, code templates, other types of templates used for instruction execution)
             createTemplate: async (instructionTemplate) => {
                 try {
@@ -486,6 +497,23 @@ const useStore = create(
                 } catch (error) {
                     console.error('Failed to fetch projects:', error);
                 }
+            },
+            deleteProcessor: async (processorId) => {
+                const response = await fetch(`${get().ISM_API_BASE_URL}/processor/${processorId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    // TODO proper error handling -- throw new Error('Network response was not ok');
+                }
+
+                // TODO delete the exact nodes and edges instead of doing a full refresh.
+                const projectId = get().selectedProjectId
+                await get().fetchWorkflowNodes(projectId);
+                await get().fetchWorkflowEdges(projectId);
             },
             deleteProcessorStateWithWorkflowEdge: async(id) => {
                 return await get().deleteWorkflowEdge(id).then(() => {
@@ -708,12 +736,17 @@ const useStore = create(
 
             getNodeDataStateConfig: (nodeId) => {
                 const node = get().getNode(nodeId)
+                if (!node) {
+                    console.error(`no node found by id ${nodeId}`)
+                    return null
+                }
+
                 const nodeData = get().getNodeData(nodeId)
 
                 //
                 if (!nodeData?.config) {
                     nodeData.config = {
-                        name: node.node_label,
+                        name: node?.node_label,
                         primary_key: [],
                         query_state_inheritance: [],
                         remap_query_state_columns: [],
@@ -761,7 +794,18 @@ const useStore = create(
 
             getNodeDataStateConfigKeyDefinition: (nodeId, definition_name) => {
                 const config = get().getNodeDataStateConfig(nodeId)
+                if (!config) {
+                    return null
+                }
                 return config[definition_name]
+            },
+
+            getNodeDataStateConfigActions: (nodeId) => {
+                const config = get().getNodeDataStateConfig(nodeId)
+                if (!config) {
+                    return null
+                }
+                return config["actions"]
             },
 
             purgeStateData: async (stateId) => {
@@ -799,6 +843,8 @@ const useStore = create(
                     // TODO proper error handling -- throw new Error('Network response was not ok');
                     return {}
                 }
+
+                // TODO delete the exact nodes and edges instead of doing a full refresh.
                 const projectId = get().selectedProjectId
                 await get().fetchWorkflowNodes(projectId);
                 await get().fetchWorkflowEdges(projectId);

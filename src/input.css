@@ -1,41 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-    html {
-        font-family: "Roboto", system-ui, sans-serif;
+    ::-webkit-scrollbar {
+        width: 1.5px;  /* or any desired width */
     }
 
-    label {
-        @apply text-label block mb-2 font-semibold text-gray-700;
+    ::-webkit-scrollbar-track {
+        background: transparent;
     }
 
-    h1 {
-        @apply uppercase block font-semibold text-blue-100 antialiased font-sans;
+    ::-webkit-scrollbar-thumb {
+        background-color: rgb(156 163 175 / 0.5); /* gray-400 with 50% opacity */
+        border-radius: 9999px;
     }
 
-    p {
-        @apply text-paragraph mb-2 antialiased;
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: rgb(156 163 175); /* solid gray-400 on hover */
+    }
+}
+
+@layer utilities {
+    .bg-scanline {
+        background: repeating-linear-gradient(
+                transparent 0px,
+                transparent 1px,
+                rgba(0, 0, 0, 0.3) 2px,
+                rgba(0, 0, 0, 0.3) 3px
+        );
     }
 
-    ul {
-        @apply mb-3 pl-5 list-disc text-gray-600;
+    .bg-crt {
+        background: radial-gradient(
+                ellipse at center,
+                rgba(255, 255, 255, 0.1) 0%,
+                rgba(0, 0, 0, 0.2) 100%
+        );
     }
-
-    li {
-        @apply text-paragraph;
-    }
-
-    /*@font-face {*/
-    /*    font-family: 'Roboto';*/
-    /*    font-style: normal;*/
-    /*    font-weight: 400;*/
-    /*    font-display: swap;*/
-    /*    src: url(/fonts/Roboto.woff2) format('woff2');*/
-    /*}*/
 }
 
 body {
-    @apply font-sans;
+
 }
+

@@ -1,8 +1,7 @@
-import { useCallback } from 'react';
+import {useCallback} from 'react';
 
-import {applyNodeChanges, OnNodesChange} from 'reactflow';
-
-import useStore from './store'; // Path to your Zustand store
+import useStore from './store';
+import {applyNodeChanges, OnNodesChange} from "@xyflow/react"; // Path to your Zustand store
 
 const useNodesStateSynced = () => {
     const { workflowNodes, setWorkflowNodes, updateNode } = useStore(state => ({

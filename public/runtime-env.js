@@ -9,4 +9,6 @@ window.env = {
   REACT_APP_FIREBASE_STORAGE_BUCKET: "quantum-ism.appspot.com",
   REACT_APP_ISM_API_BASE_URL: "http://localhost:8000",
   REACT_APP_ISM_STREAM_API_BASE_URL: "ws://localhost:8080",
+  REACT_APP_ISM_USER_INPUT_BASE_URL: "http://localhost:3001",
+  REACT_APP_ISM_USER_INPUT_BASE_URL: "http://localhost:3001",
 }

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import {Link, useNavigate} from "react-router-dom";
-import { auth } from "./firebase";
+import { auth } from "./firebase/firebase";
 
 import {createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider} from "firebase/auth";
-import CustomButton from "./CustomButton";
+import CustomButton from "./archive/CustomButton";
 import useStore from "./store";
 
 const Signup = () => {
@@ -36,7 +36,7 @@ const Signup = () => {
             // Save JWT in Zustand store
             useStore.setState({ jwtToken });
 
-            navigate('/studio');
+            navigate('/studio2');
         } catch (error) {
             console.error('Error signing in with Google:', error);
         }
