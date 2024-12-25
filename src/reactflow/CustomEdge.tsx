@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import useStore from "../store";
+import {useStore} from "../store";
 import {faFilter, faPlay, faRemove} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import StateDataFilterDialog from "../archive/StateDataFilterDialog";
 import {EdgeLabelRenderer, EdgeProps, getBezierPath} from "@xyflow/react";
 
 function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
@@ -10,13 +9,12 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                                                         style = {}, markerStart,
                                                         markerEnd}: EdgeProps) {
 
-
+    const theme = useStore((state: any) => state.getCurrentTheme())
     const [isHovered, setIsHovered] = useState(false);
     const [edge, setEdge] = useState()
     const [status, setStatus] = useState('')
-    const processorStates = useStore(state => state.processorStates)
     const {workflowEdges, findWorkflowEdgeById, deleteProcessorStateWithWorkflowEdge, executeProcessorStateRoute} = useStore()
-    const {selectedEdgeId, setSelectedEdgeId} = useStore()
+    const {selectedEdgeId, setSelectedEdgeId, processorStates} = useStore()
     const isSelected = selectedEdgeId === id;
     const [isOpenStateDataFilterDialog, setIsOpenStateDataFilterDialog] = useState(false);
 
@@ -113,11 +111,6 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
 
         return "bg-purple-100"
     }
-
-    // let status_2 = "RUNNING"
-    // const t = statusColors(status_2)
-    const theme = useStore(state => state.getCurrentTheme());
-
 
     return (<>
         <svg className="w-full h-64 border border-gray-200 rounded">
@@ -236,11 +229,11 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
             </div>
         </EdgeLabelRenderer>
 
-        <StateDataFilterDialog
-            isOpen={isOpenStateDataFilterDialog}
-            setIsOpen={setIsOpenStateDataFilterDialog}
-            filterId={id}
-        />
+        {/*<StateDataFilterDialog*/}
+        {/*    isOpen={isOpenStateDataFilterDialog}*/}
+        {/*    setIsOpen={setIsOpenStateDataFilterDialog}*/}
+        {/*    filterId={id}*/}
+        {/*/>*/}
     </>);
 }
 

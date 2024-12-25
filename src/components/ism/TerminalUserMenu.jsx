@@ -7,7 +7,7 @@ import {
     Languages,
     ChevronRight
 } from 'lucide-react';
-import useStore from '../../store';
+import {useStore} from '../../store';
 
 const TerminalUserMenu = ({
                              onThemeChange,

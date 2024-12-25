@@ -1,5 +1,5 @@
 import React from 'react';
-import useStore from '../store';
+import {useStore} from '../store';
 import { Home, Settings, Users, Activity } from 'lucide-react';
 
 export const MenuTab = ({ onItemClick }) => {

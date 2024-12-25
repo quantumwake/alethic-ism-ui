@@ -1,4 +1,4 @@
-import useStore from "../../store";
+import {useStore} from "../../store";
 import React, {memo, useEffect, useRef, useState} from "react";
 import {TerminalDialog, TerminalDataTable2} from "../common";
 import {BellIcon} from "lucide-react";

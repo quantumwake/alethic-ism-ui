@@ -1,5 +1,5 @@
 import React from "react";
-import useStore from '../store';
+import {useStore} from '../store';
 import {SaveIcon} from "lucide-react";
 import {TerminalButton} from "../components/common";
 import StatePropertyTab from "./property/StatePropertyTab";

@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import BaseNode from './BaseNode';
-import useStore from "../../store";
+import {useStore} from "../../store";
 import {Download, Eraser, Pause, Play, PlayIcon, Trash2, Upload} from 'lucide-react';
 import {TerminalInfoButton} from "../../components/common";
 import TerminalDialogConfirmation from "../../components/common/TerminalDialogConfirmation";

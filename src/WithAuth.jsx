@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useStore from './store';
+import {useStore} from "./store";
 
 const withAuth = (Component) => {
     return (props) => {

@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import {Link, useNavigate} from "react-router-dom";
-import { auth } from "./firebase/firebase";
-
+import {useNavigate} from "react-router-dom";
+import {TerminalButton} from "./components/common";
 import {createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider} from "firebase/auth";
-import CustomButton from "./archive/CustomButton";
-import useStore from "./store";
+import {auth} from "./firebase/firebase";
+import {useStore} from "./store";
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -90,7 +89,8 @@ const Signup = () => {
 
                     <div className="space-y-6">
                         <div>
-                            <CustomButton
+                            <TerminalButton
+                                variant="primary"
                                 value="Sign in with Google"
                                 icon="fa-google"
                                 onClick={signupWithGoogle}

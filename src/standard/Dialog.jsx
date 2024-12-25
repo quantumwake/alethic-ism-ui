@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, GripHorizontal } from 'lucide-react';
-import useStore from "../store";
+import {useStore} from "../store";
 import ResizableWindow from "./ResizableWindow";
 
 const Dialog = ({

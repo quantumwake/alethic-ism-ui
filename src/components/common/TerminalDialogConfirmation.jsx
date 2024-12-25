@@ -3,7 +3,7 @@ import TerminalDialog from './TerminalDialog';
 import {TerminalButton} from "./TerminalButton";
 import {DeleteIcon, SaveIcon} from "lucide-react";
 import {StopIcon} from "@heroicons/react/24/outline";
-import useStore from '../../store';
+import {useStore} from '../../store';
 
 export const TerminalDialogConfirmation = ({
                                        isOpen,

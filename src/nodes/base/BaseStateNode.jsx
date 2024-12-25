@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react';
 import BaseNode from "./BaseNode";
-import useStore from "../../store";
+import {useStore} from "../../store";
 import TerminalInfoButton from "../../components/common/TerminalInfoButton";
 import {
     Upload,

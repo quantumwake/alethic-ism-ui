@@ -1,4 +1,4 @@
-import useStore from '../../store';
+import {useStore} from '../../store';
 import React from "react";
 
 export const TerminalSidebar = ({

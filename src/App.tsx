@@ -1,17 +1,11 @@
-// App.js
 import React, {useEffect} from "react";
-import {
-    createBrowserRouter,
-    RouterProvider, useLocation, useNavigationType,
-} from "react-router-dom";
+import {createBrowserRouter, RouterProvider, useLocation, useNavigationType} from "react-router-dom";
+import {ReactFlowProvider} from "@xyflow/react";
 import RootLayout from "./RootLayout";
 import Login from "./Login";
 import Signup from "./Signup";
-import useStore from "./store";
-import Studio from "./archive/Studio";
-import {ReactFlowProvider} from "@xyflow/react";
 import Layout from "./Layout";
-
+import {useStore} from "./store";
 
 const RouteLogger = () => {
     const navigationType = useNavigationType();
@@ -44,14 +38,7 @@ const router = createBrowserRouter([
                 path: "/studio",
                 element:
                     <ReactFlowProvider>
-                        <Studio/>
-                    </ReactFlowProvider>
-            },
-            {
-                path: "/studio2",
-                element:
-                    <ReactFlowProvider>
-                        <Layout />
+                        <Layout/>
                     </ReactFlowProvider>
             },
             {

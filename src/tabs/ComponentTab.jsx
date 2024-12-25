@@ -1,4 +1,4 @@
-import useStore from "../store";
+import {useStore} from "../store";
 import React, {useState} from 'react';
 import {Search,Plus} from 'lucide-react';
 import {processorStyles, processorCategories} from './processors';

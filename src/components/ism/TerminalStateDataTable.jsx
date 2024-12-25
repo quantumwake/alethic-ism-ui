@@ -1,5 +1,5 @@
 import TerminalDataTable2 from "../common/TerminalDataTable2";
-import useStore from "../../store";
+import {useStore} from "../../store";
 import {memo, useEffect, useState} from "react";
 
 const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => {

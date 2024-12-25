@@ -10,7 +10,7 @@ import {
     Hash,
     Plus,
 } from 'lucide-react';
-import useStore from "./store";
+import {useStore} from "./store";
 import uuidv4 from "./utils";
 import ResizableWindow from "./standard/ResizableWindow";
 

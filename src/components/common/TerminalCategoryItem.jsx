@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
-import useStore from '../../store';
+import {useStore} from '../../store';
 
 export const TerminalCategoryItem = ({ icon: Icon, name, tooltip, enabled, onClick }) => {
     const theme = useStore(state => state.getCurrentTheme());

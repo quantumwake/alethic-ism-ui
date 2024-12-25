@@ -1,6 +1,6 @@
 import {Search} from "lucide-react";
 import React from "react";
-import useStore from '../../store';
+import {useStore} from '../../store';
 
 export const TerminalSearchBar = ({ value, onChange }) => {
     const theme = useStore(state => state.getCurrentTheme());

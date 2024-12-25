@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Handle, Position } from "@xyflow/react";
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
-import useStore from "../../store";
+import {useStore} from "../../store";
 
 function BaseNode({ nodeId, data, type, renderHeader, renderContent, renderControls, onExecute }) {
     const theme = useStore(state => state.getCurrentTheme());

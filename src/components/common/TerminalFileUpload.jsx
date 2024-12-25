@@ -1,6 +1,6 @@
 import React, {useRef, useState} from "react";
 import { Upload } from 'lucide-react';
-import useStore from '../../store';
+import {useStore} from '../../store';
 
 const TerminalFileUpload = ({
                         accept = '*',

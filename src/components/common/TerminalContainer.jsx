@@ -1,5 +1,5 @@
 import React from 'react';
-import useStore from '../../store';
+import {useStore} from '../../store';
 
 // Base container that handles theme and effects
 export const TerminalContainer = ({ children, className = '' }) => {

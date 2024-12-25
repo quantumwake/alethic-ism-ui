@@ -1,5 +1,5 @@
 import React from "react";
-import useStore from "../../../store";
+import {useStore} from "../../../store";
 import { PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 import { TerminalInput, TerminalToggle, TerminalButton } from "../../../components/common";
 

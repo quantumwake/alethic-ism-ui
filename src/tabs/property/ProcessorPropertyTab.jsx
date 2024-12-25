@@ -1,4 +1,4 @@
-import useStore from '../../store';
+import {useStore} from '../../store';
 import React, { useState, useEffect } from 'react';
 import {TerminalDropdown, TerminalInput, TerminalLabel, TerminalTabViewSection} from "../../components/common";
 

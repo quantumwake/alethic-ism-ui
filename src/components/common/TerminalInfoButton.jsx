@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Info, Clipboard } from 'lucide-react';
-import useStore from '../../store';
+import {useStore} from '../../store';
 
 const TerminalInfoButton = ({ id, details }) => {
     const theme = useStore(state => state.getCurrentTheme());

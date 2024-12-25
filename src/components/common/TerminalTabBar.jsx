@@ -1,4 +1,4 @@
-import useStore from '../../store';
+import {useStore} from '../../store';
 import React from "react";
 import TerminalTabButton from "./TerminalTabButton";
 import {ChevronLeft, ChevronRight} from "lucide-react";

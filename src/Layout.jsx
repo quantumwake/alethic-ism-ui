@@ -6,30 +6,31 @@ import {
     Menu,
     Files,
     Settings,
-    List
+    List, FilesIcon
 } from 'lucide-react';
 import {
     TerminalTabBar,
     TerminalContainer,
     TerminalHeader,
     TerminalSidebar,
-    TerminalFooter
-}  from "./components/common";
+    TerminalFooter, TerminalTabView
+} from "./components/common";
 
 import MenuTab from "./tabs/MenuTab";
-import FileTab from "./tabs/FileTab";
 import ProjectTab from "./tabs/ProjectTab";
 import ComponentTab from "./tabs/ComponentTab";
 import PropertyTab from "./tabs/PropertyTab";
 import TerminalUserMenu from "./components/ism/TerminalUserMenu";
 
-import Studio2 from "./Studio2";
-import useStore from "./store";
+import Studio from "./Studio";
+import {useStore} from "./store";
 import TerminalSyslog from "./components/ism/TerminalSyslog";
+import TerminalTemplateEditor from "./components/ism/TerminalTemplateEditor";
+import ProjectFileTab from "./tabs/ProjectFileTab";
 
 const TAB_COMPONENTS = {
     component: ComponentTab,
-    files: FileTab,
+    files: ProjectFileTab,
     project: ProjectTab,
     property: PropertyTab,
     menu: MenuTab
@@ -50,13 +51,14 @@ const Layout = () => {
     const [isRightSidebarOpen, setRightSidebarOpen] = useState(true);
     const [activeLeftTab, setActiveLeftTab] = useState("menu");
     const [activeRightTab, setActiveRightTab] = useState("property");
-    const {setActiveTheme} = useStore()
+    const {setActiveTheme, currentWorkspace} = useStore()
     const {isSyslogOpen, setIsSyslogOpen} = useState(false)
 
     const leftTabs = [
         { id: 'menu', icon: <Menu className="w-4 h-4" /> },
+        { id: 'studio', icon: <WorkflowIcon className="w-4 h-4" /> },
         { id: 'component', icon: <LucideSquareFunction className="w-4 h-4" /> },
-        { id: 'project', icon: <WorkflowIcon className="w-4 h-4" /> },
+        { id: 'project', icon: <FilesIcon className="w-4 h-4" /> },
         { id: 'files', icon: <Files className="w-4 h-4" /> }
     ];
 
@@ -120,7 +122,32 @@ const Layout = () => {
                 />
 
                 <main className="flex-1 p-0 overflow-auto">
-                    <Studio2 />
+                    {/*{ currentWorkspace === "studio" && (*/}
+                    {/*    <Studio />*/}
+                    {/*)}*/}
+                    {/*{ currentWorkspace === "editor" && (*/}
+                    {/*    <TerminalTemplateEditor />*/}
+                    {/*)}*/}
+
+                    <TerminalTabView
+                        tabs={[
+                            {
+                                label: 'Studio',
+                                content: <Studio />,
+                                closeable: false
+                            },
+                            {
+                                label: 'Editor',
+                                content:  <TerminalTemplateEditor />,
+                                closeable: false
+                            },
+                        ]}
+                        position="bottom"
+                        onTabClose={(index) => console.log('Close tab', index)}
+                        onTabSelect={(index) => console.log('Select tab', index)}
+                    />
+
+
                     {/*<TerminalSection title="Welcome" className="h-full">*/}
                         {/*Type 'help' for available commands*/}
                         {/*<TerminalCursor />*/}
@@ -146,10 +173,7 @@ const Layout = () => {
                 />
             </div>
 
-            <TerminalFooter
-                leftContent="SYSTEM STATUS: ACTIVE"
-                rightContent="V1.0.0">
-            </TerminalFooter>
+            <TerminalFooter leftContent="SYSTEM STATUS: ACTIVE" rightContent="V1.0.0" />
         </TerminalContainer>
     );
 };

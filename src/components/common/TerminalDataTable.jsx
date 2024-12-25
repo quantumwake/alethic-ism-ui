@@ -2,7 +2,7 @@ import React, { useState, useEffect, memo } from 'react';
 import { Dialog as HeadlessDialog } from '@headlessui/react';
 import { Search as SearchIcon } from 'lucide-react';
 import TerminalInput from './TerminalInput';
-import useStore from '../../store';
+import {useStore} from '../../store';
 
 const SearchField = ({ columnKey, theme, onSearch }) => (
     <TerminalInput

@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {ChevronDown, ChevronRight} from "lucide-react";
-import useStore from '../../store';
+import {useStore} from '../../store';
 
 export const TerminalCategorySection = ({ title, children, defaultCollapsed = false }) => {
     const theme = useStore(state => state.getCurrentTheme());

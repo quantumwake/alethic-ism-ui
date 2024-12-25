@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog as HeadlessDialog } from '@headlessui/react';
 import { X } from 'lucide-react';
-import useStore from '../../store';
+import {useStore} from '../../store';
 
 export const TerminalDialog = ({
                            isOpen,

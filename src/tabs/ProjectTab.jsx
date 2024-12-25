@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import useStore from '../store';
+import {useStore} from '../store';
 import {
     Calendar,
     ChevronRight,

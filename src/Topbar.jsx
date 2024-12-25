@@ -10,7 +10,7 @@ import {
     RefreshCw,
     FileCode
 } from 'lucide-react';
-import useStore from "./store";
+import {useStore} from "./store";
 import ProjectTemplateDialog from "./ProjectTemplateDialog";
 import MonitorLogEventViewDialog from "./components/ism/TerminalSyslog";
 import NewProjectDialog from "./NewProjectDialog";

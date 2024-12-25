@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import useStore from '../../store';
+import {useStore} from '../../store';
 
 export const TerminalToggle = ({
                                    checked = false,

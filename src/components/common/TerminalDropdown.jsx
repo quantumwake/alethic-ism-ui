@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { Listbox } from '@headlessui/react';
 import { ChevronUpDownIcon } from '@heroicons/react/24/solid';
-import useStore from '../../store';
+import {useStore} from '../../store';
 
 const TerminalDropdown = ({
                               values = [],

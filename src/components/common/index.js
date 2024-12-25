@@ -18,4 +18,4 @@ export { default as TerminalDropdown } from './TerminalDropdown'
 export { default as TerminalToggle } from './TerminalToggle'
 export { default as TerminalInput } from './TerminalInput'
 export { default as TerminalLabel } from './TerminalLabel'
-export { default as TerminalTabViewToolButton } from './TerminalTabViewToolButton'
+export { default as TerminalTabView } from "./TerminalTabView"

@@ -1,6 +1,6 @@
 import React, { memo, useState } from "react";
 import {TerminalDialog, TerminalButton, TerminalFileUpload} from "../common";
-import useStore from "../../store";
+import {useStore} from "../../store";
 import { Upload, X } from 'lucide-react';
 
 function TerminalStateUploadDialog({ isOpen, setIsOpen, nodeId }) {
