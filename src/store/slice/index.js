@@ -13,5 +13,6 @@ export { default as createWorkspaceSlice } from './workspaceSlice'
 export { default as createWorkflowExtendedSlice } from './workflowExtendedSlice'
 export { default as createSessionSlice } from './sessionSlice'
 export { default as createLoggerSlice } from './loggerSlice'
+export { default as createFileSystemSlice } from './filesystemSlice'
 
 

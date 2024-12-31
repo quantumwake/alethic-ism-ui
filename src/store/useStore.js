@@ -15,7 +15,7 @@ import {
     createWorkspaceSlice,
     createWorkflowExtendedSlice,
     createSessionSlice,
-    createLoggerSlice,
+    createLoggerSlice, createFileSystemSlice,
 } from "./slice";
 
 import {authFetch} from "."
@@ -44,6 +44,7 @@ const useStore = create(
             ...createThemeSlice(set, get),
             ...createAccountSlice(set, get),
             ...createProjectSlice(set, get),
+            ...createFileSystemSlice(set, get),
             ...createStateSlice(set, get),
             ...createTemplateSlice(set, get),
             ...createProcessorSlice(set, get),

@@ -65,6 +65,7 @@ export const createTemplateSlice = (set, get) => ({
                     templates: []
                 }));
             }
+            return templates
         } catch (error) {
             console.error('Failed to fetch projects:', error);
         }

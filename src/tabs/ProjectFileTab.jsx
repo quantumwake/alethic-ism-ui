@@ -12,55 +12,24 @@ import {
     Play
 } from 'lucide-react';
 
-
-const tempFunc = (name, label, templates) => {
-    const filtered = templates.filter(t => t.template_type === name)
-    if (!filtered) {
-        return []
-    }
-
-    const children = filtered.map((t) => {
-        return {
-            id: t.template_id,
-            label: t.template_path,
-            icon: FileCode,
-            type: 'file'
-        }
-    })
-
-    return { id: name, label: label, icon: Folder, type: 'folder',  children: children }
-}
-
 export const ProjectFileTab = ({}) => {
     const theme = useStore(state => state.getCurrentTheme());
-    const {currentWorkspace, setCurrentWorkspace} = useStore()
-    const {templates, createTemplate, selectedProjectId} = useStore();
+    const {
+        currentWorkspace,
+        setCurrentWorkspace,
+        selectedProjectId,
+        projectFileSystem,
+        fetchProjectFileSystem
+    } = useStore()
+
     const [expandedFolders, setExpandedFolders] = useState(new Set(['src']));
-    const [files, setFiles] = useState([])
+    // const [files, setFiles] = useState([])
 
     useEffect(() => {
-        // TODO temporary hack
-        let temp = [{
-                id: 'src',
-                label: 'src',
-                icon: Folder,
-                type: 'folder',
-                children: [
-                    tempFunc("basic", "Basic", templates),
-                    tempFunc("mako", "Mako", templates),
-                    tempFunc("python", "Python", templates),
-                    tempFunc("golang", "Go", templates),
-                    tempFunc("sql", "SQL", templates)
-                ]
-            },
-            // { id: 'package.json', label: 'package.json', icon: FileJson, type: 'file' },
-            { id: 'README.md', label: 'README.md', icon: FileText, type: 'file' }
-        ]
-
-        setFiles(temp)
-
-    }, [templates]);
-
+        fetchProjectFileSystem(selectedProjectId).then(() => {
+            console.log(`finished loading project files: ${selectedProjectId}`)
+        })
+    }, [selectedProjectId]);
 
     const getFileIcon = (filename) => {
         if (filename.endsWith('.js') || filename.endsWith('.jsx')) return FileCode;
@@ -86,6 +55,10 @@ export const ProjectFileTab = ({}) => {
 
     const onItemClick = (item) => {
         console.debug(item)
+        if (item.callbackFn) {
+
+            // item.callbackFn(item)
+        }
         setCurrentWorkspace("editor")
     }
 
@@ -125,7 +98,7 @@ export const ProjectFileTab = ({}) => {
 
     return (
         <div className="space-y-0">
-            {files.map(item => renderItem(item))}
+            {projectFileSystem && projectFileSystem.map(item => renderItem(item))}
         </div>
     );
 };
