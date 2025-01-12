@@ -1,3 +1,4 @@
+
 export const createTemplateSlice = (set, get) => ({
     templates: [],
     getTemplate: (templateId) => {
@@ -6,26 +7,28 @@ export const createTemplateSlice = (set, get) => ({
     },
     setTemplates: (instructions) => set({ templates: instructions }),
 
-    insertOrUpdateTemplate: async (instructionTemplate) => {
+    updateTemplate: async (template) => {
         set((state) => {
             // Check if the template already exists in the state store
-            const existingIndex = state.templates.findIndex(template => template.template_id === instructionTemplate.template_id);
+            const existingIndex = state.templates.findIndex(
+                t => t.template_id === template.template_id
+            );
 
             if (existingIndex !== -1) {
                 // Update the existing template
-                const updatedTemplates = state.templates.map((template, index) =>
-                    index === existingIndex ? instructionTemplate : template
+                const updatedTemplates = state.templates.map((t, index) =>
+                    index === existingIndex ? template : t
                 );
                 return { templates: updatedTemplates };
             } else {
                 // Insert the new template
-                return { templates: [...state.templates, instructionTemplate] };
+                return { templates: [...state.templates, template] };
             }
         });
     },
 
     // manage templates (e.g. language templates, code templates, other types of templates used for instruction execution)
-    createTemplate: async (instructionTemplate) => {
+    saveTemplate: async (template) => {
         try {
             // invoke the new project api
             const response = await fetch(`${get().ISM_API_BASE_URL}/template/create`, {
@@ -34,7 +37,7 @@ export const createTemplateSlice = (set, get) => ({
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(instructionTemplate),
+                body: JSON.stringify(template),
             });
 
             // ensure the response is ok 20x
@@ -44,7 +47,7 @@ export const createTemplateSlice = (set, get) => ({
 
             // update the project state
             const newInstructionTemplate = await response.json()
-            await get().insertOrUpdateTemplate(newInstructionTemplate)
+            await get().updateTemplate(newInstructionTemplate)
             return true;
         } catch (error) {
             console.error('Failed to add project:', error);

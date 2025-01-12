@@ -6,6 +6,7 @@ export const TerminalSidebar = ({
                                     onToggle,
                                     tabContent,
                                     mainContent,
+                                    className,
                                     position = 'left',
                                     width = '96',
                                     collapsedWidth = '12'
@@ -20,6 +21,7 @@ export const TerminalSidebar = ({
             ${theme.border} 
             transition-all 
             duration-200
+            ${className}
         `}>
             {position === 'left' ? (
                 <>

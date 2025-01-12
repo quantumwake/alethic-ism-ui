@@ -68,24 +68,24 @@ const Layout = () => {
     ];
 
     const handleItemClick = (item) => {
-        // Different handling based on tab type
-        switch(activeLeftTab) {
-            case 'processors':
-                // Handle processor selection
-                console.log('Selected processor:', item);
-                // Add processor to canvas, open configuration, etc.
-                break;
-            case 'menu':
-                // Handle menu navigation
-                console.log('Selected menu item:', item);
-                // Navigate to route, open panel, etc.
-                break;
-            case 'files':
-                // Handle file selection
-                console.log('Selected file:', item);
-                // Open file, show preview, etc.
-                break;
-        }
+        // // Different handling based on tab type
+        // switch(activeLeftTab) {
+        //     case 'processors':
+        //         // Handle processor selection
+        //         console.log('Selected processor:', item);
+        //         // Add processor to canvas, open configuration, etc.
+        //         break;
+        //     case 'menu':
+        //         // Handle menu navigation
+        //         console.log('Selected menu item:', item);
+        //         // Navigate to route, open panel, etc.
+        //         break;
+        //     case 'files':
+        //         // Handle file selection
+        //         console.log('Selected file:', item);
+        //         // Open file, show preview, etc.
+        //         break;
+        // }
     };
 
     return (
@@ -106,6 +106,7 @@ const Layout = () => {
                 <TerminalSidebar position="left" isOpen={isLeftSidebarOpen} onToggle={() => setLeftSidebarOpen(!isLeftSidebarOpen)}
                     tabContent={
                         <TerminalTabBar
+                            className="w-12"
                             tabs={leftTabs}
                             activeTab={activeLeftTab}
                             onTabChange={setActiveLeftTab}
@@ -115,6 +116,7 @@ const Layout = () => {
                     }
                     mainContent={
                         <TerminalTabContent
+                            className="w-full"
                             activeTab={activeLeftTab}
                             onItemClick={handleItemClick}>
                         </TerminalTabContent>
@@ -132,15 +134,18 @@ const Layout = () => {
                     <TerminalTabView
                         tabs={[
                             {
+                                name: 'studio',
                                 label: 'Studio',
-                                content: <Studio />,
-                                closeable: false
+                                content: <Studio />, // Assuming you have Studio and TerminalTemplateEditor components
+                                closeable: false,
                             },
                             {
+                                name: 'editor',
                                 label: 'Editor',
-                                content:  <TerminalTemplateEditor />,
-                                closeable: false
+                                content: <TerminalTemplateEditor />,
+                                closeable: false,
                             },
+
                         ]}
                         position="bottom"
                         onTabClose={(index) => console.log('Close tab', index)}
@@ -154,21 +159,26 @@ const Layout = () => {
                     {/*</TerminalSection>*/}
                 </main>
 
-                <TerminalSidebar position="right" isOpen={isRightSidebarOpen} onToggle={() => setRightSidebarOpen(!isRightSidebarOpen)}
+                <TerminalSidebar className="w-96" position="right" isOpen={isRightSidebarOpen} onToggle={() => setRightSidebarOpen(!isRightSidebarOpen)}
                     tabContent={
-                        <TerminalTabBar
-                            tabs={rightTabs}
-                            activeTab={activeRightTab}
-                            onTabChange={setActiveRightTab}
-                            onToggle={() => setRightSidebarOpen(!isRightSidebarOpen)}
-                            position="right">
-                        </TerminalTabBar>
+                        <div className="flex w-12 flex-none">
+                            <TerminalTabBar
+                                className="w-12"
+                                tabs={rightTabs}
+                                activeTab={activeRightTab}
+                                onTabChange={setActiveRightTab}
+                                onToggle={() => setRightSidebarOpen(!isRightSidebarOpen)}
+                                position="right">
+                            </TerminalTabBar>
+                        </div>
                     }
                     mainContent={
-                        <TerminalTabContent
-                            activeTab={activeRightTab}
-                            onItemClick={handleItemClick}>
-                        </TerminalTabContent>
+                        <div className="flex-1  overflow-auto">
+                            <TerminalTabContent
+                                activeTab={activeRightTab}
+                                onItemClick={handleItemClick}>
+                            </TerminalTabContent>
+                        </div>
                     }
                 />
             </div>

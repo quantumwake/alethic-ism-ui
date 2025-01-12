@@ -1,40 +1,27 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useRef, useState} from 'react';
 import {
     User,
     LogOut,
     Settings,
     Palette,
     Languages,
-    ChevronRight
 } from 'lucide-react';
-import {useStore} from '../../store';
+import { useStore } from '../../store';
+import { TerminalContextMenu } from '../common/TerminalContextMenu';
 
 const TerminalUserMenu = ({
-                             onThemeChange,
-                             onLanguageChange,
-                             onAppearanceChange,
-                             onSettingsClick,
-                             onProfileClick,
-                             onLogout
-                         }) => {
+                              onThemeChange,
+                              onLanguageChange,
+                              onAppearanceChange,
+                              onSettingsClick,
+                              onProfileClick,
+                              onLogout
+                          }) => {
 
-    const [isOpen, setIsOpen] = useState(false);
-    const menuRef = useRef(null);
-    const theme = useStore(state => state.getCurrentTheme());
-    const logout = useStore(state => state.logout);
-
-    // Close menu when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
+    const containerRef = useRef(null)
+    const theme = useStore(state => state.getCurrentTheme())
+    const [isOpen, setIsOpen] = useState(false)
+    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
     const menuItems = [
         {
             id: 'profile',
@@ -48,14 +35,9 @@ const TerminalUserMenu = ({
             icon: Palette,
             command: 'set theme',
             subItems: [
-                { id: 'matrix', label: 'Matrix', },
-                { id: 'amber', label: 'Amber', },
-                { id: 'pro', label: 'Pro', },
-                // { id: 'ibm', label: 'IBM Blue', },
-                // { id: 'minimal', label: 'Minimal', },
-                // { id: 'modern', label: 'Modern', },
-                // { id: 'terminalNoir', label: 'Terminal Noir', },
-                // { id: 'neoVintage', label: 'Neo Vintage', },
+                { id: 'matrix', label: 'Matrix' },
+                { id: 'amber', label: 'Amber' },
+                { id: 'pro', label: 'Pro' },
             ]
         },
         {
@@ -64,9 +46,9 @@ const TerminalUserMenu = ({
             icon: Languages,
             command: 'set lang',
             subItems: [
-                { id: 'en', label: 'English', },
-                { id: 'es', label: 'Español', },
-                { id: 'fr', label: 'Français', },
+                { id: 'en', label: 'English' },
+                { id: 'es', label: 'Español' },
+                { id: 'fr', label: 'Français' },
             ]
         },
         {
@@ -82,78 +64,68 @@ const TerminalUserMenu = ({
             command: 'logout',
             danger: true
         }
-    ];
-
-    const [activeSubmenu, setActiveSubmenu] = useState(null);
+    ]
 
     const handleItemClick = (item, subItem = null) => {
-        console.log(item)
-
-        if (item.subItems) {
-            setActiveSubmenu(activeSubmenu === item.id ? null : item.id);
-        }
-
         if (!subItem) {
-            return
+            return;
         }
 
         switch (item.id) {
             case 'theme':
-                onThemeChange(subItem.id)
+                onThemeChange?.(subItem.id);
+                break;
+            case 'language':
+                onLanguageChange?.(subItem.id);
                 break;
         }
     };
 
-    const renderMenuItem = (item) => {
-        const Icon = item.icon;
-        const hasSubItems = item.subItems?.length > 0;
-        const isSubmenuOpen = activeSubmenu === item.id;
+    const handleClick = (e, item) => {
+        e.preventDefault();
+        e.stopPropagation();
 
-        return (
-            <div key={item.id}>
-                <button
-                    onClick={() => handleItemClick(item)}
-                    className={`w-full text-left px-2 py-1.5 ${theme.hover} flex items-center gap-2 group
-                    ${item.danger ? theme.textAccent : theme.text}`}>
-                    <Icon className={`w-3 h-3 ${theme.icon}`} />
-                    <span className="text-xs">{item.label}</span>
-                    {hasSubItems && (
-                        <ChevronRight className={`w-3 h-3 ${theme.icon} ml-auto transform transition-transform
-                        ${isSubmenuOpen ? 'rotate-90' : ''}`}/>
-                    )}
-                </button>
+        const button = e.currentTarget;
+        const rect = button.getBoundingClientRect();
 
-                {isSubmenuOpen && item.subItems && (
-                    <div className="ml-4 border-l pl-2 space-y-1">
-                        {item.subItems.map(subItem => (
-                            <button
-                                key={subItem.id}
-                                onClick={() => handleItemClick(item, subItem)}
-                                className={`w-full text-left px-2 py-1 ${theme.hover} flex items-center gap-2`}>
-                                <span className={theme.textMuted}>{'>'}</span>
-                                {subItem.icon && <subItem.icon className={`w-3 h-3 ${theme.icon}`} />}
-                                <span className={`text-xs ${theme.text}`}>{subItem.label}</span>
-                            </button>
-                        ))}
-                    </div>
-                )}
-            </div>
-        );
+        // Get menu dimensions
+        const menuWidth = containerRef.current ? containerRef.current.offsetWidth : 200; // fallback width
+        const menuHeight = containerRef.current ? containerRef.current.offsetHeight : 150; // fallback height
+
+        // Calculate available space
+        const spaceRight = window.innerWidth - rect.right;
+        const spaceBottom = window.innerHeight - rect.bottom;
+
+        // Determine position
+        let x = rect.left;
+        let y = rect.bottom;
+
+        // Adjust horizontal position if needed
+        if (spaceRight < menuWidth && rect.left > menuWidth) {
+            x = rect.right - menuWidth;
+        }
+
+        // Adjust vertical position if needed
+        if (spaceBottom < menuHeight && rect.top > menuHeight) {
+            y = rect.top - menuHeight;
+        }
+
+        setMenuPosition({ x, y });
+        setIsOpen(true);
     };
 
     return (
-        <div ref={menuRef} className="relative">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
+        <div>
+            <button onClick={handleClick}
                 className={`p-1 rounded ${theme.hover} flex items-center gap-2`}>
-                <User className={`w-4 h-4 ${theme.icon}`} />
+                <User className={`w-4 h-4 ${theme.icon}`}/>
             </button>
 
-            {isOpen && (
-                <div className={`absolute right-0 top-full mt-1 w-48 border ${theme.border} ${theme.bg} rounded shadow-lg overflow-hidden z-50`}>
-                    {menuItems.map(renderMenuItem)}
-                </div>
-            )}
+            <TerminalContextMenu menuRef={containerRef} isOpen={isOpen} setIsOpen={setIsOpen}
+                menuItems={menuItems}
+                menuPosition={menuPosition}
+                onItemClick={handleItemClick}
+            />
         </div>
     );
 };

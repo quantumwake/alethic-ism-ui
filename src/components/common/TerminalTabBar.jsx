@@ -9,17 +9,13 @@ export const TerminalTabBar = ({
                                    onTabChange,
                                    onToggle,
                                    position = 'left',
-                                   width = '12'
+                                   className = 'w-12'
                                }) => {
     const theme = useStore(state => state.getCurrentTheme());
 
     return (
         <div className={`
-            w-${width} 
-            flex 
-            flex-col 
-            py-2 
-            gap-1 
+            flex flex-col py-2 gap-1 ${className} 
             ${position === 'left' ? 'border-r' : 'border-l'}
             ${theme.border}
         `}>

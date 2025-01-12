@@ -35,7 +35,7 @@ const Signup = () => {
             // Save JWT in Zustand store
             useStore.setState({ jwtToken });
 
-            navigate('/studio2');
+            navigate('/home');
         } catch (error) {
             console.error('Error signing in with Google:', error);
         }
@@ -62,7 +62,7 @@ const Signup = () => {
             };
 
             await createUserProfile(userDetails)
-            navigate('/designer')
+            navigate('/home')
         } catch {
             setNotice("Sorry, something went wrong. Please try again.");
         }

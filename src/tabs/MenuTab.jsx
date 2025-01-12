@@ -17,11 +17,7 @@ export const MenuTab = ({ onItemClick }) => {
             {menuItems.map(item => {
                 const Icon = item.icon;
                 return (
-                    <button
-                        key={item.id}
-                        onClick={() => onItemClick?.(item)}
-                        className={`w-full text-left px-3 py-2 ${theme.hover} flex items-center gap-2`}
-                    >
+                    <button key={item.id} onClick={() => onItemClick?.(item)} className={`w-full text-left px-3 py-2 ${theme.hover} flex items-center gap-2`}>
                         <span className={theme.textAccent}>$</span>
                         <Icon className={`w-4 h-4 ${theme.icon}`} />
                         <span className={theme.text}>{item.label}</span>

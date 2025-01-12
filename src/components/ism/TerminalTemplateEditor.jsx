@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, {useRef, useEffect} from 'react';
 import { Editor } from "@monaco-editor/react";
-import { Search } from 'lucide-react';
+import {BugIcon, DeleteIcon, SaveIcon, TestTubeIcon, Trash2Icon} from 'lucide-react';
 import {useStore} from '../../store';
-import TerminalInput from '../common/TerminalInput';
-import TerminalDropdown from '../common/TerminalDropdown';
+
+import {TerminalButton} from "../../components/common";
 
 const templateTypes = [
     { id: 'mako', label: 'Mako' },
@@ -15,50 +15,100 @@ const templateTypes = [
 const TerminalTemplateEditor = () => {
     const theme = useStore(state => state.getCurrentTheme());
 
-    const [templateId, setTemplateId] = useState('');
-    const [templatePath, setTemplatePath] = useState('');
-    const [templateType, setTemplateType] = useState('');
-    const [templateContent, setTemplateContent] = useState('');
-    const {createTemplate, selectedProjectId } = useStore();
+    const {selectedFile, setSelectedFileContent, saveFile} = useStore()
     const editorRef = useRef(null);
 
-    // const handleTypeSelect = (selected) => {
-    //     setTemplateType(selected.id);
-    // };
+    useEffect(() => {
+        if (!selectedFile) {
+            console.warn("selected file changed but no file selected")
+        }
+    }, [selectedFile]);
 
-    const handleSave = () => {
-        if (!templatePath || !templateType || !templateContent) return;
-        const newTemplate = {
-            template_id: templateId,
-            template_path: templatePath,
-            template_type: templateType,
-            template_content: templateContent,
-            project_id: selectedProjectId
-        };
+    const saveFileClicked = async() => {
+        await saveFile()
+    }
 
-        createTemplate(newTemplate).then(() => {
-            setTemplateId('');
-            setTemplatePath('');
-            setTemplateContent('');
-        });
-    };
+    const testFileClicked = async() => {
+
+    }
+
+    const deleteFileClicked = async() => {
+
+    }
+
+    if (!selectedFile) return <></>
 
     return (
-        <div className="flex h-full w-full">
+        <div className="relative flex h-full w-full p-1 bg-emerald-950">
+
+            <div className="z-50 absolute top-2 right-6 flex gap-4">
+                {/* Floating Save Button */}
+                <TerminalButton onClick={saveFileClicked} variant="primary">
+                    <SaveIcon className="w-4 h-4"/>
+                </TerminalButton>
+
+                {/* Floating Test Validation Button */}
+                <TerminalButton onClick={testFileClicked} variant="primary">
+                    <BugIcon className="w-4 h-4"/>
+                </TerminalButton>
+
+                {/* Floating Delete Button */}
+                <TerminalButton onClick={deleteFileClicked} variant="primary">
+                    <Trash2Icon className="w-4 h-4"/>
+                </TerminalButton>
+
+            </div>
+            {/*// className="z-50 absolute top-2 right-6 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600"*/}
+
+            {/* Monaco Editor */}
             <Editor
+                theme="vs-dark"
                 defaultLanguage="python"
-                value={templateContent}
-                onChange={setTemplateContent}
+                value={selectedFile.content}
+                onChange={setSelectedFileContent}
                 onMount={(editor) => {
                     editorRef.current = editor;
                     editor.focus();
                 }}
                 options={{
                     lineNumbers: 'on',
-                    minimap: { enabled: false },
-                    scrollBeyondLastLine: false
-                }}
-            />
+                    minimap: {
+                        enabled: false
+                    },
+                    scrollBeyondLastLine: true,
+                    fontSize: 14,
+                    // fontFamily: "'Fira Code', 'Consolas', monospace",
+                    fontLigatures: true,
+                    renderLineHighlight: 'all',
+                    cursorStyle: 'line',
+                    automaticLayout: true,
+                    padding: {
+                        top: 10,
+                        bottom: 10
+                    },
+                    // rulers: [],
+                    // bracketPairColorization: {
+                    //     enabled: true
+                    // },
+                    scrollbar: {
+                        vertical: 'visible',
+                        horizontal: 'visible',
+                        verticalScrollbarSize: 12,
+                        horizontalScrollbarSize: 12
+                    },
+                    suggest: {
+                        showMethods: true,
+                        showFunctions: true,
+                        showConstructors: true,
+                        showDeprecated: false,
+                        matchOnWordStartOnly: false
+                    },
+                    wordWrap: 'off',
+                    formatOnPaste: true,
+                    formatOnType: true
+                }
+            }
+        />
         </div>
     );
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import {useStore} from '../store';
-import {SaveIcon} from "lucide-react";
+import {RefreshCcwIcon, SaveIcon} from "lucide-react";
 import {TerminalButton} from "../components/common";
 import StatePropertyTab from "./property/StatePropertyTab";
 import ProcessorPropertyTab from "./property/ProcessorPropertyTab";
@@ -24,30 +24,25 @@ const PropertyTab = () => {
         }
     }
 
-    return (<div className="flex flex-col w-full">
-            {/* toolbar */}
-            <div className={`${theme.font} ${theme.bg} ${theme.border} p-1.5 border-b-4`}>
-                <TerminalButton
-                    variant="secondary"
-                    // size="large"
-                    children={<span>Save</span>}
-                    onClick={handleSave}
-                    icon={<SaveIcon className="w-4 h-4"/>}
-                />
-            </div>
+    return (<div className={`relative flex-grow h-screen flex w-full ${theme.bg}`}>
+                <div className="z-50 absolute top-2 right-6 flex gap-4">
+                    <TerminalButton onClick={handleSave} variant="primary">
+                        <SaveIcon className="w-4 h-h"/>
+                    </TerminalButton>
+                </div>
 
-            {/* properties */}
-            <div className={`${theme.font} ${theme.bg} ${theme.border} overflow-y-auto`}>
-                {selectedNode !== null && (<>
-                    {selectedNode.type === "state" && (
-                        <StatePropertyTab />
-                    )}
-                    {selectedNode.type.startsWith("processor") && (
-                        <ProcessorPropertyTab />
-                    )}
-                </>)}
-            </div>
-    </div>)
+                {/* properties */}
+                <div className={`${theme.font} ${theme.border} w-full overflow-y-auto`}>
+                    {selectedNode !== null && (<>
+                        {selectedNode.type === "state" && (
+                            <StatePropertyTab/>
+                        )}
+                        {selectedNode.type.startsWith("processor") && (
+                            <ProcessorPropertyTab/>
+                        )}
+                    </>)}
+                </div>
+            </div>)
 }
 
 export default PropertyTab

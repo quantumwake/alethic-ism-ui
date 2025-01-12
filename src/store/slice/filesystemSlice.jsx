@@ -1,63 +1,97 @@
-import {FileCode, FileText, Folder} from "lucide-react";
-
-const tempFunc = (name, label, templates, callbackFn) => {
-    const filtered = templates.filter(t => t.template_type === name)
-    if (!filtered) {
-        return []
-    }
-
-    const children = filtered.map((t) => {
-        return {
-            id: t.template_id,
-            label: t.template_path,
-            icon: FileCode,
-            type: 'file',
-            callbackFn: callbackFn
-        }
-    })
-
-    return { id: name, label: label, icon: Folder, type: 'folder',  children: children }
-}
+import {FileTemplate, Directory} from "../model/file";
+import {InstructionTemplate} from "../model/template";
 
 export const createFileSystemSlice = (set, get) => ({
-    selectedFileId: null,
-    setSelectedFileId: (userId) => set({ selectedFileId: userId }),
-    projectFileSystem: [],
-    setProjectFileSystem: (projectFileSystem) => set({projectFileSystem: projectFileSystem}),
+    projectFiles: [],
+    selectedFile: null,
 
-    fetchProjectFileTemplate: async (projectId) => {
-        console.debug("hello world")
+    setProjectFiles: (projectFiles) => set({projectFiles: projectFiles}),
+    setSelectedFile: (selectedFile) => set({selectedFile: selectedFile}),
+
+    setSelectedFileContent: (content) => {
+        if (!get().selectedFile) {
+            return
+        }
+        get().selectedFile.content = content
+    },
+    saveFile: async() => {
+        const file = get().selectedFile
+        if (!file) {
+            console.error('unable to save incomplete and or undefined file')
+            return
+        }
+
+        const projectId = get().selectedProjectId
+        if (file instanceof FileTemplate) {
+            const template = new InstructionTemplate(projectId, file)
+            await get().saveTemplate(template)
+            console.debug("saving instruction template")
+        } else {
+            throw new Error("invalid file type")
+        }
+    },
+
+
+    buildFileStructure: (name, label, templates) => {
+        const filtered = templates.filter(t => t.template_type === name)
+        if (!filtered) {
+            return []
+        }
+
+        const children = filtered.map(t => new FileTemplate(t));
+        return new Directory(name, name, children)
+    },
+
+    buildFileTemplates: async () => {
+        let children = []
+        const projectId = get().selectedProjectId
+        const bfs = get().buildFileStructure
+        const templates = await get().fetchTemplates(projectId)
+        if (templates) {
+            children = [
+                bfs("basic", "Basic", templates),
+                bfs("mako", "Mako", templates),
+                bfs("python", "Python", templates),
+                bfs("golang", "Go", templates),
+                bfs("sql", "SQL", templates)
+            ]
+        }
+        return children
+    },
+
+    createProjectFile: (name, type) => {
+        new InstructionTemplate(
+            get().selectedProjectId,
+            new FileTemplate({
+                    id: null,
+                    name: name,
+                    content: "start here"
+                }
+            )
+        )
+        const file = {
+            template_id: null,
+            template_content: "<blank>",
+            template_type: type,
+            template_path: name
+
+        }
+        get().projectFiles.push(file)
     },
 
     // fetch project files
     // TODO this is temporarily hacked together to return a list of templates associated to the project
-    fetchProjectFileSystem: async (projectId) => {
-        let children = []
-        if (projectId) {
-            const templates = await get().fetchTemplates(projectId)
-            if (templates) {
-                children = [
-                    tempFunc("basic", "Basic", templates),
-                    tempFunc("mako", "Mako", templates),
-                    tempFunc("python", "Python", templates),
-                    tempFunc("golang", "Go", templates),
-                    tempFunc("sql", "SQL", templates)
-                ]
-            }
-        }
+    fetchProjectFiles: async () => {
+        const files = await get().buildFileTemplates()
+        const root = new Directory(
+            "src",
+            "src",
+            files
+        )
+        // { id: 'README.md', label: 'README.md', icon: FileText, type: 'file' }
 
-        // TODO temporary hack until we build a remote file system api for projects
-        const fs = [
-            {
-                id: 'src',
-                label: 'src',
-                icon: Folder,
-                type: 'folder',
-                children: children
-            },
-            { id: 'README.md', label: 'README.md', icon: FileText, type: 'file' }
-        ]
-        get().setProjectFileSystem(fs)
+        const fs = [root]
+        get().setProjectFiles(fs)
     },
 })
 

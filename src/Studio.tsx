@@ -1,5 +1,5 @@
 import './output.css';
-import React, {DragEvent, useCallback, useState} from 'react';
+import React, {DragEvent, ReactElement, useCallback, useState} from 'react';
 import '@xyflow/react/dist/style.css';
 
 import {Background, EdgeTypes, NodeMouseHandler, OnConnect, ReactFlow, useReactFlow} from '@xyflow/react';
@@ -22,6 +22,9 @@ import useEdgesStateSynced from "./useEdgesStateSynced";
 import CustomConnectionLine from "./reactflow/CustomConnectionLine";
 import CustomEdge from "./reactflow/CustomEdge";
 import WithAuth from "./WithAuth";
+import {TerminalButton} from "./components/common";
+
+import {BugIcon, RefreshCcwIcon, SaveIcon, Trash2Icon} from "lucide-react";
 
 const nodeTypes = {
     state: StateNode,
@@ -34,7 +37,6 @@ const nodeTypes = {
     processor_mistral: ProcessorNodeMistral,
     processor_state_coalescer: ProcessorNodeStateCoalescer,
     processor_datasource_sql: ProcessorNodeSQL,
-    // processor_user_input: FunctionNodeUserInteraction,
     trainer: TrainerNode,
 };
 
@@ -121,28 +123,39 @@ const Studio = () => {
         console.log(value)
     }
 
+    const saveRefreshClicked = async() => {
+        console.log("hello world")
+    }
+
   return (
-      <div className="flex-grow h-screen">
+      <div className="relative flex-grow h-screen bg-[#1e1e1e] flex w-full">
+
+          <div className="z-50 absolute top-2 right-6 flex gap-4">
+              <TerminalButton onClick={saveRefreshClicked} variant="primary">
+                  <RefreshCcwIcon className="w-4 h-h" />
+              </TerminalButton>
+          </div>
+
           {selectedProjectId !== null && (
-          <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodeClick={onNodeClick}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              onInit={onInit}
-              onDrop={onDrop}
-              onDragOver={onDragOver}
-              fitView
-              attributionPosition="top-right"
-              connectionLineComponent={CustomConnectionLine}
-              proOptions={proOptions}
-              color="black"
-              edgeTypes={edgeTypes}
-              nodeTypes={nodeTypes}>
-              <Background color="#abab" gap={12}/>
-          </ReactFlow>
+              <ReactFlow
+                  nodes={nodes}
+                  edges={edges}
+                  onNodeClick={onNodeClick}
+                  onNodesChange={onNodesChange}
+                  onEdgesChange={onEdgesChange}
+                  onConnect={onConnect}
+                  onInit={onInit}
+                  onDrop={onDrop}
+                  onDragOver={onDragOver}
+                  fitView
+                  attributionPosition="top-right"
+                  connectionLineComponent={CustomConnectionLine}
+                  proOptions={proOptions}
+                  color="white"
+                  edgeTypes={edgeTypes}
+                  nodeTypes={nodeTypes}>
+                  <Background color="#ffffff" gap={32}/>
+              </ReactFlow>
           )}
       </div>
   );

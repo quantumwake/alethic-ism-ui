@@ -24,7 +24,7 @@ const TerminalTabViewSection = ({title, items, sub = false}) => {
     };
 
     return (<>
-        <div className={`border-0 ${theme.border} ${sectionStyles.wrapper} flex flex-col`}>
+        <div className={`border-0 ${theme.border} ${sectionStyles.wrapper} w-full flex flex-col`}>
             {/* collapse button */}
             <button onClick={() => setIsCollapsed(prevState => !prevState)} className={sectionStyles.header}>
                 <div className="flex items-center gap-1.5">

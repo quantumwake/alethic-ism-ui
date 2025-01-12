@@ -35,7 +35,7 @@ const router = createBrowserRouter([
         // loader: () => ({}),
         children: [
             {
-                path: "/studio",
+                path: "/home",
                 element:
                     <ReactFlowProvider>
                         <Layout/>

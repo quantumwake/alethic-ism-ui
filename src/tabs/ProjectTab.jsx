@@ -20,7 +20,8 @@ const ProjectTab = () => {
         fetchWorkflowEdges,
         fetchTemplates,
         fetchProviders,
-        setSelectedProjectId
+        setSelectedProjectId,
+        setCurrentWorkspace,
     } = useStore();
 
     const [expandedGroups, setExpandedGroups] = useState(new Set(['recent']));
@@ -28,7 +29,9 @@ const ProjectTab = () => {
 
     useEffect(() => {
         if (jwtToken) {
-            fetchProjects(userId);
+            fetchProjects(userId).then(r => {
+                console.debug(`fetched all projects for user ${userId}`)
+            });
         }
     }, [jwtToken, userId, fetchProjects]);
 
@@ -39,6 +42,7 @@ const ProjectTab = () => {
         await fetchTemplates(projectId);
         await fetchProviders();
         setSelectedProjectId(projectId);
+        setCurrentWorkspace("studio")
     };
 
     const groupProjectsByTime = (projects) => {

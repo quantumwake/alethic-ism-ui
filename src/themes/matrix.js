@@ -21,6 +21,9 @@ export const matrix= {
     },
     border: 'border-green-900',
     hover: 'hover:bg-green-900 hover:text-amber-300',
+    files: {
+        select: 'bg-green-900 text-amber-300',
+    },
     input: input,
     icon: 'text-green-500',
     font: 'font-["IBM_Plex_Mono"]',
