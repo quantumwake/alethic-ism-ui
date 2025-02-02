@@ -1,4 +1,4 @@
-import themes from "./themes"
+import themes from "../../themes"
 import React, { useState, useRef, useEffect, memo } from 'react';
 import {
     GripHorizontal,
@@ -10,9 +10,10 @@ import {
     Hash,
     Plus,
 } from 'lucide-react';
-import {useStore} from "./store";
-import uuidv4 from "./utils";
-import ResizableWindow from "./standard/ResizableWindow";
+import {useStore} from "../../store";
+import uuidv4 from "../../utils";
+import ResizableWindow from "../../standard/ResizableWindow";
+import {TerminalButton, TerminalInput} from "../common";
 
 const InfoRow = ({ label, value, onClear, onNew, theme }) => (
     <div className="flex items-center gap-2 text-xs">
@@ -41,7 +42,7 @@ const Message = ({ message, index, theme }) => (
     </div>
 );
 
-const ChannelObserver = () => {
+const TerminalStreamDebug = () => {
     const [position, setPosition] = useState({x: 20, y: 20});
     const [isDragging, setIsDragging] = useState(false);
     const [dragOffset, setDragOffset] = useState({x: 0, y: 0});
@@ -313,18 +314,18 @@ const ChannelObserver = () => {
                             <InfoRow label="Subscriber" value={userId} theme={theme}/>
 
                             <div className="flex items-center gap-1.5 pt-1">
-                                <button
+                                <TerminalButton
                                     onClick={newSession}
                                     className={`flex items-center gap-1 px-2 py-1 text-xs ${theme.border} ${theme.hover} rounded-sm`}>
                                     <Plus className="w-3 h-3"/>
                                     <span>New Session</span>
-                                </button>
-                                <button
+                                </TerminalButton>
+                                <TerminalButton
                                     onClick={disconnect}
                                     className={`flex items-center gap-1 px-2 py-1 text-xs ${theme.border} ${theme.hover} rounded-sm ${theme.error}`}>
                                     <Power className="w-3 h-3"/>
                                     <span>Disconnect</span>
-                                </button>
+                                </TerminalButton>
                             </div>
                         </div>
                     </div>
@@ -349,11 +350,17 @@ const ChannelObserver = () => {
                         </div>
                     </div>
 
-                    <form onSubmit={sendMessage} className="flex p-1.5 gap-1">
-                        <input type="text" value={messageText}
-                               onChange={(e) => setMessageText(e.target.value)}
-                               className={`flex-1 px-2 py-1 text-xs ${theme.text} ${theme.input} rounded-sm focus:outline-none focus:ring-1`}
-                               placeholder="Enter message..."/>
+                    <form onSubmit={sendMessage} className="flex w-full p-1.5 gap-1">
+                        {/*<input type="text" value={messageText}*/}
+                        {/*       onChange={(e) => setMessageText(e.target.value)}*/}
+                        {/*       className={`flex-1 px-2 py-1 text-xs ${theme.text} ${theme.input} rounded-sm focus:outline-none focus:ring-1`}*/}
+                        {/*       placeholder="Enter message..."/>*/}
+                        <TerminalInput onChange={(e) => setMessageText(e.target.value)}
+                                   className={`flex-1 px-2 py-1 text-xs ${theme.text} ${theme.input} rounded-sm focus:outline-none focus:ring-1`}
+                                   placeholder="Enter message..."
+                                   icon={<Send className={`w-3 h-3 ${theme.textAccent}`}/>}
+                        />
+
                         <button type="submit" className={`p-1 ${theme.hover} ${theme.border} rounded-sm`}>
                             <Send className={`w-3 h-3 ${theme.textAccent}`}/>
                         </button>
@@ -364,4 +371,4 @@ const ChannelObserver = () => {
     )
 }
 
-export default memo(ChannelObserver);
+export default memo(TerminalStreamDebug);

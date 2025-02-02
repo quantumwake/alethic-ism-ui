@@ -9,6 +9,7 @@ export const TerminalInput = ({
                                   name,
                                   value,
                                   onChange,
+                                  onKeyDown,
                                   onFocus,
                                   onBlur,
                                   placeholder = '',
@@ -49,6 +50,7 @@ export const TerminalInput = ({
                 name={name}
                 value={value}
                 onChange={onChange}
+                onKeyDown={onKeyDown}
                 onFocus={onFocus}
                 onBlur={onBlur}
                 disabled={disabled}

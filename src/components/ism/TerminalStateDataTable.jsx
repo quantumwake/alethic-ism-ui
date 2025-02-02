@@ -5,26 +5,25 @@ import {memo, useEffect, useState} from "react";
 const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => {
     const theme = useStore(state => state.getCurrentTheme());
     const {fetchState} = useStore();
-    const [data, setData] = useState(null);
+    const [table, setTable] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const getData = async () => {
-            // setLoading(true);
-            setError(null);
+        if (!isOpen) {
+            return;
+        }
+
+        const fetchData = async () => {
             try {
                 const result = await fetchState(nodeId, true, false);
-                setData(result);
+                setTable(result);
             } catch (error) {
                 setError(error.message);
-            } finally {
-                // setLoading(false);
             }
         };
-        if (isOpen) getData().then(r => {
-            console.debug("fetch state data completed")
-        });
+
+        fetchData().then(r => console.debug("completed fetch state data"));
     }, [isOpen, nodeId, fetchState]);
 
     if (loading) {
@@ -39,7 +38,7 @@ const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => 
         <TerminalDataTable2
             isOpen={isOpen}
             onClose={onClose}
-            data={data}
+            table={table}
             className={className}
         />
     );

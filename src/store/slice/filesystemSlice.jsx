@@ -1,7 +1,6 @@
-import {FileTemplate, Directory} from "../model/file";
-import {InstructionTemplate} from "../model/template";
+import {Directory, FileTemplate, InstructionTemplate} from "../model";
 
-export const createFileSystemSlice = (set, get) => ({
+export const useFileSystemSlice = (set, get) => ({
     projectFiles: [],
     selectedFile: null,
 
@@ -14,7 +13,30 @@ export const createFileSystemSlice = (set, get) => ({
         }
         get().selectedFile.content = content
     },
-    saveFile: async() => {
+    saveSelectedFile: async() => {
+        const file = get().selectedFile
+        return get().saveFile(file)
+    },
+    saveFile: async(file) => {
+        if (!file) {
+            console.error('unable to save incomplete and or undefined file')
+            return
+        }
+
+        const projectId = get().selectedProjectId
+        if (file instanceof FileTemplate) {
+            let template = new InstructionTemplate(projectId, file)
+            template = await get().saveTemplate(template)
+            console.debug(`saved instruction template ${template}`)
+
+            // add the newly created template, need to refresh the file tree
+            const files = await get().buildFileTemplates(get().templates)
+            await get().buildAndSetProjectFileStructure(files)
+        } else {
+            throw new Error("invalid file type")
+        }
+    },
+    renameSelectedFile: async(new_name) => {
         const file = get().selectedFile
         if (!file) {
             console.error('unable to save incomplete and or undefined file')
@@ -23,30 +45,35 @@ export const createFileSystemSlice = (set, get) => ({
 
         const projectId = get().selectedProjectId
         if (file instanceof FileTemplate) {
-            const template = new InstructionTemplate(projectId, file)
-            await get().saveTemplate(template)
-            console.debug("saving instruction template")
+            let template = new InstructionTemplate(projectId, file)
+            template = await get().renameTemplate(template, new_name)
+            console.debug(`renamed instruction template ${template}`)
+
+            // add the newly created template, need to refresh the file tree
+            const files = await get().buildFileTemplates(get().templates)
+            await get().buildAndSetProjectFileStructure(files)
         } else {
             throw new Error("invalid file type")
         }
     },
-
-
-    buildFileStructure: (name, label, templates) => {
+    buildFileTemplateStructure: (name, label, templates) => {
+        if (!templates) return []
         const filtered = templates.filter(t => t.template_type === name)
-        if (!filtered) {
-            return []
-        }
+        if (!filtered) return []
 
         const children = filtered.map(t => new FileTemplate(t));
         return new Directory(name, name, children)
     },
-
+    fetchAndBuildFileTemplates: async() => {
+        const projectId = get().selectedProjectId
+        if (!projectId) return null   // return immediate empty files if no project is selected
+        const templates = await get().fetchTemplates(projectId)
+        return await get().buildFileTemplates(templates)
+    },
     buildFileTemplates: async () => {
         let children = []
-        const projectId = get().selectedProjectId
-        const bfs = get().buildFileStructure
-        const templates = await get().fetchTemplates(projectId)
+        const bfs = get().buildFileTemplateStructure
+        const templates = get().templates
         if (templates) {
             children = [
                 bfs("basic", "Basic", templates),
@@ -59,30 +86,35 @@ export const createFileSystemSlice = (set, get) => ({
         return children
     },
 
-    createProjectFile: (name, type) => {
-        new InstructionTemplate(
-            get().selectedProjectId,
-            new FileTemplate({
-                    id: null,
-                    name: name,
-                    content: "start here"
-                }
-            )
-        )
-        const file = {
-            template_id: null,
-            template_content: "<blank>",
-            template_type: type,
-            template_path: name
-
-        }
-        get().projectFiles.push(file)
-    },
+    // createProjectFile: (name, type) => {
+    //     const templateFile = new InstructionTemplate(
+    //         get().selectedProjectId,
+    //         new FileTemplate({
+    //                 id: null,
+    //                 name: name,
+    //                 content: ""
+    //             }
+    //         )
+    //     )
+    //
+    //
+    //     const file = {
+    //         template_id: null,
+    //         template_content: "<blank>",
+    //         template_type: type,
+    //         template_path: name
+    //
+    //     }
+    //     get().projectFiles.push(file)
+    // },
 
     // fetch project files
     // TODO this is temporarily hacked together to return a list of templates associated to the project
     fetchProjectFiles: async () => {
-        const files = await get().buildFileTemplates()
+        const files = await get().fetchAndBuildFileTemplates()
+        return get().buildAndSetProjectFileStructure(files)
+    },
+    buildAndSetProjectFileStructure: async (files) => {
         const root = new Directory(
             "src",
             "src",
@@ -92,8 +124,8 @@ export const createFileSystemSlice = (set, get) => ({
 
         const fs = [root]
         get().setProjectFiles(fs)
-    },
+    }
 })
 
-export default createFileSystemSlice
+export default useFileSystemSlice
 

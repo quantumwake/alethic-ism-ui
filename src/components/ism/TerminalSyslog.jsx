@@ -3,11 +3,11 @@ import React, {memo, useEffect, useRef, useState} from "react";
 import {TerminalDialog, TerminalDataTable2} from "../common";
 import {BellIcon} from "lucide-react";
 
-function TerminalSyslog({}) {
+function TerminalSyslog({routeId, buttonClass}) {
 
     // global state
     const theme = useStore(state => state.getCurrentTheme());
-    const { selectedProjectId, fetchMonitorLogEvent } = useStore();
+    const { selectedProjectId, fetchMonitorLogEvents, fetchMonitorLogEventsByRouteId} = useStore();
 
     // local states
     const menuRef = useRef(null);
@@ -22,7 +22,12 @@ function TerminalSyslog({}) {
             setLoading(true);
             setError(null);
             try {
-                const result = await fetchMonitorLogEvent(selectedProjectId);
+                let result = []
+                if (routeId) {
+                    result = await fetchMonitorLogEventsByRouteId(routeId)
+                } else {
+                    result = await fetchMonitorLogEvents(selectedProjectId);
+                }
                 setData(result);
             } catch (error) {
                 setError(error.message);
@@ -35,7 +40,7 @@ function TerminalSyslog({}) {
         if (isOpen) getData().then(() => {
             console.debug("fetched: project system event logs")
         })
-    }, [isOpen, selectedProjectId, fetchMonitorLogEvent]);
+    }, [isOpen, selectedProjectId, fetchMonitorLogEvents]);
 
     const columns = {
         log_id: { name: "Id" },
@@ -53,14 +58,14 @@ function TerminalSyslog({}) {
         <div ref={menuRef} className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`p-1 rounded ${theme.hover} flex items-center gap-2`}>
-                <BellIcon className={`w-4 h-4 ${theme.icon}`} />
+                className={buttonClass === "" ? `p-1 rounded ${theme.hover} flex items-center gap-2` : buttonClass}>
+                <BellIcon className={`w-4 h-4`} />
             </button>
 
             <TerminalDataTable2
                 isOpen={isOpen}
                 onClose={() => toggleDialog()}
-                data={data}
+                table={data}
                 columns={columns}
                 className="w-full"
             />

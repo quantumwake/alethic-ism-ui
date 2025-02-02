@@ -1,5 +1,5 @@
 // manage provider processors (e.g. openai, anthropic, python, etc..)
-export const createProcessorProviderSlice = (set, get) => ({
+export const useProcessorProviderSlice = (set, get) => ({
     providers: [],
     fetchProviders: async () => {
         // const projectId = get().selectedProjectId
@@ -24,5 +24,5 @@ export const createProcessorProviderSlice = (set, get) => ({
     },
 });
 
-export default createProcessorProviderSlice
+export default useProcessorProviderSlice
 

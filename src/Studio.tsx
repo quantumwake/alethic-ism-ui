@@ -1,5 +1,5 @@
 import './output.css';
-import React, {DragEvent, ReactElement, useCallback, useState} from 'react';
+import React, {DragEvent, ReactElement, useCallback, useEffect, useRef, useState} from 'react';
 import '@xyflow/react/dist/style.css';
 
 import {Background, EdgeTypes, NodeMouseHandler, OnConnect, ReactFlow, useReactFlow} from '@xyflow/react';
@@ -24,7 +24,8 @@ import CustomEdge from "./reactflow/CustomEdge";
 import WithAuth from "./WithAuth";
 import {TerminalButton} from "./components/common";
 
-import {BugIcon, RefreshCcwIcon, SaveIcon, Trash2Icon} from "lucide-react";
+import {BugOffIcon, RefreshCcwIcon} from "lucide-react";
+import TerminalStreamDebug from "./components/ism/TerminalStreamDebug";
 
 const nodeTypes = {
     state: StateNode,
@@ -51,8 +52,7 @@ const Studio = () => {
     // const theme = useStore((state: any) => state.getCurrentTheme().getCurrentTheme());
     const {selectedProjectId, setSelectedNode, getNode} = useStore()
     const {workflowEdges, createStateWithWorkflowNode, createTrainerWithWorkflowNode, createProcessorWithWorkflowNode, createProcessorStateWithWorkflowEdge} = useStore()
-
-    const [isConfigViewOpen, setIsConfigViewOpen] = useState(false)
+    const {userUsageReport, fetchProjectProcessorStates, fetchUsageReportGroupByUser} = useStore()
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
     const [nodes, setNodes, onNodesChange] = useNodesStateSynced();
     const [edges, setEdges, onEdgesChange] = useEdgesStateSynced();
@@ -119,20 +119,48 @@ const Studio = () => {
         event.dataTransfer.dropEffect = 'move';
     };
 
-    const callback = (value: any) => {
-        console.log(value)
-    }
+    const {isStudioRefreshEnabled, setStudioIsRefreshEnabled} = useStore()
+    const [isStreamDebugOpen, setIsStreamDebugOpen] = useState(false);
 
-    const saveRefreshClicked = async() => {
-        console.log("hello world")
+    const toggleDebugChannelClicked = () => {
+        setIsStreamDebugOpen((prev) => !prev);
+    };
+
+    const toggleRefreshClicked = async() => {
+        const isRefreshingLast = isStudioRefreshEnabled
+        const isRefreshingUpdate = !isRefreshingLast
+        setStudioIsRefreshEnabled(isRefreshingUpdate);
+        console.log(`updated auto-refresh flag from: ${isRefreshingLast}, to: ${isRefreshingUpdate}`)
+
     }
+    const timeoutIdRef = useRef<string | number | NodeJS.Timeout>()
+
+    const refreshStudio = useCallback(() => {
+        if (!isStudioRefreshEnabled) {
+            clearTimeout(timeoutIdRef.current)
+            return
+        }
+
+        console.info('refreshing processor states store, this includes workflow node and edge status information')
+        fetchProjectProcessorStates()
+        timeoutIdRef.current = setTimeout(refreshStudio, 2000)
+    }, [isStudioRefreshEnabled])
+
+
+    useEffect(() => {
+        refreshStudio()
+    }, [isStudioRefreshEnabled, setStudioIsRefreshEnabled])
 
   return (
       <div className="relative flex-grow h-screen bg-[#1e1e1e] flex w-full">
 
           <div className="z-50 absolute top-2 right-6 flex gap-4">
-              <TerminalButton onClick={saveRefreshClicked} variant="primary">
-                  <RefreshCcwIcon className="w-4 h-h" />
+              <TerminalButton onClick={toggleRefreshClicked} variant="primary">
+                  <RefreshCcwIcon className="w-4 h-h"/>
+              </TerminalButton>
+
+              <TerminalButton onClick={toggleDebugChannelClicked} variant="primary">
+                  <BugOffIcon className="w-4 h-h"/>
               </TerminalButton>
           </div>
 
@@ -156,6 +184,15 @@ const Studio = () => {
                   nodeTypes={nodeTypes}>
                   <Background color="#ffffff" gap={32}/>
               </ReactFlow>
+          )}
+
+          {/* Channel Debugger Floating Dialog */}
+          {isStreamDebugOpen && ( // Conditionally render based on state
+              // <div className="z-40 absolute inset-0 flex justify-center items-center bg-black bg-opacity-50">
+              //     <div className="bg-white p-4 rounded shadow-lg">
+                      <TerminalStreamDebug />
+                  // </div>
+              // </div>
           )}
       </div>
   );

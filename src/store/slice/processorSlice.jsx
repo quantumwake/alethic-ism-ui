@@ -1,4 +1,4 @@
-export const createProcessorSlice = (set, get) => ({
+export const useProcessorSlice = (set, get) => ({
     createProcessor: async (nodeId) => {
         if (!nodeId) {
             console.log('warning: no node data found')
@@ -93,4 +93,4 @@ export const createProcessorSlice = (set, get) => ({
     },
 });
 
-export default createProcessorSlice
+export default useProcessorSlice

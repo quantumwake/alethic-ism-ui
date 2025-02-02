@@ -18,6 +18,7 @@ import {
     useLoggerSlice,
     useFileSystemSlice,
     useNotificationSlice,
+    useStudioSlice,
 
 } from "./slice";
 
@@ -61,6 +62,7 @@ const useStore = create(
             ...useWorkspaceSlice(set, get),
             ...useLoggerSlice(set, get),
             ...useNotificationSlice(set, get),
+            ...useStudioSlice(set, get),
 
         }),
         {

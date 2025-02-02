@@ -1,4 +1,4 @@
-export const createWorkflowSlice = (set, get) => ({
+export const useWorkflowSlice = (set, get) => ({
     selectedNode: null,
     setSelectedNode: (node) => set({ selectedNode: node }),
 
@@ -259,5 +259,5 @@ export const createWorkflowSlice = (set, get) => ({
 
 });
 
-export default createWorkflowSlice
+export default useWorkflowSlice
 

@@ -1,4 +1,4 @@
-export const createAccountSlice = (set, get) => ({
+export const useAccountSlice = (set, get) => ({
     jwtToken: null,
 
     // Set JWT token
@@ -70,5 +70,5 @@ export const createAccountSlice = (set, get) => ({
     },
 });
 
-export default createAccountSlice
+export default useAccountSlice
 

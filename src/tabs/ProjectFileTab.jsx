@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import {PlusIcon} from "@heroicons/react/24/outline";
 import TerminalContextMenu from "../components/common/TerminalContextMenu";
+import TerminalNewFileDialog from "../components/ism/TerminalNewFileDialog";
+import TerminalFileRenameDialog from "../components/ism/TerminalFileRenameDialog";
 
 export const ProjectFileTab = ({}) => {
     const theme = useStore(state => state.getCurrentTheme());
@@ -27,11 +29,15 @@ export const ProjectFileTab = ({}) => {
     } = useStore()
 
     const [selectedItem, setSelectedItem] = useState(null)
-    const menuRef = useRef(null)
-    const [isOpen, setIsOpen] = useState(false)
     const [expandedFolders, setExpandedFolders] = useState(new Set(['src']));
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const [contextMenuItems, setContextMenuItems] = useState([])
+    const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
+    const contextMenuRef = useRef(null)
+
+    // used to display the create new file dialog
+    const [isNewFileDialogOpen, setIsNewFileDialogOpen] = useState(false)
+    const [isFileRenameDialogOpen, setIsFileRenameDialogOpen] = useState(false)
 
     useEffect(() => {
         fetchProjectFiles().then(() => {
@@ -90,7 +96,7 @@ export const ProjectFileTab = ({}) => {
         const clickY = e.clientY;
 
         setContextMenuPosition({ x: clickX, y: clickY });
-        setIsOpen(true);
+        setIsContextMenuOpen(true);
     };
 
     const handleClick = (item) => {
@@ -144,9 +150,19 @@ export const ProjectFileTab = ({}) => {
         console.debug(`item: ${item}`)
         switch (item.id) {
             case "new":
-
+                toggleNewFileDialog()
                 break
+            case "rename":
+                toggleFileRenameDialog()
         }
+    }
+
+    const toggleNewFileDialog = () => {
+        setIsNewFileDialogOpen(prevState => !prevState)
+    }
+
+    const toggleFileRenameDialog = () => {
+        setIsFileRenameDialogOpen(prevState => !prevState)
     }
 
     const renderItem = (item, depth = 0, skipRoot = false) => {
@@ -191,10 +207,17 @@ export const ProjectFileTab = ({}) => {
         <div className="space-y-0 mt-2 w-full">
             {projectFiles && projectFiles.map(item => renderItem(item, 0, true))}
 
-            <TerminalContextMenu menuRef={menuRef} isOpen={isOpen} setIsOpen={setIsOpen} menuItems={contextMenuItems}
+            <TerminalContextMenu menuRef={contextMenuRef} isOpen={isContextMenuOpen} setIsOpen={setIsContextMenuOpen} menuItems={contextMenuItems}
                 onItemClick={handleItemClick} menuPosition={contextMenuPosition}
             />
+
+            <TerminalNewFileDialog isOpen={isNewFileDialogOpen} setIsOpen={() => toggleNewFileDialog()} />
+            <TerminalFileRenameDialog isOpen={isFileRenameDialogOpen} setIsOpen={() => toggleFileRenameDialog()} />
+
+
         </div>
+
+
     );
 };
 

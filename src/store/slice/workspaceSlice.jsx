@@ -1,10 +1,6 @@
-import extendTheme from "../extendedTheme";
-
-export const createWorkspaceSlice = (set, get) => ({
-
+export const useWorkspaceSlice = (set, get) => ({
     currentWorkspace: "studio",
     setCurrentWorkspace: (currentWorkspace) => set( { currentWorkspace: currentWorkspace }),
-
 });
 
-export default createWorkspaceSlice
+export default useWorkspaceSlice

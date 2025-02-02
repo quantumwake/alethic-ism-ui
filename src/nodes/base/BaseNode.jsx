@@ -26,8 +26,7 @@ function BaseNode({ nodeId, data, type, renderHeader, renderContent, renderContr
             left: ArrowLeft,
             right: ArrowRight
         };
-        const Icon = icons[direction];
-        return Icon;
+        return icons[direction];
     };
 
 
@@ -58,7 +57,7 @@ function BaseNode({ nodeId, data, type, renderHeader, renderContent, renderContr
         const Icon = getArrowIcon(direction);
 
         return (
-            <Handle id={id} type={handle} position={position} className={`${positionClasses[position]}
+            <Handle id={id} type={handle} position={position} className={`${positionClasses[position]} hover:scale-[4] transition-transform duration-150 
                 ${clazz} border border-solid ${theme.border} w-3 h-3 rounded-2xl`}
                 style={{
                     borderColor: colors.border,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {useStore} from '../store';
 import {
     Calendar,
@@ -6,8 +6,9 @@ import {
     ChevronDown,
     Clock,
     Search,
-    File,
+    File, PencilIcon, TrashIcon, CopyIcon, LogsIcon, ShareIcon, Share2Icon, ScaleIcon, PlusSquareIcon,
 } from 'lucide-react';
+import {TerminalInput, TerminalContextMenu} from "../components/common";
 
 const ProjectTab = () => {
     const theme = useStore(state => state.getCurrentTheme());
@@ -15,6 +16,9 @@ const ProjectTab = () => {
         userId,
         jwtToken,
         projects,
+        selectedProjectId,
+        newProject,
+        saveProject,
         fetchProjects,
         fetchWorkflowNodes,
         fetchWorkflowEdges,
@@ -24,9 +28,16 @@ const ProjectTab = () => {
         setCurrentWorkspace,
     } = useStore();
 
+    const [newProjectName, setNewProjectName] = useState(null)
+
     const [expandedGroups, setExpandedGroups] = useState(new Set(['recent']));
     const [searchTerm, setSearchTerm] = useState('');
+    const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
+    const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+    const [contextMenuItems, setContextMenuItems] = useState([])
+    const contextMenuRef = useRef(null)
 
+    //
     useEffect(() => {
         if (jwtToken) {
             fetchProjects(userId).then(r => {
@@ -35,8 +46,66 @@ const ProjectTab = () => {
         }
     }, [jwtToken, userId, fetchProjects]);
 
+    // update context menus based on selected item
+    useEffect(() => {
+        // if (!selectedProjectId) {
+        //     return
+        // }
+
+        let options = []
+        // if (selectedProjectId.type === "directory") {
+            options.push({
+                id: 'new',
+                label: 'New Project',
+                icon: PlusSquareIcon
+            })
+        // } else if (selectedItem.type === "file") {
+            options.push(
+                {
+                    id: 'rename',
+                    label: 'Rename Project',
+                    icon: PencilIcon,
+                },
+                {
+                    id: 'delete',
+                    label: 'Delete Project',
+                    icon: TrashIcon,
+                    danger: true
+                },
+                {
+                    id: 'clone',
+                    label: 'Clone Project',
+                    icon: CopyIcon
+                },
+                {
+                    id: 'clone',
+                    label: 'Share Project',
+                    icon: Share2Icon
+                },
+                {
+                    id: 'clone',
+                    label: 'Publish as Component',
+                    icon: ShareIcon
+                },
+                {
+                    id: 'clone',
+                    label: 'Scale',
+                    icon: ScaleIcon
+                },
+                {
+                    id: 'clone',
+                    label: 'Event Log',
+                    icon: LogsIcon
+                }
+            )
+        // }
+
+        setContextMenuItems(options)
+    }, []);
+
     const onSelectProject = async (project) => {
         const projectId = project.project_id;
+        console.debug(`selecting project id ${projectId}`)
         await fetchWorkflowNodes(projectId);
         await fetchWorkflowEdges(projectId);
         await fetchTemplates(projectId);
@@ -44,6 +113,15 @@ const ProjectTab = () => {
         setSelectedProjectId(projectId);
         setCurrentWorkspace("studio")
     };
+
+    const handleItemClick = (item) => {
+        console.debug(`item: ${item}`)
+        switch (item.id) {
+            case "new":
+                setNewProjectName("") // this enables the terminal input for a new project
+                break
+        }
+    }
 
     const groupProjectsByTime = (projects) => {
         const now = new Date();
@@ -87,10 +165,39 @@ const ProjectTab = () => {
     };
 
     const filteredProjects = projects?.filter(project =>
-        project.project_name.toLowerCase().includes(searchTerm.toLowerCase())
+        project?.project_name?.toLowerCase().includes(searchTerm?.toLowerCase())
     ) || [];
 
-    const groupedProjects = groupProjectsByTime(filteredProjects);
+    // const groupedProjects = groupProjectsByTime(filteredProjects);
+
+    const [groupedProjects, setGroupedProjects] = useState()
+
+    useEffect(() => {
+        const grouped = groupProjectsByTime(projects)
+        setGroupedProjects(grouped)
+    }, [projects]);
+
+    const handleContextMenu = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Get the mouse coordinates from the event
+        const clickX = e.clientX;
+        const clickY = e.clientY;
+
+        setContextMenuPosition({ x: clickX, y: clickY });
+        setIsContextMenuOpen(true)
+    };
+
+    const handleNewProjectKeyDown = async(event) => {
+        if (event.key === "Enter") {
+            // create the new project
+            const project = await newProject(event.target.value)
+            await saveProject(project);
+            setNewProjectName(null)
+            // setNewProjectName(); // clear after saving
+        }
+    };
 
     const renderGroup = (title, projects, groupId) => {
         if (projects.length === 0) return null;
@@ -115,25 +222,41 @@ const ProjectTab = () => {
 
                 {isExpanded && (
                     <div className="space-y-1 py-1">
+                        {newProjectName !== null && (
+                            <div className="flex flex-col">
+                                <TerminalInput
+                                    value={newProjectName}
+                                    placeholder="enter project name"
+                                    size="small"
+                                    variant="primary"
+                                    onChange={(o) => setNewProjectName(o.value)}
+                                    onKeyDown={handleNewProjectKeyDown}
+                                />
+                            </div>
+                        )}
                         {projects.map(project => (
                             <button
                                 key={project.project_id}
                                 onClick={() => onSelectProject(project)}
+                                onContextMenu={(e) => handleContextMenu(e)}  // Add this line
                                 className={`w-full text-left px-3 py-1 ${theme.hover} flex items-center gap-2`}
                             >
                                 <File className={`w-3 h-3 ${theme.icon}`}/>
-                                <div className="flex flex-col">
-                                <span className={`text-xs ${theme.text}`}>
-                                  {project.project_name}
-                                </span>
-                                <span className={`text-xs ${theme.textMuted}`}>
-                                  {new Date(project.created_date).toLocaleDateString('en-US', {
-                                      year: 'numeric',
-                                      month: 'long',
-                                      day: 'numeric',
-                                  })}
-                                </span>
-                                </div>
+                                {project?.project_id && (
+                                    <div className="flex flex-col">
+                                        <span className={`text-xs ${theme.text}`}>
+                                          {project.project_name}
+                                        </span>
+
+                                        <span className={`text-xs ${theme.textMuted}`}>
+                                            {new Date(project.created_date).toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric',
+                                            })}
+                                        </span>
+                                    </div>
+                                )}
                             </button>
                         ))}
                     </div>
@@ -153,15 +276,26 @@ const ProjectTab = () => {
                     className={`w-full bg-transparent text-xs ${theme.text} focus:outline-none px-2`}
                     placeholder="Search projects..."
                 />
-                <Clock className={`w-3 h-3 ${theme.icon}`} />
+                <Clock className={`w-3 h-3 ${theme.icon}`}/>
             </div>
 
             <div className="flex-1 overflow-y-auto">
-                {renderGroup('Today', groupedProjects.today, 'today')}
-                {renderGroup('This Week', groupedProjects.thisWeek, 'thisWeek')}
-                {renderGroup('This Month', groupedProjects.thisMonth, 'thisMonth')}
-                {renderGroup('Older', groupedProjects.older, 'older')}
+                {groupedProjects && (
+                    <>
+                        {renderGroup('Today', groupedProjects.today, 'today')}
+                        {renderGroup('This Week', groupedProjects.thisWeek, 'thisWeek')}
+                        {renderGroup('This Month', groupedProjects.thisMonth, 'thisMonth')}
+                        {renderGroup('Older', groupedProjects.older, 'older')}
+                    </>
+                )}
             </div>
+
+            <TerminalContextMenu menuRef={contextMenuRef}
+                                 isOpen={isContextMenuOpen}
+                                 setIsOpen={setIsContextMenuOpen}
+                                 menuItems={contextMenuItems}
+                                 onItemClick={handleItemClick}
+                                 menuPosition={contextMenuPosition}/>
         </div>
     );
 };

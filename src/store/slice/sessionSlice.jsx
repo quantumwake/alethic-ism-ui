@@ -1,4 +1,4 @@
-export const createSessionSlice = (set, get) => ({
+export const useSessionSlice = (set, get) => ({
     // create a new session used to hold relevant information (mainly for chat dialogue)
     createSession: async() => {
         const { authenticatedFetch } = get();
@@ -21,5 +21,5 @@ export const createSessionSlice = (set, get) => ({
 
 });
 
-export default createSessionSlice
+export default useSessionSlice
 

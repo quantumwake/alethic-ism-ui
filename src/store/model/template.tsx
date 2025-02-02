@@ -15,3 +15,5 @@ export class InstructionTemplate {
         this.project_id = project_id
     }
 }
+
+export default InstructionTemplate

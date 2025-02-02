@@ -27,8 +27,8 @@ function TerminalStateUploadDialog({ isOpen, setIsOpen, nodeId }) {
             <div className="space-y-4">
                 <TerminalFileUpload onChange={handleFileChange} accept=".csv" icon={<Upload className={`w-4 h-4 ${theme.icon}`} />} />
                 <div className="flex justify-end gap-2">
-                    <TerminalButton variant="warning" onClick={handleClose}>Primary</TerminalButton>
-                    <TerminalButton variant="primary" onClick={handleUpload}>Primary</TerminalButton>
+                    <TerminalButton variant="primary" onClick={handleClose}>Discard</TerminalButton>
+                    <TerminalButton variant="primary" onClick={handleUpload}>Upload</TerminalButton>
                 </div>
             </div>
         </TerminalDialog>

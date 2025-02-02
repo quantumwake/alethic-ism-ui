@@ -1,4 +1,4 @@
-export const createWorkflowExtendedSlice = (set, get) => ({
+export const useWorkflowExtendedSlice = (set, get) => ({
 
 
     createProcessorWithWorkflowNode: async (nodeData) => {
@@ -79,5 +79,5 @@ export const createWorkflowExtendedSlice = (set, get) => ({
 
 });
 
-export default createWorkflowExtendedSlice
+export default useWorkflowExtendedSlice
 

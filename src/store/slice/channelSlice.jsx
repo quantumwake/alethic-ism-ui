@@ -1,4 +1,4 @@
-export const createChannelSlice = (set, get) => ({
+export const useChannelSlice = (set, get) => ({
 
     // channel selectors
     channelInputId: null,
@@ -12,5 +12,5 @@ export const createChannelSlice = (set, get) => ({
 
 });
 
-export default createChannelSlice
+export default useChannelSlice
 

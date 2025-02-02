@@ -1,5 +1,5 @@
 // DataTable.jsx
-import React, {memo, useState} from 'react';
+import React, {memo, useEffect, useState} from 'react';
 import { Dialog as HeadlessDialog } from '@headlessui/react';
 import { Search as SearchIcon } from 'lucide-react';
 import TerminalInput from './TerminalInput';
@@ -18,8 +18,14 @@ const SearchField = ({ columnKey, onSearch }) => {
     )
 }
 
-const TableHeader = ({ columns, onSearch }) => {
+const TableHeader = ({ table, onSearch, isStateFormat }) => {
     const theme = useStore(state => state.getCurrentTheme());
+    let columns = {}
+    if (isStateFormat) {
+        columns = table?.columns
+    } else {
+        columns = table?.length > 0 ? Object.keys(table[0]) : [];
+    }
 
     return (<thead>
         <tr>
@@ -40,12 +46,23 @@ const TableHeader = ({ columns, onSearch }) => {
 const TableCell = ({value, rowIndex, columnKey, isExpanded, onExpand}) => {
     const theme = useStore(state => state.getCurrentTheme());
 
+    const displayValue = (value) => {
+        const type = typeof(value)
+        switch (type) {
+            case "number":
+                return value
+            case "string":
+                return value?.slice(0, 80)
+            default:
+                return value
+        }
+    }
+
     return (
         <td className={`border-r border-dashed ${theme.border} px-2 py-2 ${theme.text}`}>
-            {(isExpanded[`${rowIndex}-${columnKey}`] || !value || value.length <= 80)
+            {(isExpanded[`${rowIndex}-${columnKey}`] || value?.length <= 80)
                 ? value
-                : (<>
-                    {value.slice(0, 80)}{' '}
+                : (<>{displayValue(value)}{' '}
                     <button onClick={() => onExpand(rowIndex, columnKey, true)}
                             className={`${theme.button.secondary} px-1 py-0.5 text-xs`}>...
                     </button>
@@ -54,22 +71,19 @@ const TableCell = ({value, rowIndex, columnKey, isExpanded, onExpand}) => {
     )
 }
 
-const TableBody = ({ data, filterData, isExpanded, onExpand }) => {
+const TableBody = ({ table, filterData, isExpanded, onExpand, isStateFormat }) => {
     const theme = useStore(state => state.getCurrentTheme());
 
-    // Helper to determine if data is in columnar format
-    const isColumnarFormat = data?.data?.values || (data?.data && data?.columns && data?.count);
-
-    if (isColumnarFormat) {
-        // Handle original columnar format
+    // handle original state column data row value format
+    if (isStateFormat && table?.data) {
         return (
-            <tbody>
-            {Array.from({ length: data.count }).map((_, rowIndex) => filterData(rowIndex) && (
+            <tbody className="">
+            {Array.from({ length: table.count }).map((_, rowIndex) => filterData(rowIndex) && (
                 <tr key={rowIndex} className={`border-b border-dashed ${theme.border} hover:${theme.button.primary}`}>
-                    {Object.keys(data.columns).map((columnKey) => (
+                    {Object.keys(table.columns).map((columnKey) => (
                         <TableCell
                             key={columnKey}
-                            value={data.data[columnKey]?.values[rowIndex] ?? null}
+                            value={table.data[columnKey]?.values[rowIndex] ?? null}
                             rowIndex={rowIndex}
                             columnKey={columnKey}
                             theme={theme}
@@ -83,61 +97,71 @@ const TableBody = ({ data, filterData, isExpanded, onExpand }) => {
         );
     }
 
-    // Handle array of objects format
-    const columns = data?.length > 0 ? Object.keys(data[0]) : [];
+    // as opposed to a set of dictionary rows composed of [{column=value, ...}].
+    if (!isStateFormat && table?.length) {
+        // Handle array of objects format
+        const columns = table?.length > 0 ? Object.keys(table[0]) : [];
+        return (
+            <tbody>
+            {table?.map((row, rowIndex) => filterData(rowIndex) && (
+                <tr key={rowIndex} className={`border-b border-dashed ${theme.border} hover:${theme.button.primary}`}>
+                    {columns.map((columnKey) => (
+                        <TableCell
+                            key={columnKey}
+                            value={row[columnKey] ?? null}
+                            rowIndex={rowIndex}
+                            columnKey={columnKey}
+                            theme={theme}
+                            isExpanded={isExpanded}
+                            onExpand={onExpand}
+                        />
+                    ))}
+                </tr>
+            ))}
+            </tbody>
+        );
+    }
 
-    return (
-        <tbody>
-        {data?.map((row, rowIndex) => filterData(rowIndex) && (
-            <tr key={rowIndex} className={`border-b border-dashed ${theme.border} hover:${theme.button.primary}`}>
-                {columns.map((columnKey) => (
-                    <TableCell
-                        key={columnKey}
-                        value={row[columnKey] ?? null}
-                        rowIndex={rowIndex}
-                        columnKey={columnKey}
-                        theme={theme}
-                        isExpanded={isExpanded}
-                        onExpand={onExpand}
-                    />
-                ))}
-            </tr>
-        ))}
-        </tbody>
-    );
+    // else
+    return <></>
 };
 
 const TerminalDataTable2 = ({
-                       data,
+                       table,
                        isOpen,
                        onClose,
                        className = '',
                        modalProps = {}
                    }) => {
+
     const theme = useStore(state => state.getCurrentTheme());
     const [isExpanded, setExpanded] = useState({});
     const [filters, setFilters] = useState({});
+    const [isStateFormat, setIsStateFormat] = useState(false)
+
+    useEffect(() => {
+        if (table?.data && table?.columns && table?.count) {
+            setIsStateFormat(true)
+        } else {
+            setIsStateFormat(false)
+        }
+    }, [table]);
 
     const handleExpansion = (row, col, expanded) => setExpanded(prev => ({ ...prev, [`${row}-${col}`]: expanded }));
 
     const handleSearch = (columnKey, value) => setFilters(prev => ({ ...prev, [columnKey]: value.toLowerCase() }));
 
-
-
-
-// Update the filterData function in the main component to handle both formats
+    // Update the filterData function in the main component to handle both formats
     const filterData = (rowIndex) => {
-        const isColumnarFormat = data?.data?.values || (data?.data && data?.columns && data?.count);
-
         return Object.keys(filters).every(columnKey => {
             const filterValue = filters[columnKey];
             if (!filterValue) return true;
 
             let cellValue;
-            if (isColumnarFormat) {
-                cellValue = data.data[columnKey]?.values[rowIndex];
+            if (isStateFormat) {
+                cellValue = table?.data[columnKey]?.values[rowIndex];
             } else {
-                cellValue = data[rowIndex][columnKey];
+                cellValue = table[rowIndex][columnKey];
             }
 
             return cellValue?.toString().toLowerCase().includes(filterValue.toLowerCase());
@@ -148,15 +172,20 @@ const TerminalDataTable2 = ({
         <HeadlessDialog open={isOpen} onClose={onClose} className="relative z-50" {...modalProps}>
             <div className="fixed inset-0 bg-black/30" />
             <div className="fixed inset-0 flex items-center justify-center">
-                <HeadlessDialog.Panel className={`w-full max-w-[90vw] min-w-[700px] ${theme.bg} ${theme.border} border shadow-lg ${className}`}>
+                <HeadlessDialog.Panel className={`w-full max-h-[80vh] overflow-y-auto ${theme.bg} ${theme.border} border shadow-lg`}>
+                {/*<HeadlessDialog.Panel className={`w-full h-1/2 ${theme.bg} ${theme.border} border shadow-lg`}>*/}
                     <div className="p-2 overflow-x-auto">
                         <table className="w-full">
-                            <TableHeader columns={data?.columns} onSearch={handleSearch} />
+                            <TableHeader table={table}
+                                         onSearch={handleSearch}
+                                         isStateFormat={isStateFormat}
+                            />
                             <TableBody
-                                data={data}
+                                table={table}
                                 filterData={filterData}
                                 isExpanded={isExpanded}
                                 onExpand={handleExpansion}
+                                isStateFormat={isStateFormat}
                             />
                         </table>
                     </div>

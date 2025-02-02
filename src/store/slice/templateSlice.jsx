@@ -1,5 +1,5 @@
 
-export const createTemplateSlice = (set, get) => ({
+export const useTemplateSlice = (set, get) => ({
     templates: [],
     getTemplate: (templateId) => {
         const { templates } = get(); // Get the current state of workflowNodes
@@ -46,28 +46,50 @@ export const createTemplateSlice = (set, get) => ({
             }
 
             // update the project state
-            const newInstructionTemplate = await response.json()
-            await get().updateTemplate(newInstructionTemplate)
+            const json = await response.json()
+            await get().updateTemplate(json)
             return true;
         } catch (error) {
             console.error('Failed to add project:', error);
             return false;
         }
     },
+    renameTemplate: async (template, new_name) => {
+        try {
+            // invoke the new project api
+            const response = await fetch(`${get().ISM_API_BASE_URL}/template/${template.template_id}/rename/${new_name}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
+            // ensure the response is ok 20x
+            if (!response.ok) {
+                // TODO proper error handling -- throw new Error('Network response was not ok');
+            }
+
+            // update the project state
+            const json = await response.json()
+            await get().updateTemplate(json)
+            return true;
+        } catch (error) {
+            console.error('Failed to add project:', error);
+            return false;
+        }
+    },
     fetchTemplates: async (projectId) => {
         try {
             set({ setTemplates: []});
 
+            let templates = []
             const response = await fetch(`${get().ISM_API_BASE_URL}/project/${projectId}/templates`);
-            const templates = await response.json();
             if (response.ok) {
+                templates = await response.json();
                 set({templates});
-            } else {
-                set((state) => ({
-                    templates: []
-                }));
             }
+            set({templates});
             return templates
         } catch (error) {
             console.error('Failed to fetch projects:', error);
@@ -75,5 +97,5 @@ export const createTemplateSlice = (set, get) => ({
     },
 });
 
-export default createTemplateSlice
+export default useTemplateSlice
 

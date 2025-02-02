@@ -15,7 +15,7 @@ const templateTypes = [
 const TerminalTemplateEditor = () => {
     const theme = useStore(state => state.getCurrentTheme());
 
-    const {selectedFile, setSelectedFileContent, saveFile} = useStore()
+    const {selectedFile, setSelectedFileContent, saveSelectedFile} = useStore()
     const editorRef = useRef(null);
 
     useEffect(() => {
@@ -25,7 +25,7 @@ const TerminalTemplateEditor = () => {
     }, [selectedFile]);
 
     const saveFileClicked = async() => {
-        await saveFile()
+        await saveSelectedFile()
     }
 
     const testFileClicked = async() => {

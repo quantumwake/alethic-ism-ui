@@ -1,4 +1,4 @@
-export const createUsageSlice = (set, get) => ({
+export const useUsageSlice = (set, get) => ({
 
     // usage reports
     userUsageReport: {},
@@ -44,5 +44,5 @@ export const createUsageSlice = (set, get) => ({
     },
 });
 
-export default createUsageSlice
+export default useUsageSlice
 

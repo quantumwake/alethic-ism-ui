@@ -1,4 +1,4 @@
-export const createProcessorStateSlice = (set, get) => ({
+export const useProcessorStateSlice = (set, get) => ({
     // TODO combine these two methods (above), maybe the processor states can be derived from all the associated states or vice versa
     processorStates: {},
     setProcessorStates: (processor_states) => set({ processorStates: processor_states }),
@@ -129,4 +129,4 @@ export const createProcessorStateSlice = (set, get) => ({
 
 });
 
-export default createProcessorStateSlice
+export default useProcessorStateSlice

@@ -112,7 +112,7 @@ const TerminalDropdown = ({
                     }}
                     className={`
                         z-50 fixed mt-1 overflow-auto border
-                        max-h-60 ${theme.bg} ${theme.border} ${theme.font}
+                        max-h-60 ${theme.bg} ${theme.border} ${theme.font} ${theme.text}
                     `}>
                     {allowEmpty && (
                         <Listbox.Option
@@ -121,11 +121,11 @@ const TerminalDropdown = ({
                             className={({ active, selected }) => `
                                 ${baseOptionStyle}
                                 ${active ? theme.button.primary : theme.bg}
-                                ${selected ? theme.button.secondary : ''}
+                                ${selected ? theme.button.primary : ''}
                                 ${sizes[size]}
                             `}>
                             {({ selected }) => (
-                                <span className={`block truncate ${selected ? 'font-bold' : 'font-normal'}`}>
+                                <span className={`block truncate ${selected ? 'font-extrabold' : ''}`}>
                                     {placeholder}
                                 </span>
                             )}
@@ -139,11 +139,11 @@ const TerminalDropdown = ({
                             className={({active, selected}) => `
                                 ${baseOptionStyle}
                                 ${active ? theme.button.primary : theme.bg}
-                                ${selected ? theme.button.secondary : ''}
+                                ${selected ? theme.button.primary : ''}
                                 ${sizes[size]}
                             `}>
                             {({selected}) => (
-                                <span className={`block truncate ${selected ? 'font-bold' : 'font-normal'}`}>
+                                <span className={`block truncate  ${selected ? `font-extrabold` : ''}`}>
                                     {item.label}
                                 </span>
                             )}

@@ -3,6 +3,7 @@ import {useStore} from "../store";
 import {faFilter, faPlay, faRemove} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {EdgeLabelRenderer, EdgeProps, getBezierPath} from "@xyflow/react";
+import TerminalSyslog from "../components/ism/TerminalSyslog";
 
 function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                                                         sourcePosition, targetPosition,
@@ -16,7 +17,13 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
     const {workflowEdges, findWorkflowEdgeById, deleteProcessorStateWithWorkflowEdge, executeProcessorStateRoute} = useStore()
     const {selectedEdgeId, setSelectedEdgeId, processorStates} = useStore()
     const isSelected = selectedEdgeId === id;
+    const {isStudioRefreshEnabled} = useStore()
     const [isOpenStateDataFilterDialog, setIsOpenStateDataFilterDialog] = useState(false);
+    const [isOpenSyslogDialog, setIsOpenSyslogDialog] = useState(false)
+
+    useEffect(() => {
+        console.debug(`*************is animated: ${isStudioRefreshEnabled}`)
+    }, [isStudioRefreshEnabled]);
 
     const getEdgeType = () => {
         if (edge) {
@@ -92,24 +99,32 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
     }
 
 
+
     const statusColors = (status: string) => {
 
         if (status === "CREATED")
-            return "bg-gray-50"
+            return "stroke-gray-300"
         else if (status === "QUEUED")
-            return "bg-yellow-50"
+            return "stroke-gray-600"
         else if (status === "ROUTE")
-            return "bg-yellow-100"
+            return "stroke-yellow-500"
         else if (status === "ROUTED")
-            return "bg-yellow-200"
+            return "stroke-amber-400"
         else if (status === "RUNNING")
-            return "bg-blue-100"
+            return "stroke-blue-400"
         else if (status === 'COMPLETED')
-            return "bg-green-50"
+            return "stroke-green-500"
         else if (status === "FAILED")
-            return "bg-red-100"
+            return "stroke-red-400"
 
-        return "bg-purple-100"
+        return "stroke-purple-100"
+    }
+
+    const statusStyles = (status: string) => {
+        if (status === 'FAILED') {
+            return "strokePulse 2s ease-in-out infinite"
+        }
+        return ""
     }
 
     return (<>
@@ -119,30 +134,40 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                 strokeWidth="2"
                 d={edgePath}
                 className={`
-          ${isSelected ? theme.edge.selected :
-                    isHovered ? theme.edge.hover :
-                        theme.edge.default}
-          animate-dash
-        `}
+                    ${isSelected ? theme.edge.selected :
+                        isHovered ? theme.edge.hover : 
+                            statusColors(status)}
+                `}
                 onClick={() => setSelectedEdgeId(id)}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 style={{
                     cursor: 'pointer',
                     strokeDasharray: '4',
-                    animation: 'flowDash 1s linear infinite'
+                    animation: isStudioRefreshEnabled ?
+                        `flowDash 1s linear infinite ${statusStyles(status)}` :
+                        `${statusStyles(status)}`
                 }}
             />
-            <style>{`
-        @keyframes flowDash {
-          to {
-            stroke-dashoffset: -8;
-          }
-        }
-        .animate-dash {
-          animation: flowDash 1s linear infinite;
-        }
-      `}</style>
+            <style>
+                {`
+                    @keyframes strokePulse {
+                        0% { stroke-width: 1; }
+                        50% { stroke-width: 4; }
+                        100% { stroke-width: 1; }
+                    }
+                    
+                    @keyframes flowDash {
+                        from { stroke-dashoffset: 24; }
+                        to { stroke-dashoffset: 0; }
+                    }
+                    @keyframes flowDash {
+                      to {
+                        stroke-dashoffset: -8;
+                      }
+                    }
+                `}
+            </style>
         </svg>
 
         {/*<path*/}
@@ -170,64 +195,45 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                     transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
                     pointerEvents: 'all',
                 }}
-                className={`nodrag nopan ${theme.textSize.xs}`}
+                className="nodrag nopan text-xs"
             >
-                <div className={`flex flex-row ${theme.spacing.xs} ${theme.edge.label.container}`}>
-                    <div className={`
-                        ${statusColors(status)} 
-                        ${theme.spacing.xs} 
-                        ${theme.border} 
-                        ${theme.edge.label.status}
-                    `}>
-                        {status}
-                    </div>
-
-                    {getEdgeType() === "state_auto_stream_playable_edge" && (
+                <div className={`flex flex-row items-center gap-2 p-1 hover:bg-white/10 transition-all duration-200`}>
+                    <div className="flex gap-1 ">
+                        {getEdgeType() === "state_auto_stream_playable_edge" && (
+                            <button
+                                onClick={() => onEdgePlayClick(id)}
+                                className="p-1.5 rounded-md bg-opacity-20 bg-green-900 text-white text-opacity-40 hover:bg-green-600 hover:text-opacity-100">
+                                <FontAwesomeIcon
+                                    icon={faPlay}
+                                    className="w-4 h-4"
+                                />
+                            </button>
+                        )}
                         <button
-                            onClick={() => onEdgePlayClick(id)}
-                            className={`
-                                ml-0.5 
-                                ${theme.spacing.xs} 
-                                ${theme.button.success} 
-                                ${theme.edge.label.button}
-                            `}>
+                            onClick={() => setIsOpenStateDataFilterDialog(true)}
+                            className="p-1.5 rounded-md bg-opacity-20 bg-blue-900 text-white text-opacity-40 hover:bg-blue-600 hover:text-opacity-100">
                             <FontAwesomeIcon
-                                icon={faPlay}
-                                className={theme.default.icon.size.sm}
+                                icon={faFilter}
+                                className="w-4 h-4"
                             />
                         </button>
-                    )}
 
-                    <button
-                        onClick={() => setIsOpenStateDataFilterDialog(true)}
-                        className={`
-                            ml-0.5 
-                            ${theme.spacing.xs} 
-                            ${theme.button.secondary} 
-                            ${theme.edge.label.button}
-                        `}>
-                        <FontAwesomeIcon
-                            icon={faFilter}
-                            className={theme.default.icon.size.sm}
-                        />
-                    </button>
+                        {/* incorporates the button already */}
+                        <TerminalSyslog buttonClass="p-1.5 rounded-md bg-opacity-20 bg-amber-900 text-white text-opacity-40 hover:bg-amber-600 hover:text-opacity-100" routeId={id} />
 
-                    <button
-                        onClick={() => onEdgeDelete(id)}
-                        className={`
-                            ml-0.5 
-                            ${theme.spacing.xs} 
-                            ${theme.button.danger} 
-                            ${theme.edge.label.button}
-                        `}>
-                        <FontAwesomeIcon
-                            icon={faRemove}
-                            className={theme.default.icon.size.sm}
-                        />
-                    </button>
+                        <button
+                            onClick={() => onEdgeDelete(id)}
+                            className="p-1.5 rounded-md bg-opacity-20 bg-red-900 text-white text-opacity-40 hover:bg-red-600 hover:text-opacity-100">
+                            <FontAwesomeIcon
+                                icon={faRemove}
+                                className="w-4 h-4"
+                            />
+                        </button>
+                    </div>
                 </div>
             </div>
         </EdgeLabelRenderer>
+
 
         {/*<StateDataFilterDialog*/}
         {/*    isOpen={isOpenStateDataFilterDialog}*/}

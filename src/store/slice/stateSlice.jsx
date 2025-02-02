@@ -1,4 +1,4 @@
-export const createStateSlice = (set, get) => ({
+export const useStateSlice = (set, get) => ({
 
     deleteNodeDataStateConfigKeyDefinition: async (nodeId, definition_type, id) => {
         try {
@@ -237,5 +237,5 @@ export const createStateSlice = (set, get) => ({
 
 });
 
-export default createStateSlice
+export default useStateSlice
 
