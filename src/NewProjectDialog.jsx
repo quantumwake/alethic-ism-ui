@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import useStore from "./store";
+import {useStore} from "./store";
 
 function NewProjectDialog({ isOpen, setIsOpen,}) {
     const {userId, jwtToken} = useStore()

@@ -1,13 +1,9 @@
-import { useCallback } from 'react';
-import {applyEdgeChanges, applyNodeChanges} from 'reactflow';
-import useStore from './store'; // Adjust the path as necessary
+import {useCallback} from 'react';
+import {applyNodeChanges} from "@xyflow/react"; // Adjust the path as necessary
+import {useStore} from "./store";
 
 const useEdgesStateSynced = () => {
-    const { workflowEdges, setWorkflowEdges, deleteWorkflowEdge } = useStore((state) => ({
-        workflowEdges: state.workflowEdges,
-        setWorkflowEdges: state.setWorkflowEdges,
-        deleteWorkflowEdge: state.deleteWorkflowEdge
-    }));
+    const { workflowEdges, setWorkflowEdges } = useStore()
 
     const onEdgesChange = useCallback((changes: any) => {
         console.log('Edge changes:', changes);
