@@ -15,7 +15,5 @@ while getopts 'i:' flag; do
   esac
 done
 
-
-echo "using image $IMAGE to deploy"
-cat k8s/deployment.yaml | sed "s|<IMAGE>|$IMAGE|g" > k8s/deployment-output.yaml
-kubectl apply -f k8s/deployment-output.yaml
+echo "pushing docker image"
+docker push $IMAGE

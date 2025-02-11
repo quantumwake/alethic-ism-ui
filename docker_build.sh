@@ -2,9 +2,9 @@
 
 # Function to print usage
 print_usage() {
-  echo "Usage: $0 [-t tag] [-a architecture]"
-  echo "  -t tag             Docker image tag"
-  echo "  -p platform        Target platform architecture (default: linux/amd64)"
+  echo "Usage: $0 [-i image] [-p architecture]"
+  echo "  -i image           Docker image krasaee/alethic-ism-ui:latest"
+  echo "  -p platform        Target platform architecture (linux/amd64, linux/arm64, ...)"
 }
 
 # Default values
@@ -14,7 +14,7 @@ TAG=""
 ARCH="linux/amd64"
 
 # Parse command line arguments
-while getopts 't:a:' flag; do
+while getopts 'i:p:' flag; do
   case "${flag}" in
     t) TAG="${OPTARG}" ;;
     a) ARCH="${OPTARG}" ;;
