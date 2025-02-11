@@ -1,22 +1,21 @@
 import React, {useEffect, useRef, useState} from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import useStore from "./store";
-import CustomList from "./CustomList";
-import CustomListbox from "./CustomListbox";
-import CustomInput from "./CustomInput";
+import {useStore} from "./store";
+// import CustomList from "./archive/CustomList";
+// import CustomListbox from "./archive/CustomListbox";
+// import CustomInput from "./archive/CustomInput";
 import {Editor} from "@monaco-editor/react";
 import ProjectTemplateInfo from "./ProjectTemplateInfo";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleDoubleRight, faDiagramNext} from "@fortawesome/free-solid-svg-icons";
 import Tippy from "@tippyjs/react";
 import 'tippy.js/dist/tippy.css';
-import {Tooltip} from "chart.js";
-import {ClipboardIcon} from "@heroicons/react/24/outline"; // Import the styles
 
 const templateTypes = [
     {type: 'mako', value: 'mako'},
     {type: 'simple', value: 'simple'},
     {type: 'python', value: 'python'},
+    {type: 'filter', value: 'filter'},
     // {type: 'javascript', value: 'javascript'},
 ];
 
@@ -105,7 +104,7 @@ const templateSample = {
         # the data that is passed in is simply yielded to the stream 
         # (e.g. a websocket on the egress of an output state that happens to be a state stream config)
         yield json.dumps(query_state, indent=2)
-`}],
+`}], // end of samples: python
 
 ////////////////////
 // mako templates //
@@ -132,24 +131,23 @@ const templateSample = {
 - **Last Name:** \${last_name}
 - **Age:** \${age}
 - **Phone Numbers:** \${format_phone_numbers(phone_no)}
-`}],
+`}], // end of samples: mako
 
+///////////////////////
+// filter templates //
 //////////////////////
-// simple templates //
-//////////////////////
-
-    'simple':  [{ "template_path": "simple instruction that can be used in a language model", "content": `
-given the following {input} provide a short and concise answer. output in the following json format.
-    
-\`\`\`json
-{
-    "answer": "[your answer]",
-    "justification": "[justification for your answer]",
-    "input_score": "[what score you would give the input from 1 to 100 and how aligned it is with your answer and justification]"
-}
-\`\`\`
-`
-}]}
+        'filter': [
+    // filter template 1
+{ "template_path": "simple filter sample", content: `filter_groups: [
+    {
+        filters: [
+            // { column: "instruction", operator: "like", value: "%" },
+            { column: "animal", operator: "=", value: "dog" },
+        ],
+        group_logic: "AND",
+    } 
+]`}] // end of samples: filter
+} // end of samples
 
 function ProjectTemplateDialog({ isOpen, setIsOpen }) {
 
@@ -240,9 +238,7 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
         })
     };
 
-    const onDeleteTemplate = (e) => {
-
-    };
+    const onDeleteTemplate = (e) => {};
 
     const onEditTemplate = (template) => {
         // const t = getTemplate(template.id)
@@ -257,61 +253,10 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
         editor.focus();
     }
 
-    //
-    // const createDependencyProposals = useCallback((range) => {
-    //     if (!monacoRef.current) return [];
-    //
-    //     // Define your attributes here
-    //     const attributes = [
-    //         'attribute1',
-    //         'attribute2',
-    //         'attribute3',
-    //         // ... add more attributes as needed
-    //     ];
-    //
-    //     return attributes.map(attr => ({
-    //         label: attr,
-    //         kind: monacoRef.current.languages.CompletionItemKind.Property,
-    //         documentation: `This is the ${attr} attribute`,
-    //         insertText: attr,
-    //         range: range
-    //     }));
-    // }, []);
-    //
-    // const onEditorMount = useCallback((editor, monaco) => {
-    //     monacoRef.current = monaco;
-    //
-    //     monaco.languages.registerCompletionItemProvider('python', {
-    //         provideCompletionItems: (model, position) => {
-    //             const wordInfo = model.getWordUntilPosition(position);
-    //             const wordRange = new monaco.Range(
-    //                 position.lineNumber,
-    //                 wordInfo.startColumn,
-    //                 position.lineNumber,
-    //                 wordInfo.endColumn
-    //             );
-    //
-    //             return {
-    //                 // suggestions: createDependencyProposals(wordRange)
-    //             };
-    //         }
-    //     });
-    // // }, [createDependencyProposals]);
-    // }, []);
-
     const searchTemplate = (template, term) => {
         // This is just an example. Adjust according to your data structure and search requirements
         return template['template_path'].toLowerCase().includes(term.toLowerCase());
     };
-
-    // Hover on each property to see its docs!
-    // const myEditor = monaco.editor.create(document.getElementById("container"), {
-    //     value,
-    //     language: "javascript",
-    //     automaticLayout: true,
-    // });
-
-
 
     const renderTemplate = (value) => <>
         <div className="flex items-center space-x-4">

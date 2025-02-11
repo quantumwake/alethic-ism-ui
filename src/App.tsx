@@ -1,18 +1,11 @@
-// App.js
 import React, {useEffect} from "react";
-import {
-    createBrowserRouter, Outlet, Route,
-    RouterProvider, useLocation, useNavigationType,
-} from "react-router-dom";
-import {ReactFlowProvider} from "reactflow";
+import {createBrowserRouter, RouterProvider, useLocation, useNavigationType} from "react-router-dom";
+import {ReactFlowProvider} from "@xyflow/react";
 import RootLayout from "./RootLayout";
 import Login from "./Login";
 import Signup from "./Signup";
-import DiscourseChannel from "./DiscourseChannel";
-import WebSocketMessageDisplay from "./WebSocketMessageDisplay";
-import useStore from "./store";
-import Studio from "./Studio";
-
+import Layout from "./Layout";
+import {useStore} from "./store";
 
 const RouteLogger = () => {
     const navigationType = useNavigationType();
@@ -42,10 +35,10 @@ const router = createBrowserRouter([
         // loader: () => ({}),
         children: [
             {
-                path: "/studio",
+                path: "/home",
                 element:
                     <ReactFlowProvider>
-                        <Studio/>
+                        <Layout/>
                     </ReactFlowProvider>
             },
             {
@@ -82,14 +75,24 @@ const router = createBrowserRouter([
 
 
 const App = () => {
-    const setJwtToken = useStore(state => state.setJwtToken);
+    const {jwtToken, setJwtToken} = useStore();
+    const {userId, fetchUserProfile, setUserProfile} = useStore()
 
+    // TODO NOTE: login bypass: search 'login bypass' in all files (comment out)
     useEffect(() => {
         const jwtToken = localStorage.getItem('jwtToken');
         if (jwtToken) {
             setJwtToken(jwtToken);
         }
     }, [setJwtToken]);
+
+    useEffect(() => {
+        // if (!userId) {
+        //     setUserProfile(null)
+        //     return
+        // }
+        // fetchUserProfile()
+    }, [jwtToken]);
 
     return (
         <React.StrictMode>

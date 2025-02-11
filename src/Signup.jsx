@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import {Link, useNavigate} from "react-router-dom";
-import { auth } from "./firebase";
-
+import {useNavigate} from "react-router-dom";
+import {TerminalButton} from "./components/common";
 import {createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider} from "firebase/auth";
-import CustomButton from "./CustomButton";
-import useStore from "./store";
+import {auth} from "./firebase/firebase";
+import {useStore} from "./store";
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -36,7 +35,7 @@ const Signup = () => {
             // Save JWT in Zustand store
             useStore.setState({ jwtToken });
 
-            navigate('/studio');
+            navigate('/home');
         } catch (error) {
             console.error('Error signing in with Google:', error);
         }
@@ -63,7 +62,7 @@ const Signup = () => {
             };
 
             await createUserProfile(userDetails)
-            navigate('/designer')
+            navigate('/home')
         } catch {
             setNotice("Sorry, something went wrong. Please try again.");
         }
@@ -90,7 +89,8 @@ const Signup = () => {
 
                     <div className="space-y-6">
                         <div>
-                            <CustomButton
+                            <TerminalButton
+                                variant="primary"
                                 value="Sign in with Google"
                                 icon="fa-google"
                                 onClick={signupWithGoogle}

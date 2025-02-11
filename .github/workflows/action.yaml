@@ -1,4 +1,4 @@
-name: Docker Image CI for Alethic ISM API
+name: Docker Image CI for Alethic ISM UI
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
 
     steps:
 
-      - name: Checkout Alethic ISM API code
+      - name: Checkout Alethic ISM UI code
         id: code_checkout
         uses: actions/checkout@v3
 
@@ -31,7 +31,7 @@ jobs:
         run: |
           COMMIT_ID=$(echo $GITHUB_SHA | head -c7)
           NAMESPACE="krasaee"
-          PROJECT_NAME="alethic-ism-api"
+          PROJECT_NAME="alethic-ism-ui"
           IMAGE="$NAMESPACE/$PROJECT_NAME:$COMMIT_ID"
           
           echo "COMMIT_ID=$COMMIT_ID" >> "$GITHUB_ENV" # for local variables
@@ -61,6 +61,13 @@ jobs:
         run: |
           echo "Pushing container file with image $IMAGE"
           bash docker_push.sh -i $IMAGE
+      #        docker push $IMAGE
+      #
+      #    - name: Update deployment file
+      #      run: |
+      #        echo "Updating deployment file with image $IMAGE"
+      #        sed -i "s|<IMAGE>|$IMAGE|" $GITHUB_WORKSPACE/k8s/deployment.yaml
+      #        cat $GITHUB_WORKSPACE/k8s/deployment.yaml
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
