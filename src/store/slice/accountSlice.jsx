@@ -17,8 +17,9 @@ export const useAccountSlice = (set, get) => ({
     // user profile (create account, fetch user id by auth)
     // userId: "77c17315-3013-5bb8-8c42-32c28618101f",  // TODO NOTE: login bypass
     userId: null,
-    userProfile: null,
     setUserId: (userId) => set({ userId: userId }),
+    userProfile: null,
+    setUserProfile: (userProfile) => set({userProfile: userProfile}),
 
 
     // create user profile
@@ -38,10 +39,11 @@ export const useAccountSlice = (set, get) => ({
             // TODO proper error handling -- throw new Error('Network response error when trying create or update user profile');
         }
 
-        const data = await response.json();
+        const userProfile = await response.json();
 
         // assign the new user id
-        get().setUserId(data['user_id'])
+        get().setUserId(userProfile['user_id'])
+        get().setUserProfile(userProfile)
         return response
     },
 

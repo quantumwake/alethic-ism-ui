@@ -1,33 +1,28 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import {
     LayoutGrid,
-    LucideSquareFunction,
-    WorkflowIcon,
     Menu,
-    Files,
     Settings,
     List,
-    FilesIcon, Boxes, LayoutIcon, FolderOpenIcon, BoxesIcon
-} from 'lucide-react';
+    LayoutIcon,
+    FolderOpenIcon,
+    BoxesIcon
+} from 'lucide-react'
+
 import {
     TerminalTabBar,
     TerminalContainer,
     TerminalHeader,
     TerminalSidebar,
     TerminalFooter, TerminalTabView
-} from "./components/common";
+} from "./components/common"
 
-import MenuTab from "./tabs/MenuTab";
-import ProjectTab from "./tabs/ProjectTab";
-import ComponentTab from "./tabs/ComponentTab";
-import PropertyTab from "./tabs/PropertyTab";
-import TerminalUserMenu from "./components/ism/TerminalUserMenu";
+import {useStore} from "./store"
 
-import Studio from "./Studio";
-import {useStore} from "./store";
-import TerminalSyslog from "./components/ism/TerminalSyslog";
-import TerminalTemplateEditor from "./components/ism/TerminalTemplateEditor";
-import ProjectFileTab from "./tabs/ProjectFileTab";
+import {MenuTab, ProjectTab, ProjectFileTab, ComponentTab, PropertyTab}  from "./tabs"
+import {TerminalTemplateEditor, TerminalUsageReport, TerminalSyslog, TerminalUserMenu} from "./components/ism"
+import Studio from "./Studio"
+import CustomStudio from "./CustomStudio"
 
 const TAB_COMPONENTS = {
     component: ComponentTab,
@@ -52,14 +47,12 @@ const Layout = () => {
     const [isRightSidebarOpen, setRightSidebarOpen] = useState(true);
     const [activeLeftTab, setActiveLeftTab] = useState("menu");
     const [activeRightTab, setActiveRightTab] = useState("property");
-    const {setActiveTheme, currentWorkspace} = useStore()
-    const {isSyslogOpen, setIsSyslogOpen} = useState(false)
+    const {setActiveTheme} = useStore()
 
     const leftTabs = [
         { id: 'menu', icon: <Menu className="w-4 h-4" /> },
         { id: 'project', icon: <LayoutIcon className="w-4 h-4" /> },
         { id: 'component', icon: <BoxesIcon className="w-4 h-4" /> },
-        // { id: 'studio', icon: <WorkflowIcon className="w-4 h-4" /> },
         { id: 'files', icon: <FolderOpenIcon className="w-4 h-4" /> }
     ];
 
@@ -67,7 +60,6 @@ const Layout = () => {
         { id: 'property', icon: <Settings className="w-4 h-4" /> },
         { id: 'logs', icon: <List className="w-4 h-4" /> }
     ];
-
     const handleItemClick = (item) => {
         // // Different handling based on tab type
         // switch(activeLeftTab) {
@@ -87,6 +79,7 @@ const Layout = () => {
         //         // Open file, show preview, etc.
         //         break;
         // }
+
     };
 
     return (
@@ -96,7 +89,6 @@ const Layout = () => {
                     <LayoutGrid className="w-4 h-4" />
                     <span>Instruction State Machine (ISM)</span>
                 </>}
-
                 rightContent={<>
                     <TerminalSyslog></TerminalSyslog>
                     <TerminalUserMenu onThemeChange={setActiveTheme} />
@@ -130,6 +122,12 @@ const Layout = () => {
                                 name: 'studio',
                                 label: 'Studio',
                                 content: <Studio />, // Assuming you have Studio and TerminalTemplateEditor components
+                                closeable: false,
+                            },
+                            {
+                                name: 'studio poc',
+                                label: 'Studio PoC',
+                                content: <CustomStudio />, // Assuming you have Studio and TerminalTemplateEditor components
                                 closeable: false,
                             },
                             {
@@ -167,7 +165,16 @@ const Layout = () => {
                 />
             </div>
 
-            <TerminalFooter leftContent="SYSTEM STATUS: ACTIVE" rightContent="V1.0.0" />
+            <TerminalFooter
+                leftContent={<span>SYSTEM STATUS: ACTIVE</span>}
+                rightContent={
+                    <>
+                        <span><TerminalUsageReport /></span>
+                        <span className="ml-4">v2.0 ALPHA</span>
+                    </>
+                }
+            />
+
         </TerminalContainer>
     );
 };

@@ -76,10 +76,9 @@ export const useProcessorStateSlice = (set, get) => ({
         const response = await fetch(`${get().ISM_API_BASE_URL}/project/${projectId}/processor/states`)
 
         // validate
-        if (response.status === 404) {
+        if (!response.ok) {
             get().setProcessorStates({})
-        } else if (!response.ok) {
-            // TODO proper error handling -- throw new Error('error fetching processor states by project')
+            return
         }
 
         // parse the data

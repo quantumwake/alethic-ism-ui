@@ -98,7 +98,7 @@ const TerminalStreamDebug = () => {
 
     }, [channelInputId, channelOutputId]);
 
-    const connect = () => {
+    const connect = async() => {
 
         console.log('websocket ready to establish');
         let URL = `${ISM_STREAM_API_BASE_URL}/ws/stream/${channelOutputId}`
@@ -115,6 +115,7 @@ const TerminalStreamDebug = () => {
         ws.current.onclose = () => {
             console.log('websocket connection closed');
             setConnected(false);  // Set connected to true when the connection is opened
+            ws.current = null;    // Optionally set it to null to indicate it's closed
         }
 
         const reader = new ReadableStream({
@@ -223,13 +224,20 @@ const TerminalStreamDebug = () => {
         setChannelCompositeKey(uuidv4())
     }
 
-    const disconnect = () => {
+    const disconnect = async() => {
         if (ws.current) {
+            console.log('websocket connection closing');
             ws.current.close();  // Close the WebSocket connection
-            console.log('WebSocket connection closed');
-            ws.current = null;    // Optionally set it to null to indicate it's closed
+            setConnected(false)
+            // ws.current = null;    // Optionally set it to null to indicate it's closed
         }
-    };
+    }
+
+    const reconnect = async() => {
+        disconnect().then(async() => {
+            await connect()
+        })
+    }
 
     const handleMouseDown = (e) => {
         if (e.target.closest('.handle')) {
@@ -285,7 +293,6 @@ const TerminalStreamDebug = () => {
                     </div>
                 </div>
 
-
                 {!isMinimized && (<>
                     <div className={`p-1.5 border-b ${theme.border}`}>
                         <div className="space-y-1">
@@ -304,7 +311,9 @@ const TerminalStreamDebug = () => {
                                 value={channelSessionId}
                                 onClear={() => setChannelSessionId("")}
                                 onNew={newSession}
-                                theme={theme}/>
+                                theme={theme}
+                            />
+
                             <InfoRow
                                 label="Composite Key"
                                 value={channelCompositeKey}
@@ -315,16 +324,16 @@ const TerminalStreamDebug = () => {
 
                             <div className="flex items-center gap-1.5 pt-1">
                                 <TerminalButton
-                                    onClick={newSession}
-                                    className={`flex items-center gap-1 px-2 py-1 text-xs ${theme.border} ${theme.hover} rounded-sm`}>
-                                    <Plus className="w-3 h-3"/>
-                                    <span>New Session</span>
-                                </TerminalButton>
-                                <TerminalButton
                                     onClick={disconnect}
                                     className={`flex items-center gap-1 px-2 py-1 text-xs ${theme.border} ${theme.hover} rounded-sm ${theme.error}`}>
                                     <Power className="w-3 h-3"/>
                                     <span>Disconnect</span>
+                                </TerminalButton>
+                                <TerminalButton
+                                    onClick={reconnect}
+                                    className={`flex items-center gap-1 px-2 py-1 text-xs ${theme.border} ${theme.hover} rounded-sm ${theme.error}`}>
+                                    <Power className="w-3 h-3"/>
+                                    <span>Reconnect</span>
                                 </TerminalButton>
                             </div>
                         </div>
@@ -351,14 +360,9 @@ const TerminalStreamDebug = () => {
                     </div>
 
                     <form onSubmit={sendMessage} className="flex w-full p-1.5 gap-1">
-                        {/*<input type="text" value={messageText}*/}
-                        {/*       onChange={(e) => setMessageText(e.target.value)}*/}
-                        {/*       className={`flex-1 px-2 py-1 text-xs ${theme.text} ${theme.input} rounded-sm focus:outline-none focus:ring-1`}*/}
-                        {/*       placeholder="Enter message..."/>*/}
-                        <TerminalInput onChange={(e) => setMessageText(e.target.value)}
-                                   className={`flex-1 px-2 py-1 text-xs ${theme.text} ${theme.input} rounded-sm focus:outline-none focus:ring-1`}
+                        <TerminalInput variant="primary" onChange={(e) => setMessageText(e.target.value)}
                                    placeholder="Enter message..."
-                                   icon={<Send className={`w-3 h-3 ${theme.textAccent}`}/>}
+                                   // icon={<Send className={`w-3 h-3 ${theme.textAccent}`}/>}
                         />
 
                         <button type="submit" className={`p-1 ${theme.hover} ${theme.border} rounded-sm`}>

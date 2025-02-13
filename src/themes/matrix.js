@@ -31,7 +31,7 @@ export const matrix= {
         enableScanlines: true,
         enableCrt: true,
         scanlineClass: 'relative before:pointer-events-none before:absolute before:inset-0 before:bg-scanline',
-        crtClass: 'relative rounded-md overflow-hidden before:absolute before:inset-0 before:pointer-events-none before:bg-crt'
+        crtClass: 'relative overflow-hidden before:absolute before:inset-0 before:pointer-events-none before:bg-crt'
     },
     default: {
         text: {

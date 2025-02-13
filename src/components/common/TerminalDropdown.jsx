@@ -132,7 +132,7 @@ const TerminalDropdown = ({
                         </Listbox.Option>
                     )}
 
-                    {values.map((item) => (
+                    {values && values.map((item) => (
                         <Listbox.Option
                             key={item.id}
                             value={item}

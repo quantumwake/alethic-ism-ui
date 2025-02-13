@@ -6,6 +6,7 @@ import Login from "./Login";
 import Signup from "./Signup";
 import Layout from "./Layout";
 import {useStore} from "./store";
+import CustomStudio from "./CustomStudio";
 
 const RouteLogger = () => {
     const navigationType = useNavigationType();
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
             {
                 path: "/signup",
                 element: <Signup />
+            },
+            {
+                path: "/test",
+                element: <CustomStudio />
             },
             // {
                 // path: "/discourse/:isid/:osid/:sid/:uid",
