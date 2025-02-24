@@ -1,19 +1,24 @@
 import './output.css';
-import React, {DragEvent, ReactElement, useCallback, useEffect, useRef, useState} from 'react';
+import React, {DragEvent, useCallback, useEffect, useRef, useState} from 'react';
 import '@xyflow/react/dist/style.css';
 
 import {Background, EdgeTypes, NodeMouseHandler, OnConnect, ReactFlow, useReactFlow} from '@xyflow/react';
-import ProcessorNodeOpenAI from "./nodes/ProcessorNodeOpenAI";
-import ProcessorNodeAnthropic from "./nodes/ProcessorNodeAnthropic";
-import ProcessorNodeMistral from "./nodes/ProcessorNodeMistral";
-import ProcessorNodePython from "./nodes/ProcessorNodePython";
-import ProcessorNodeStateCoalescer from "./nodes/ProcessorNodeStateCoalescer";
-import ProcessorNodeVisualOpenAI from "./nodes/ProcessorNodeVisualOpenAI";
-import ProcessorNodeLLAMA from "./nodes/ProcessorNodeLlama";
-import ProcessorNodeGoogleAI from "./nodes/ProcessorNodeGoogleAI";
-import ProcessorNodeSQL from "./nodes/ProcessorNodeDatabase";
-import TrainerNode from "./nodes/TrainerNode";
-import StateNode from './nodes/StateNode'
+import {
+    ProcessorNodeOpenAI,
+    ProcessorNodeAnthropic,
+    ProcessorNodeMistral,
+    ProcessorNodePython,
+    ProcessorNodeTransformCoalescer,
+    ProcessorNodeTransformComposite,
+    ProcessorNodeVisualOpenAI,
+    ProcessorNodeLlama,
+    ProcessorNodeGoogleAI,
+    TrainerNode,
+    StateNode,
+    /// rename these, need better naming convention around the function runtime?
+    FunctionNodeDataSourceSQL,
+    FunctionNodeUserInteraction
+} from "./nodes";
 
 import {useStore} from "./store";
 
@@ -34,11 +39,12 @@ const nodeTypes = {
     processor_visual_openai: ProcessorNodeVisualOpenAI,
     processor_google_ai: ProcessorNodeGoogleAI,
     processor_anthropic: ProcessorNodeAnthropic,
-    processor_llama: ProcessorNodeLLAMA,
+    processor_llama: ProcessorNodeLlama,
     processor_mistral: ProcessorNodeMistral,
-    processor_state_coalescer: ProcessorNodeStateCoalescer,
-    processor_datasource_sql: ProcessorNodeSQL,
+    processor_state_coalescer: ProcessorNodeTransformCoalescer,
+    processor_state_composite: ProcessorNodeTransformComposite,
     trainer: TrainerNode,
+    function_datasource_sql: FunctionNodeDataSourceSQL,
 };
 
 const edgeTypes: EdgeTypes = {
@@ -103,7 +109,7 @@ const Studio = () => {
             height: 100
         }
 
-        if (type.startsWith('processor')) {
+        if (type.startsWith('processor') || type.startsWith('function')) {
             createProcessorWithWorkflowNode(nodeData)
         } else if (type.startsWith('state')) {
             createStateWithWorkflowNode(nodeData)

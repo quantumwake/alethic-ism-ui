@@ -46,9 +46,9 @@ export const processorStyles = {
     ),
 
     // Data Sources
-    Database: componentFn(
-        'processor_database',
-        'Database',
+    SQL: componentFn(
+        'function_datasource_sql',
+        'SQL',
         'Connect and interact with SQL or NoSQL databases',
         'text-green-500',
         Database
@@ -59,7 +59,8 @@ export const processorStyles = {
         'JSON',
         'Read or write JSON data',
         'text-yellow-500',
-        FileJson
+        FileJson,
+        false
     ),
 
     CSV: componentFn(
@@ -67,7 +68,8 @@ export const processorStyles = {
         'CSV',
         'Process CSV files and tabular data',
         'text-green-400',
-        Table
+        Table,
+        false
     ),
 
     TextFile: componentFn(
@@ -75,7 +77,8 @@ export const processorStyles = {
         'Text',
         'Handle plain text files and content',
         'text-gray-500',
-        FileText
+        FileText,
+        false
     ),
 
     Stream: componentFn(
@@ -83,7 +86,8 @@ export const processorStyles = {
         'Stream',
         'Process streaming data in real-time',
         'text-purple-500',
-        Binary
+        Binary,
+        false,
     ),
 
     // Core Processors
@@ -100,7 +104,8 @@ export const processorStyles = {
         'Transform',
         'Transform data between different formats and structures',
         'text-orange-500',
-        Workflow
+        Workflow,
+        false
     ),
 
     Filter: componentFn(
@@ -108,7 +113,8 @@ export const processorStyles = {
         'Filter',
         'Filter and validate data based on conditions',
         'text-red-500',
-        Filter
+        Filter,
+        false,
     ),
 
     Split: componentFn(
@@ -119,13 +125,13 @@ export const processorStyles = {
         SplitSquareVertical
     ),
 
-    Merge: componentFn(
-        'processor_merge',
-        'Merge',
-        'Combine multiple data streams into one',
-        'text-blue-600',
-        Combine
-    ),
+    // Merge: componentFn(
+    //     'processor_merge',
+    //     'Merge',
+    //     'Combine multiple data streams into one',
+    //     'text-blue-600',
+    //     Combine
+    // ),
 
     // AI Models
     OpenAI: componentFn(
@@ -184,7 +190,8 @@ export const processorStyles = {
         'API Call',
         'Make external API requests',
         'text-purple-600',
-        Webhook
+        Webhook,
+        false
     ),
 
     Notification: componentFn(
@@ -192,7 +199,8 @@ export const processorStyles = {
         'Notification',
         'Send notifications through various channels',
         'text-blue-400',
-        MessagesSquare
+        MessagesSquare,
+        false
     ),
 
     Email: componentFn(
@@ -200,7 +208,9 @@ export const processorStyles = {
         'Email',
         'Send and process emails',
         'text-gray-600',
-        Mail
+        Mail,
+        false
+
     ),
 
     Schedule: componentFn(
@@ -208,7 +218,25 @@ export const processorStyles = {
         'Schedule',
         'Schedule and automate tasks',
         'text-orange-400',
-        Timer
+        Timer,
+        false
+
+    ),
+
+    Coalesce: componentFn(
+        'processor_state_coalescer',
+        'Merge',
+        'Create a dot product of two different states, by project mapping them onto each other.',
+        'text-orange-400',
+        Timer,
+    ),
+
+    Composite: componentFn(
+        'processor_state_composite',
+        'Combine',
+        'Merge two or more state events, given a composite key',
+        'text-orange-400',
+        Combine
     ),
 
     Queue: componentFn(
@@ -216,7 +244,9 @@ export const processorStyles = {
         'Queue',
         'Manage message queues and async processing',
         'text-purple-400',
-        Truck
+        Truck,
+        false
+
     ),
 
     Trigger: componentFn(
@@ -224,7 +254,9 @@ export const processorStyles = {
         'Trigger',
         'Event-based process trigger',
         'text-yellow-400',
-        Zap
+        Zap,
+        false
+
     ),
 
     Network: componentFn(
@@ -232,7 +264,9 @@ export const processorStyles = {
         'Network',
         'Network-related operations and protocols',
         'text-blue-300',
-        Network
+        Network,
+        false
+
     )
 };
 
@@ -244,11 +278,15 @@ export const processorCategories = {
     },
     sources: {
         name: 'Data Sources',
-        items: ['Database', 'JsonFile', 'CSV', 'TextFile', 'Stream']
+        items: ['SQL', 'JsonFile', 'CSV', 'TextFile', 'Stream']
+    },
+    transform: {
+        name: 'Transform',
+        items: ['Coalesce', 'Composite']
     },
     processors: {
         name: 'Processors',
-        items: ['Function', 'Transform', 'Filter', 'Split', 'Merge']
+        items: ['Function', 'Filter']
     },
     ai: {
         name: 'AI Models',
