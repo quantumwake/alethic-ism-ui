@@ -1,5 +1,4 @@
 import React, {memo} from 'react';
-import theme from "./theme";
 import BaseProcessorNode from "./base/BaseProcessorNode";
 
 function FunctionNodeUserInteraction({ id, data }) {
@@ -37,7 +36,7 @@ function FunctionNodeUserInteraction({ id, data }) {
             nodeId={id}
             renderAdditionalControls={renderAdditionalControls}
             renderAdditionalContent={renderAdditionalContent}
-            theme={theme.user_input}
+            // theme={theme.user_input}
         />
     );
 }

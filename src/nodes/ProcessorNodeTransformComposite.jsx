@@ -1,19 +1,19 @@
 import React, {memo} from 'react';
 import BaseProcessorNode from "./base/BaseProcessorNode";
 
-function ProcessorNode({ id, data }) {
-    const renderAdditionalControls = ({}) => (<>
+function ProcessorNodeTransformComposite({ id, data }) {
+    const renderAdditionalControls = ({ }) => (<>
 
     </>);
 
-    const renderAdditionalContent = ({}) => (<>
+    const renderAdditionalContent = () => (<>
 
     </>);
 
     return (
         <BaseProcessorNode
-            providerName="Anthropic"
-            className="NaturalLanguageProcessing"
+            providerName="State Composite"
+            className="DataTransformation"
             nodeId={id}
             renderAdditionalControls={renderAdditionalControls}
             renderAdditionalContent={renderAdditionalContent}
@@ -21,4 +21,4 @@ function ProcessorNode({ id, data }) {
     );
 }
 
-export default memo(ProcessorNode);
+export default memo(ProcessorNodeTransformComposite);

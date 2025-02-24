@@ -1,7 +1,7 @@
 import React, {memo} from 'react';
 import BaseProcessorNode from "./base/BaseProcessorNode";
 
-function ProcessorNodeQuantumWakeStateFuser({ id, data }) {
+function FunctionNodeDataSourceSQL({ id, data }) {
     const renderAdditionalControls = ({ }) => (<>
 
     </>);
@@ -12,8 +12,8 @@ function ProcessorNodeQuantumWakeStateFuser({ id, data }) {
 
     return (
         <BaseProcessorNode
-            providerName="State Coalescer"
-            className="DataTransformation"
+            providerName="SQL"
+            className="DatabaseProcessing"
             nodeId={id}
             renderAdditionalControls={renderAdditionalControls}
             renderAdditionalContent={renderAdditionalContent}
@@ -21,4 +21,4 @@ function ProcessorNodeQuantumWakeStateFuser({ id, data }) {
     );
 }
 
-export default memo(ProcessorNodeQuantumWakeStateFuser);
+export default memo(FunctionNodeDataSourceSQL);
