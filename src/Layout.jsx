@@ -130,6 +130,15 @@ const Layout = () => {
                                 content: <CustomStudio />, // Assuming you have Studio and TerminalTemplateEditor components
                                 closeable: false,
                             },
+                            // {
+                            //     name: 'studio poc',
+                            //     label: 'Query Editor',
+                            //     content: <QueryBuilder
+                            //         stateId="9ab0f4ac-3d87-4437-9528-0163cc5367a8"
+                            //         userId="77c17315-3013-5bb8-8c42-32c28618101f"
+                            //     />, // Assuming you have Studio and TerminalTemplateEditor components
+                            //     closeable: false,
+                            // },
                             {
                                 name: 'editor',
                                 label: 'Editor',

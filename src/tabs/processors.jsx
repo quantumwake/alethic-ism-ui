@@ -91,9 +91,9 @@ export const processorStyles = {
     ),
 
     // Core Processors
-    Function: componentFn(
-        'processor_function',
-        'Function',
+    Python: componentFn(
+        'processor_python',
+        'Python',
         'Custom Python function for data processing',
         'text-indigo-500',
         Code
@@ -286,7 +286,7 @@ export const processorCategories = {
     },
     processors: {
         name: 'Processors',
-        items: ['Function', 'Filter']
+        items: ['Python', 'Filter']
     },
     ai: {
         name: 'AI Models',
