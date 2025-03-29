@@ -249,6 +249,15 @@ export const processorStyles = {
 
     ),
 
+    Provider: componentFn(
+        'processor_provider',
+        'Provider',
+        'Standard interface to any provider within a provider class',
+        'text-purple-400',
+        Filter,
+        true
+    ),
+
     Trigger: componentFn(
         'processor_trigger',
         'Trigger',
@@ -287,6 +296,10 @@ export const processorCategories = {
     processors: {
         name: 'Processors',
         items: ['Python', 'Filter']
+    },
+    common: {
+        name: "Common",
+        items: ['Provider']
     },
     ai: {
         name: 'AI Models',

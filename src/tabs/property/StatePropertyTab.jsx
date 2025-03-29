@@ -270,12 +270,25 @@ const StatePropertyTab = () => {
 
     const stateConfigPrimaryKeyColumns = (type) => {
         return {
-            title: "Primary Key",
+            title: "Primary Keys",
             items: {
                 title: "Primary Key",
                 content: <StateConfigDataKeyDefinition
                     nodeId={selectedNodeId}
                     definition_name="primary_key"
+                    onStateChange={onKeyDefinitionChanged}/>
+            }
+        }
+    }
+
+    const stateConfigJoinKeyColumns = (type) => {
+        return {
+            title: "Join Keys",
+            items: {
+                title: "Join Keys",
+                content: <StateConfigDataKeyDefinition
+                    nodeId={selectedNodeId}
+                    definition_name="state_join_key"
                     onStateChange={onKeyDefinitionChanged}/>
             }
         }
@@ -342,6 +355,10 @@ const StatePropertyTab = () => {
                     primary_key: {
                         title: "Primary Key",
                         content: <TerminalTabViewSection title="Key" items={stateConfigPrimaryKeyColumns(type)} sub={true} />
+                    },
+                    state_join_key: {
+                        title: "Join Keys",
+                        content: <TerminalTabViewSection title="Join" items={stateConfigJoinKeyColumns(type)} sub={true} />
                     },
                     columns: {
                         title: "Columns",

@@ -18,13 +18,6 @@ jobs:
         id: code_checkout
         uses: actions/checkout@v3
 
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://github.com/mikefarah/yq/releases/download/v4.40.5/yq_linux_amd64 -O /usr/local/bin/yq
-          chmod +x /usr/local/bin/yq
-
       - name: Assign Environment Variables for Build & Deployment Process
         id: setup_variables
 

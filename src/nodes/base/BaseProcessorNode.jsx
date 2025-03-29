@@ -43,9 +43,9 @@ function BaseProcessorNode({ providerName, className, nodeId, renderAdditionalCo
 
     const renderHeader = () => (
         <>
-            <TerminalInfoButton id={nodeId} details={providerName} theme={theme}/>
+            <TerminalInfoButton id={nodeId} details={""} theme={theme}/>
             <span className={`py-0.5 px-0.5 text-xs`}>
-                {localProvider?.name || providerName}
+                {localProvider?.name}
             </span>
         </>
     );

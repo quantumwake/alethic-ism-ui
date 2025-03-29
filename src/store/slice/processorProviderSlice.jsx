@@ -18,6 +18,13 @@ export const useProcessorProviderSlice = (set, get) => ({
             provider.class_name.toLowerCase() === className.toLowerCase()
         )
     },
+    getProvidersByClass: (className) => {
+        if (!className) {
+            return []
+        }
+        const { providers } = get()
+        return providers.filter(provider => provider.class_name.toLowerCase() === className.toLowerCase())
+    },
     getProviderById: (id) => {
         const { providers } = get()
         return providers.find(provider => provider.id === id)

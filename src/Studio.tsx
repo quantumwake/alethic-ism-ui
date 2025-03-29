@@ -13,6 +13,7 @@ import {
     ProcessorNodeVisualOpenAI,
     ProcessorNodeLlama,
     ProcessorNodeGoogleAI,
+    ProcessorNodeProvider,
     TrainerNode,
     StateNode,
     /// rename these, need better naming convention around the function runtime?
@@ -43,6 +44,7 @@ const nodeTypes = {
     processor_mistral: ProcessorNodeMistral,
     processor_state_coalescer: ProcessorNodeTransformCoalescer,
     processor_state_composite: ProcessorNodeTransformComposite,
+    processor_provider: ProcessorNodeProvider,
     trainer: TrainerNode,
     function_datasource_sql: FunctionNodeDataSourceSQL,
 };
@@ -110,11 +112,11 @@ const Studio = () => {
         }
 
         if (type.startsWith('processor') || type.startsWith('function')) {
-            createProcessorWithWorkflowNode(nodeData)
+            await createProcessorWithWorkflowNode(nodeData)
         } else if (type.startsWith('state')) {
-            createStateWithWorkflowNode(nodeData)
+            await createStateWithWorkflowNode(nodeData)
         } else if (type.startsWith('trainer')) {
-            createTrainerWithWorkflowNode(nodeData)
+            await createTrainerWithWorkflowNode(nodeData)
         } else {
             throw new Error('unsupported module type')
         }
