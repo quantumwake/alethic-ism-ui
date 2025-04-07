@@ -1,6 +1,7 @@
 #!/bin/sh
 # env.sh
 
+
 # Check if an argument is provided
 if [ -z "$1" ]
 then

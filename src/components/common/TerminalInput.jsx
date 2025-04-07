@@ -39,7 +39,7 @@ export const TerminalInput = ({
     const sizeStyle = sizes[size];
 
     return (
-        <div className="relative flex items-center">
+        <div className="relative flex items-center border-1">
             {icon && (
                 <span className={`absolute left-2 ${theme.icon}`}>
                     {icon}

@@ -75,13 +75,13 @@ export const useStateSlice = (set, get) => ({
         await get().fetchWorkflowEdges(projectId);
     },
 
-    fetchState: async (stateId, load_state = false, setNodeData = true) => {
+    fetchState: async (stateId, load_state = false, setNodeData = true, offset = 0, limit = 100) => {
         if (!stateId) {
             return
         }
 
         try {
-            const response = await fetch(`${get().ISM_API_BASE_URL}/state/${stateId}?load_data=${load_state}`)
+            const response = await fetch(`${get().ISM_API_BASE_URL}/state/${stateId}?load_data=${load_state}&offset=${offset}&limit=${limit}`)
             let stateData = {
                 id: stateId
             }

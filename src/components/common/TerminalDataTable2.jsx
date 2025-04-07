@@ -5,15 +5,15 @@ import { Search as SearchIcon } from 'lucide-react';
 import TerminalInput from './TerminalInput';
 import {useStore} from "../../store";
 
-const SearchField = ({ columnKey, onSearch }) => {
+const SearchField = ({ columnKey, onSearch, placeholder }) => {
     return (
         <TerminalInput
             icon={<SearchIcon className="w-4 h-4" />}
             size="small"
             variant="ghost"
-            placeholder="Search..."
+            placeholder={placeholder}
             onChange={(e) => onSearch(columnKey, e.target.value)}
-            className="w-full">
+            className="min-w-8 w-full">
         </TerminalInput>
     )
 }
@@ -27,14 +27,19 @@ const TableHeader = ({ table, onSearch, isStateFormat }) => {
         columns = table?.length > 0 ? Object.keys(table[0]) : [];
     }
 
-    return (<thead>
+    return (<thead className="sticky top-0 bg-white z-10">
         <tr>
+            <th className={`${theme.datatable.header} ${theme.border}`}>
+                <div className="flex flex-col">
+                    ??
+                </div>
+            </th>
             {columns && Object.entries(columns).map(([key, column]) => (
                 <th key={key} className={`${theme.datatable.header} ${theme.border}`}>
                     <div className="flex flex-col">
                         <div className="flex min-w-[50px]">
                             <div className="text-sm pr-4 uppercase">{column.name}</div>
-                            <div className=""><SearchField columnKey={key} theme={theme} onSearch={onSearch}/></div>
+                            <SearchField placeholder={column.name} columnKey={key} theme={theme} onSearch={onSearch}/>
                         </div>
                     </div>
                 </th>
@@ -71,22 +76,27 @@ const TableCell = ({value, rowIndex, columnKey, isExpanded, onExpand}) => {
     )
 }
 
-const TableBody = ({ table, filterData, isExpanded, onExpand, isStateFormat }) => {
+const TableBody = ({ table, limit, filterData, isExpanded, onExpand, isStateFormat }) => {
     const theme = useStore(state => state.getCurrentTheme());
 
     // handle original state column data row value format
     if (isStateFormat && table?.data) {
         return (
             <tbody className="">
-            {Array.from({ length: table.count }).map((_, rowIndex) => filterData(rowIndex) && (
+            {Array.from({ length: limit ?? table.count }).map((_, rowIndex) => filterData(rowIndex) && (
                 <tr key={rowIndex} className={`border-b border-dashed ${theme.border} hover:${theme.button.primary}`}>
+                    <TableCell key={`${rowIndex}-action`} value=""
+                        rowIndex={rowIndex}
+                        columnKey={`${rowIndex}-action`}
+                        isExpanded={true}
+                        onExpand={() => {}}
+                    />
+
                     {Object.keys(table.columns).map((columnKey) => (
-                        <TableCell
-                            key={columnKey}
+                        <TableCell key={columnKey}
                             value={table.data[columnKey]?.values[rowIndex] ?? null}
                             rowIndex={rowIndex}
                             columnKey={columnKey}
-                            theme={theme}
                             isExpanded={isExpanded}
                             onExpand={onExpand}
                         />
@@ -127,12 +137,15 @@ const TableBody = ({ table, filterData, isExpanded, onExpand, isStateFormat }) =
 };
 
 const TerminalDataTable2 = ({
-                       table,
-                       isOpen,
-                       onClose,
-                       className = '',
-                       modalProps = {}
-                   }) => {
+    table,
+    isOpen,
+    onClose,
+    onPreviousOffset = null,
+    onForwardOffset = null,
+    limit = null,
+    className = '',
+    modalProps = {},
+}) => {
 
     const theme = useStore(state => state.getCurrentTheme());
     const [isExpanded, setExpanded] = useState({});
@@ -145,10 +158,10 @@ const TerminalDataTable2 = ({
         } else {
             setIsStateFormat(false)
         }
-    }, [table]);
+    }, [table, limit]);
+
 
     const handleExpansion = (row, col, expanded) => setExpanded(prev => ({ ...prev, [`${row}-${col}`]: expanded }));
-
     const handleSearch = (columnKey, value) => setFilters(prev => ({ ...prev, [columnKey]: value.toLowerCase() }));
 
     // Update the filterData function in the main component to handle both formats
@@ -173,15 +186,14 @@ const TerminalDataTable2 = ({
             <div className="fixed inset-0 bg-black/30" />
             <div className="fixed inset-0 flex items-center justify-center">
                 <HeadlessDialog.Panel className={`w-full max-h-[80vh] overflow-y-auto ${theme.bg} ${theme.border} border shadow-lg`}>
-                {/*<HeadlessDialog.Panel className={`w-full h-1/2 ${theme.bg} ${theme.border} border shadow-lg`}>*/}
-                    <div className="p-2 overflow-x-auto">
+                    <div className="overflow-x-auto max-h-[calc(100vh-200px)] overflow-y-auto">
                         <table className="w-full">
                             <TableHeader table={table}
                                          onSearch={handleSearch}
-                                         isStateFormat={isStateFormat}
-                            />
+                                         isStateFormat={isStateFormat}/>
                             <TableBody
                                 table={table}
+                                limit={limit}
                                 filterData={filterData}
                                 isExpanded={isExpanded}
                                 onExpand={handleExpansion}

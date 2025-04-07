@@ -6,9 +6,9 @@ import {
     ChevronDown,
     Clock,
     Search,
-    File, PencilIcon, TrashIcon, CopyIcon, LogsIcon, ShareIcon, Share2Icon, ScaleIcon, PlusSquareIcon,
+    File, PencilIcon, TrashIcon, CopyIcon, LogsIcon, ShareIcon, Share2Icon, ScaleIcon, PlusSquareIcon, SquareMenuIcon,
 } from 'lucide-react';
-import {TerminalInput, TerminalContextMenu} from "../components/common";
+import {TerminalInput, TerminalContextMenu, TerminalInfoButton} from "../components/common";
 
 const ProjectTab = () => {
     const theme = useStore(state => state.getCurrentTheme());
@@ -118,7 +118,7 @@ const ProjectTab = () => {
         console.debug(`item: ${item}`)
         switch (item.id) {
             case "new":
-                setNewProjectName("") // this enables the terminal input for a new project
+                setNewProjectName("project name") // this enables the terminal input for a new project
                 break
         }
     }
@@ -166,14 +166,14 @@ const ProjectTab = () => {
 
     const filteredProjects = projects?.filter(project =>
         project?.project_name?.toLowerCase().includes(searchTerm?.toLowerCase())
-    ) || [];
+    ) || [searchTerm];
 
     // const groupedProjects = groupProjectsByTime(filteredProjects);
 
     const [groupedProjects, setGroupedProjects] = useState()
 
     useEffect(() => {
-        const grouped = groupProjectsByTime(projects)
+        const grouped = groupProjectsByTime(filteredProjects);
         setGroupedProjects(grouped)
     }, [projects]);
 
@@ -222,18 +222,7 @@ const ProjectTab = () => {
 
                 {isExpanded && (
                     <div className="space-y-1 py-1">
-                        {newProjectName !== null && (
-                            <div className="flex flex-col">
-                                <TerminalInput
-                                    value={newProjectName}
-                                    placeholder="enter project name"
-                                    size="small"
-                                    variant="primary"
-                                    onChange={(o) => setNewProjectName(o.value)}
-                                    onKeyDown={handleNewProjectKeyDown}
-                                />
-                            </div>
-                        )}
+
                         {projects.map(project => (
                             <button
                                 key={project.project_id}
@@ -241,7 +230,9 @@ const ProjectTab = () => {
                                 onContextMenu={(e) => handleContextMenu(e)}  // Add this line
                                 className={`w-full text-left px-3 py-1 ${theme.hover} flex items-center gap-2`}
                             >
-                                <File className={`w-3 h-3 ${theme.icon}`}/>
+                                {/*<File className={`w-3 h-3 ${theme.icon}`}/>*/}
+                                <TerminalInfoButton id={project.project_id} details={project.project_name}  className={`w-3 h-3 ${theme.icon}`} theme={theme} icon={<File className={`w-3 h-3 ${theme.icon}`}/>}/>
+
                                 {project?.project_id && (
                                     <div className="flex flex-col">
                                         <span className={`text-xs ${theme.text}`}>
@@ -277,7 +268,20 @@ const ProjectTab = () => {
                     placeholder="Search projects..."
                 />
                 <Clock className={`w-3 h-3 ${theme.icon}`}/>
+                <SquareMenuIcon className={`ml-2 w-3 h-3 ${theme.icon}`} onClick={() => setIsContextMenuOpen(true)}/>
             </div>
+            {newProjectName !== null && (
+
+            <div className={`flex items-center p-2 border-b ${theme.border}`}>
+                <TerminalInput
+                    value={newProjectName}
+                    placeholder="enter project name"
+                    size="small"
+                    variant="primary"
+                    onChange={(o) => setNewProjectName(o.value)}
+                    onKeyDown={handleNewProjectKeyDown}
+                />
+            </div>)}
 
             <div className="flex-1 overflow-y-auto">
                 {groupedProjects && (

@@ -25,13 +25,14 @@ export const useProjectSlice = (set, get) => ({
             const projects = await response.json();
             projects.sort((b, a) => new Date(a['created_date']) - new Date(b['created_date']));
             set({projects});
-            return
+            return projects;
         }
 
+        // TODO proper error handling -- throw new Error('Network response was not ok');
         if (response.status === 404) {
             set({projects: []});
         }
-        // TODO proper error handling -- throw new Error('Network response was not ok');
+        return []
     },
     newProject: async (name) => {
         return {

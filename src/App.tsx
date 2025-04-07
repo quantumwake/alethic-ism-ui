@@ -7,6 +7,8 @@ import Signup from "./Signup";
 import Layout from "./Layout";
 import {useStore} from "./store";
 import CustomStudio from "./CustomStudio";
+import SignupBasic from "./SignupBasic";
+import LayoutBasic from "./LayoutBasic";
 
 const RouteLogger = () => {
     const navigationType = useNavigationType();
@@ -20,55 +22,56 @@ const RouteLogger = () => {
     return null; // This component doesn't render anything
 };
 
-const router = createBrowserRouter([
-    {
+const BASE_PATH = process.env.REACT_APP_BASE_PATH || "/";
+
+const router = createBrowserRouter(
+    [{
         path: "/",
         element: (
             <>
-                <RouteLogger />
+                <RouteLogger/>
                 <RootLayout/>
                 {/*<RootLayout>*/}
                 {/*    <Outlet />*/}
                 {/*</RootLayout>*/}
             </>
         ),
-        // element: <RootLayout/>,
-        // loader: () => ({}),
         children: [
             {
-                path: "/home",
+                path: "home",
                 element:
                     <ReactFlowProvider>
                         <Layout/>
                     </ReactFlowProvider>
             },
             {
-                path: "/login",
+                path: "login",
                 element: <Login/>
             },
             {
-                path: "/signup",
-                element: <Signup />
+                path: "signup",
+                element: <LayoutBasic/>,
+                children: [
+                    {
+                        path: "google",
+                        element: <Signup/>
+                    },
+                    {
+                        path: "basic",
+                        index: true, // This makes it the default child route
+                        element: <SignupBasic/>
+                    }
+                ]
             },
             {
-                path: "/test",
-                element: <CustomStudio />
+                path: "test",
+                element: <CustomStudio/>
             },
-            // {
-                // path: "/discourse/:isid/:osid/:sid/:uid",
-                // element: <DiscourseChannel />
-            // },
-            // {
-            //     path: "/stream/analyzer",
-            //     element: <WebSocketMessageDisplay />
-            // },
-            // {
-            //     path: "/filter",
-            //     element: <StateDataFilterDialog />
-            // }
         ]
-    }
-]);
+    }],
+    // Pass the dynamic basename here.
+    { basename: BASE_PATH }
+);
 
 // const App = () => {
 //     return (

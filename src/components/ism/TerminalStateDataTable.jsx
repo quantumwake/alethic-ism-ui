@@ -8,6 +8,8 @@ const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => 
     const [table, setTable] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [offset, setOffset] = useState(0);
+    const [limit, setLimit] = useState(100);
 
     useEffect(() => {
         if (!isOpen) {
@@ -16,7 +18,7 @@ const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => 
 
         const fetchData = async () => {
             try {
-                const result = await fetchState(nodeId, true, false);
+                const result = await fetchState(nodeId, true, false, offset, limit);
                 setTable(result);
             } catch (error) {
                 setError(error.message);
@@ -37,6 +39,7 @@ const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => 
     return (
         <TerminalDataTable2
             isOpen={isOpen}
+            limit={limit}
             onClose={onClose}
             table={table}
             className={className}
