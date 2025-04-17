@@ -2,7 +2,7 @@
 
 .env.local
 .env.prod
-./public/runtime-env.js
+runtime-env.js
 
 # dependencies
 /node_modules
