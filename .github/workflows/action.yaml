@@ -54,13 +54,6 @@ jobs:
         run: |
           echo "Pushing container file with image $IMAGE"
           bash docker_push.sh -i $IMAGE
-      #        docker push $IMAGE
-      #
-      #    - name: Update deployment file
-      #      run: |
-      #        echo "Updating deployment file with image $IMAGE"
-      #        sed -i "s|<IMAGE>|$IMAGE|" $GITHUB_WORKSPACE/k8s/deployment.yaml
-      #        cat $GITHUB_WORKSPACE/k8s/deployment.yaml
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
