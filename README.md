@@ -1,76 +1,22 @@
-# Alethic Instruction-Based State Machine Studio UI (ISM) 
-The Alethic ISM Core SDK is the foundational layer of the Alethic ISM project group. It provides the core processor and state management functionalities required to build specialized processors—including language-based processors—and to handle the majority of state input/output processing.
+# Alethic Instruction-Based State Machine Studio UI (ISM)
+Alethic ISM Studio is the web-based workbench for building, visualizing and running instruction-based state-machine workflows in real time. It connects to the core ISM components so you can design programmable pipelines and execute them interactively. Learn more on the Alethic ISM homepage.
 
-## Available Scripts
-``
-### TAILWIND
-npx tailwindcss -i ./src/input.css -o ./src/output.css --watch
+Instructions can invoke code, query data, direct large language models, or perform structured transformations. Each node applies an instruction to an input state via a processor, producing a new, versioned, immutable output state. Together, these nodes form computable workflows that are fully executable, traceable and reproducible.
 
-In the project directory, you can run:
+The system is experimental and is under active development as part of Bioethics with AI research supported by the University of Oxford and the National University of Singapore, with previous research support from Princeton University.
 
-### `npm start`
-``
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+![Alethic Studio](alethic_studio_1.png)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Watch Tailwind (optional)
+If you want tailwind updates to take effect during development run
 
-### `npm test`
+`sh tailwind.sh`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Start Dev Server
 
-### `npm run build`
+`npm start`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-
+Opens at http://localhost:3000.
 
 ## License
 Alethic ISM is under a DUAL licensing model, please refer to [LICENSE.md](LICENSE.md).
