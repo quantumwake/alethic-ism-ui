@@ -37,7 +37,7 @@ jobs:
           echo "DOCKER IMAGE: $IMAGE"
           
           # build the docker image
-          bash docker_build.sh -i $IMAGE
+          bash docker_build.sh -i $IMAGE -e dev
           
           # pass the image to the next step
           echo "IMAGE=$IMAGE" >> "$GITHUB_ENV" # for local variables
