@@ -1,6 +1,7 @@
 import {create} from 'zustand';
 import {persist} from "zustand/middleware";
 import {
+    useHttpSlice,
     useThemeSlice,
     useAccountSlice,
     useProjectSlice,
@@ -45,6 +46,7 @@ const useStore = create(
             ENVIRONMENT: window.env.REACT_APP_ENVIRONMENT,
             ISM_API_BASE_URL: window.env.REACT_APP_ISM_API_BASE_URL,
 
+            ...useHttpSlice(set, get),
             ...useThemeSlice(set, get),
             ...useAccountSlice(set, get),
             ...useProjectSlice(set, get),

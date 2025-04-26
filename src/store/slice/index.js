@@ -1,3 +1,4 @@
+export { default as useHttpSlice } from './httpSlice';
 export { default as useAccountSlice } from './accountSlice';
 export { default as useThemeSlice } from './themeSlice'
 export { default as useProjectSlice } from './projectSlice'
