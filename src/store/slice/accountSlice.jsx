@@ -52,7 +52,13 @@ export const useAccountSlice = (set, get) => ({
             const profile = await resp.json()
             get().setUserId(profile.user_id)
             get().setUserProfile(profile)
-            return resp
+
+            // persist jwt to local browser store
+            const jwtToken = resp.headers.get('Authorization').split(' ')[1];
+            localStorage.setItem('jwtToken', jwtToken);
+            set({ jwtToken });
+
+            return profile
         } catch (err) {
             // network error also pushed into state.errors by authFetch
             return null
