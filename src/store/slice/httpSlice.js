@@ -18,6 +18,45 @@ const useHttpSlice = (set, get) => {
         addError: err => set(state => ({ errors: [...state.errors, err] })),
         clearErrors: () => set({ errors: [] }),
 
+        authDownloadFile: async(url, filename = null) => {
+            const token = get().jwtToken; // assume you already have jwtToken in state
+            const res = await fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!res.ok) {
+                const text = await res.text().catch(() => "");
+                throw new Error(`Download failed: ${res.status} ${text}`);
+            }
+
+            // read as blob
+            const blob = await res.blob();
+
+            // determine filename
+            let suggestedName = filename;
+            if (!suggestedName) {
+                const cd = res.headers.get("Content-Disposition");
+                if (cd) {
+                    const match = cd.match(/filename="?(.+?)"?($|;)/);
+                    if (match) suggestedName = match[1];
+                }
+                if (!suggestedName) suggestedName = "download";
+            }
+
+            // 4. Trigger browser download
+            const downloadUrl = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = downloadUrl;
+            a.download = suggestedName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(downloadUrl);
+            return res
+        },
+
         authFetch: async (url, opts) => {
             try {
                 const res = await fetchAuth(buildUrl(url), opts)
@@ -31,6 +70,7 @@ const useHttpSlice = (set, get) => {
                 throw err
             }
         },
+
 
         authGet: (url, opts = {}) =>
             get().authFetch(url, { method: 'GET', ...opts }),
@@ -47,7 +87,7 @@ const useHttpSlice = (set, get) => {
             get().authFetch(url, {
                 method: 'PUT',
                 headers: { ...jsonHeaders, ...opts.headers },
-                body: JSON.stringify(body),
+                body: body,
                 ...opts,
             }),
 

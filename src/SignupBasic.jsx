@@ -23,23 +23,17 @@ const SignupBasic = () => {
             // const userDetails = { token: token, user: user };
 
             // Send the user details to the backend and get the JWT
-            const response = await createUserProfileBasic({
+            const user = await createUserProfileBasic({
                 email: email,
                 name: fullName,
                 credentials: password,
             });
 
-            // Store the JWT from the response header
-            const jwtToken = response.headers.get('Authorization').split(' ')[1];
-            // const jwtToken = "hello world - jwt"
-
-            // Save JWT in localStorage
-            localStorage.setItem('jwtToken', jwtToken);
-
-            // Save JWT in Zustand store
-            useStore.setState({ jwtToken });
-
-            navigate('/home');
+            if (user) {
+                navigate('/home');
+            } else {
+                setNotice("Error creating user profile. Please try again.");
+            }
         } catch (error) {
             console.error('Error signing in with Google:', error);
         }
@@ -57,15 +51,15 @@ const SignupBasic = () => {
                 </p>
             </div>
 
-            {/*<div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">*/}
-            {/*    <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">*/}
-            {/*        {notice && (*/}
-            {/*            <div className="mb-4 p-4 bg-yellow-100 text-yellow-700 rounded" role="alert">*/}
-            {/*                {notice}*/}
-            {/*            </div>*/}
-            {/*        )}*/}
-            {/*    </div>*/}
-            {/*</div>*/}
+            {notice && (
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                        <div className="mb-4 p-4 bg-yellow-100 text-yellow-700 rounded" role="alert">
+                            {notice}
+                        </div>
+                </div>
+            </div>
+            )}
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">

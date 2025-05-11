@@ -81,7 +81,8 @@ export const useStateSlice = (set, get) => ({
         }
 
         try {
-            const response = await fetch(`${get().ISM_API_BASE_URL}/state/${stateId}?load_data=${load_state}&offset=${offset}&limit=${limit}`)
+            // const response = await fetch(`${get().ISM_API_BASE_URL}/state/${stateId}?load_data=${load_state}&offset=${offset}&limit=${limit}`)
+            const response = await get().authGet(`${get().ISM_API_BASE_URL}/state/${stateId}?load_data=${load_state}&offset=${offset}&limit=${limit}`)
             let stateData = {
                 id: stateId
             }
@@ -136,6 +137,21 @@ export const useStateSlice = (set, get) => ({
         stateData = await response.json();
         get().setNodeData(nodeId, stateData)
         return stateData
+    },
+
+    exportStateData: async(stateId, filename) => {
+        const offset = 0
+        const limit = 1000000000 // TODO needs to be properly set
+
+        const params = new URLSearchParams({
+            load_data: true,
+            offset: String(offset),
+            limit: String(limit),
+        });
+
+        const url = `${get().ISM_API_BASE_URL}/state/${encodeURIComponent(stateId)}/export?${params}`
+        const resp = await get().authDownloadFile(url, filename)
+        return resp?.ok;
     },
 
     uploadState: async (stateId, file) => {

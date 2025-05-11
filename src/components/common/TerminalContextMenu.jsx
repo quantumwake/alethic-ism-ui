@@ -33,6 +33,7 @@ export const TerminalContextMenu = ({
     const handleItemClick = (item, subItem = null) => {
         if (item.subItems) {
             setActiveSubmenu(activeSubmenu === item.id ? null : item.id);
+            return
         }
 
         if (onItemClick) {
@@ -53,7 +54,10 @@ export const TerminalContextMenu = ({
         return (
             <div key={item.id}>
                 <button
-                    onClick={() => handleItemClick(item)}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        handleItemClick(item)
+                    }}
                     className={`w-full text-left px-2 py-1.5 ${theme.hover} flex items-center gap-2 group
                     ${item.danger ? theme.textAccent : theme.text}`}>
                     {Icon && <Icon className={`w-3 h-3 ${theme.icon}`}/>}
@@ -74,7 +78,7 @@ export const TerminalContextMenu = ({
                                 onClick={() => handleItemClick(item, subItem)}
                                 className={`w-full text-left px-2 py-1 ${theme.hover} flex items-center gap-2`}
                             >
-                                <span className={theme.textMuted}>{'>'}</span>
+                                {/*<span className={theme.textMuted}>{'>'}</span>*/}
                                 {subItem.icon && <subItem.icon className={`w-3 h-3 ${theme.icon}`} />}
                                 <span className={`text-xs ${theme.text}`}>{subItem.label}</span>
                             </button>

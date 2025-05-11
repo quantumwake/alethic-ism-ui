@@ -27,6 +27,21 @@ export const matrix= {
     input: input,
     icon: 'text-green-500',
     font: 'font-["IBM_Plex_Mono"]',
+    hoverMenu: {
+        // the button or icon that you hover to open the menu
+        trigger: 'text-green-300 hover:bg-amber-900 hover:text-amber-300',
+        // the menu panel itself
+        content: 'bg-black border-2 border-green-950 shadow-lg',
+        // each top-level menu item
+        item: 'text-green-300 hover:bg-amber-900 hover:text-amber-300 focus:bg-green-900',
+        // submenu container & items
+        subItems: {
+            // the submenu panel
+            content: 'bg-black border border-green-900',
+            // each submenu item
+            item: 'text-green-300 hover:bg-amber-900 hover:text-amber-300 focus:bg-green-800'
+        }
+    },
     effects: {
         enableScanlines: true,
         enableCrt: true,

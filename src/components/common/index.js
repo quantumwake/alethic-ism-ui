@@ -20,3 +20,4 @@ export { default as TerminalInput } from './TerminalInput'
 export { default as TerminalLabel } from './TerminalLabel'
 export { default as TerminalContextMenu } from './TerminalContextMenu'
 export { default as TerminalTabView } from "./TerminalTabView"
+export { default as TerminalHoverMenu } from "./TerminalHoverMenu"

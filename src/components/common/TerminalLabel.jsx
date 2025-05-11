@@ -12,9 +12,9 @@ export const TerminalLabel = ({
     const theme = useStore(state => state.getCurrentTheme());
 
     const sizes = {
-        small: 'text-xs mb-1',
-        default: 'text-sm mb-1.5',
-        large: 'text-base mb-2'
+        small: 'text-xs',
+        default: 'text-sm',
+        large: 'text-base'
     };
 
     return (
@@ -25,9 +25,7 @@ export const TerminalLabel = ({
                     ${theme.font}
                     ${theme.default.text.primary}
                     ${sizes[size]}
-                    flex items-center gap-1
-                `}
-            >
+                    flex items-center gap-1`}>
                 {children}
                 {required && (
                     <span className={theme.default.text.danger}>*</span>
