@@ -32,8 +32,16 @@ import TerminalStateExportDialog from "../../components/ism/TerminalStateExportD
 
 function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalContent }) {
     const theme = useStore(state => state.getCurrentTheme());
+    // const {workflowNodes, getNode} = useStore();
+    const {fetchState} = useStore();
+    // const node = useStore(state => state.getNode(nodeId));
     const nodeData = useStore(state => state.getNodeData(nodeId));
+    // const [nodeData, setNodeData] = useState()
     const {purgeStateData, deleteState, setChannelInputId, setChannelOutputId} = useStore();
+
+    useEffect(() => {
+        fetchState(nodeId).then(r => {});
+    }, [nodeId])
 
     // Dialog states
     const [dialogs, setDialogs] = useState({
@@ -60,7 +68,6 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
 
     // Button configuration for consistent styling
     const actionButtons = [
-
         {
             icon: DatabaseIcon,
             title: "Data",
@@ -113,47 +120,6 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
 
     const renderControls = () => (
         <TerminalHoverMenu actionButtons={actionButtons} theme={theme} />
-
-        // <div className="relative flex items-center gap-1">
-        //     {/*<SquareMenuIcon*/}
-        //     {/*    className={`ml-2 w-3 h-3 ${theme.icon}`}*/}
-        //     {/*    onClick={e => {*/}
-        //     {/*        setIsContextMenuOpen(true);*/}
-        //     {/*    }}*/}
-        //     {/*/>*/}
-        //
-        //     <button
-        //         onClick={() => setIsContextMenuOpen(true)}
-        //         className={`p-1 flex items-center justify-center rounded-sm`}
-        //         title="Actions">
-        //         <SquareMenuIcon className={`w-3 h-3 ${theme.icon}`} />
-        //     </button>
-        //
-        //     {/* 3) Absolute menu at the captured coords */}
-        //     <TerminalContextMenu
-        //         className="absolute z-10"
-        //         menuItems={contextMenuItems}
-        //         menuRef={contextMenuRef}
-        //         isOpen={isContextMenuOpen}
-        //         setIsOpen={setIsContextMenuOpen}
-        //         onItemClick={handleItemClick}
-        //     />
-        //
-        //     {renderAdditionalControls}
-        // </div>
-        //     {actionButtons.map((button, index) => {
-        //         const Icon = button.icon;
-        //         return (
-        //             <button
-        //                 key={index}
-        //                 onClick={button.onClick}
-        //                 className={`p-1 flex items-center justify-center rounded-sm ${button.className}`}
-        //                 title={button.title}>
-        //                 <Icon className={`w-3 h-3 ${theme.icon}`} />
-        //             </button>
-        //         );
-        //     })}
-        // </div>
     );
 
     const renderContent = () => (
@@ -244,4 +210,4 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
     );
 }
 
-export default memo(BaseStateNode);
+export default BaseStateNode;

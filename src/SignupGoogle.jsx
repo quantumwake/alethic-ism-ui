@@ -5,7 +5,7 @@ import {signInWithPopup, GoogleAuthProvider} from "firebase/auth";
 import {auth} from "./firebase/firebase";
 import {useStore} from "./store";
 
-const Signup = () => {
+const SignupGoogle = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -17,6 +17,7 @@ const Signup = () => {
     const {createUserProfileGoogle} = useStore()
 
     const signupWithGoogle = async () => {
+
         try {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
@@ -105,4 +106,4 @@ const Signup = () => {
     )
 }
 
-export default Signup
+export default SignupGoogle

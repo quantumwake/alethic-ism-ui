@@ -47,6 +47,7 @@ export const TerminalInput = ({
             )}
             <input
                 type={type}
+                autoComplete={type === 'password' ? "on" : "off" }
                 name={name}
                 value={value}
                 onChange={onChange}

@@ -13,6 +13,28 @@ export const useAccountSlice = (set, get) => ({
         localStorage.removeItem('jwtToken')
     },
 
+
+    setJwtTokenFromResponse: async(response) => {
+        if (!response || !response.ok) {
+            get().clearJwtToken()
+            return
+        }
+
+        const profile = await response.json()
+        if (!profile) {
+            get().clearJwtToken()
+            return
+        }
+        get().setUserId(profile.user_id)
+        get().setUserProfile(profile)
+
+        // persist jwt to local browser store
+        const jwtToken = response.headers.get('Authorization').split(' ')[1];
+        localStorage.setItem('jwtToken', jwtToken);
+        set({ jwtToken });
+        return profile
+    },
+
     userId: null,
     userProfile: null,
     setUserId: userId => set({ userId }),
@@ -20,49 +42,29 @@ export const useAccountSlice = (set, get) => ({
 
     // POST /user/basic
     createUserProfileBasic: async userCreate => {
-        try {
-            const resp = await get().authPost('/user/basic', userCreate)
-            if (!resp.ok) {
-                // authPost already pushed an error into state.errors
-                return null
-            }
-            const profile = await resp.json()
-            get().setUserId(profile.user_id)
-            get().setUserProfile(profile)
-
-            // persist jwt to local browser store
-            const jwtToken = resp.headers.get('Authorization').split(' ')[1];
-            localStorage.setItem('jwtToken', jwtToken);
-            set({ jwtToken });
-
-            return profile
-        } catch (err) {
-            // network error also pushed into state.errors by authFetch
-            return null
-        }
+        const resp = await get().noAuthPost('/user/basic', userCreate)
+        return await get().setJwtTokenFromResponse(resp)
     },
 
+    // POST /user/google
     createUserProfileGoogle: async userCreate => {
-        try {
-            const resp = await get().authPost('/user/google', userCreate)
-            if (!resp.ok) {
-                // authPost already pushed an error into state.errors
-                return null
-            }
-            const profile = await resp.json()
-            get().setUserId(profile.user_id)
-            get().setUserProfile(profile)
+        const resp = await get().noAuthPost('/user/google', userCreate)
+        return await get().setJwtTokenFromResponse(resp)
 
-            // persist jwt to local browser store
-            const jwtToken = resp.headers.get('Authorization').split(' ')[1];
-            localStorage.setItem('jwtToken', jwtToken);
-            set({ jwtToken });
-
-            return profile
-        } catch (err) {
-            // network error also pushed into state.errors by authFetch
-            return null
-        }
+        // if (!resp.ok {
+        //     return null
+        // }
+        //
+        // const profile = await resp.json()
+        // get().setUserId(profile.user_id)
+        // get().setUserProfile(profile)
+        //
+        // // persist jwt to local browser store
+        // const jwtToken = resp.headers.get('Authorization').split(' ')[1];
+        // localStorage.setItem('jwtToken', jwtToken);
+        // set({ jwtToken });
+        //
+        // return profile
     },
 
     // GET /user

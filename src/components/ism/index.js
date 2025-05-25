@@ -7,3 +7,4 @@ export { default as TerminalSyslog } from './TerminalSyslog';
 export { default as TerminalTemplateEditor } from './TerminalTemplateEditor';
 export { default as TerminalUsageReport } from './TerminalUsageReport';
 export { default as TerminalUserMenu } from './TerminalUserMenu';
+export { default as TerminalErrorsDialog} from './TerminalErrorsDialog';

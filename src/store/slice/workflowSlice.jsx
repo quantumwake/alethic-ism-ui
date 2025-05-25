@@ -40,6 +40,9 @@ export const useWorkflowSlice = (set, get) => ({
     // Use .find() to search for the node with the matching ID
     getNode: (nodeId) => {
         const { workflowNodes } = get(); // Get the current state of workflowNodes
+        if (!workflowNodes) {
+            return []
+        }
         return workflowNodes.find(node => node.id === nodeId); // This will be the node map if found, or undefined if not
     },
 

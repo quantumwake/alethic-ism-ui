@@ -75,31 +75,31 @@ export const useStateSlice = (set, get) => ({
         await get().fetchWorkflowEdges(projectId);
     },
 
-    fetchState: async (stateId, load_state = false, setNodeData = true, offset = 0, limit = 100) => {
-        if (!stateId) {
+    fetchState: async(stateId, load_state = false, setNodeData = true, offset = 0, limit = 100) => {
+        if (!stateId) return
+
+        // attempt to fetch the state defaults
+        const response = await get().authGet(`/state/${stateId}?load_data=${load_state}&offset=${offset}&limit=${limit}`)
+        if (!response?.ok) {
+            get().setNodeData(stateId, {id: stateId})
             return
         }
 
-        try {
-            // const response = await fetch(`${get().ISM_API_BASE_URL}/state/${stateId}?load_data=${load_state}&offset=${offset}&limit=${limit}`)
-            const response = await get().authGet(`${get().ISM_API_BASE_URL}/state/${stateId}?load_data=${load_state}&offset=${offset}&limit=${limit}`)
-            let stateData = {
-                id: stateId
-            }
+        const stateData = await response.json()
+        get().setNodeData(stateId, stateData)
+        return stateData
+    },
 
-            if (response.ok) {
-                stateData = await response.json();
-            }
-
-            // return quickly if state data is not found
-            if (setNodeData) {
-                get().setNodeData(stateId, stateData)
-            }
-
-            return stateData
-        } catch (error) {
-            console.warn(`Warning, unable to fetch data for state id: ${stateId} with error`, error);
+    fetchStatesByProject: async (projectId) => {
+        const resp = await get().authGet(`/project/${projectId}/states`)
+        if (!resp?.ok) {
+            return []
         }
+        const states = await resp.json()
+        states.forEach(state => {
+            get().setNodeData(state.state_id, state)
+        })
+        return states
     },
 
     createState: async (nodeId) => {
@@ -109,34 +109,40 @@ export const useStateSlice = (set, get) => ({
 
         const node = get().getNode(nodeId)
         let stateData = get().getNodeData(nodeId)
-        const stateObject =
-            {
-                "id": node.id,
-                "state_type": stateData.state_type || 'StateConfig',
-                "project_id": get().selectedProjectId,
-                "columns": stateData.columns || {},
-                "config": {
-                    ...stateData.config, // append existing nodeData.config to the new object
-                    "storage_class": "database",
-                }
+        const stateObject = {
+            "id": node.id,
+            "state_type": stateData.state_type || 'StateConfig',
+            "project_id": get().selectedProjectId,
+            "columns": stateData.columns || {},
+            "config": {
+                ...stateData.config, // append existing nodeData.config to the new object
+                "storage_class": "database",
             }
-
-        const response = await fetch(`${get().ISM_API_BASE_URL}/state/create`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(stateObject),
-        });
-
-        if (!response.ok) {
-            // TODO proper error handling -- throw new Error('Network response was not ok');
         }
 
-        // reassign the new state data returned, this will provide an updated list of ids if any
+        const response = get().authPost(`/state/create`, stateObject)
+        if (!response.ok) {
+            return stateData
+        }
+
         stateData = await response.json();
         get().setNodeData(nodeId, stateData)
-        return stateData
+
+        // const response = await fetch(`${get().ISM_API_BASE_URL}/state/create`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(stateObject),
+        // });
+
+        // if (!response.ok) {
+        //     TODO proper error handling -- throw new Error('Network response was not ok');
+        // }
+
+        // reassign the new state data returned, this will provide an updated list of ids if any
+        // get().setNodeData(nodeId, stateData)
+        // return stateData
     },
 
     exportStateData: async(stateId, filename) => {
@@ -183,8 +189,8 @@ export const useStateSlice = (set, get) => ({
 
 
     deleteProcessorStateWithWorkflowEdge: async(id) => {
-        return await get().deleteWorkflowEdge(id).then(() => {
-            get().deleteProcessorState(id).then(() => {
+        return await  get().deleteProcessorState(id).then(() => {
+            get().deleteWorkflowEdge(id).then(() => {
                 const {workflowEdges} = get(); // Get the current state of workflowNodes
                 const updatedEdges = workflowEdges.filter(edge => edge.id !== id);
 

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {useNavigate} from "react-router-dom";
 import {TerminalButton, TerminalInput} from "./components/common";
-import {auth} from "./firebase/firebase";
 import {useStore} from "./store";
 
 const SignupBasic = () => {
@@ -16,12 +15,6 @@ const SignupBasic = () => {
 
     const signupWithBasic = async () => {
         try {
-            // const result = await signInWithPopup(auth, provider);
-            // const user = result.user;
-
-            // const token = await user.getIdToken();
-            // const userDetails = { token: token, user: user };
-
             // Send the user details to the backend and get the JWT
             const user = await createUserProfileBasic({
                 email: email,
@@ -35,7 +28,7 @@ const SignupBasic = () => {
                 setNotice("Error creating user profile. Please try again.");
             }
         } catch (error) {
-            console.error('Error signing in with Google:', error);
+            console.error('Error signing in with local account:', error);
         }
     };
 
@@ -61,6 +54,7 @@ const SignupBasic = () => {
             </div>
             )}
 
+            <form onSubmit={(e) => e.preventDefault()}>
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
                     Full Name
@@ -100,13 +94,14 @@ const SignupBasic = () => {
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                     Password
                 </label>
+
                 <div className="mt-1">
                     <TerminalInput
                         id="password"
                         name="password"
                         type="password"
-                        autoComplete="current-password"
-                        required
+                        // autoComplete="current-password"
+                        // required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -134,6 +129,7 @@ const SignupBasic = () => {
                     Privacy Policy
                 </a>
             </div>
+            </form>
         </div>
     )
 }

@@ -25,17 +25,20 @@ const configOptions = [
 const StatePropertyTab = () => {
 
     const theme = useStore(state => state.getCurrentTheme());
-    const { templates } = useStore();
-    const [internalTemplates, setInternalTemplates] = useState({})
+    const {templates} = useStore();
+    const [internalTemplates, setInternalTemplates] = useState([])
 
     useEffect(() => {
-        const internal = templates.map(t => ({ id: t.template_id, label: t.template_path }))
+        const internal = templates.map(t => (
+            { id: t.template_id, label: t.template_path }
+        ))
         setInternalTemplates(internal)
     }, [templates]);
 
 
     const {selectedNode, setNodeData, fetchState} = useStore()
     const selectedNodeId = selectedNode?.id
+    const node = useStore(state => state.getNode(selectedNodeId))
     const nodeData = useStore(state => state.getNodeData(selectedNodeId))
     const [isAdvancedCollapsed, setIsAdvancedCollapsed] = useState(false);
 
@@ -79,15 +82,12 @@ const StatePropertyTab = () => {
                 break
         }
         setNodeData(selectedNodeId, nodeData)
-
     }
 
     const onConfigTypeChange = (state_type) => {
         setNodeData(selectedNodeId, {
             state_type: state_type
         })
-
-
     };
 
     const onKeyDefinitionChanged = (definition_name, items) => {
@@ -101,6 +101,7 @@ const StatePropertyTab = () => {
 
         switch (e.target.name) {
             case "name":
+                node.data.label = value;
                 nodeData.config.name = value
                 break;
             case "language":
@@ -116,7 +117,6 @@ const StatePropertyTab = () => {
                 break
         }
         setNodeData(selectedNodeId, nodeData)
-
     }
 
     const generalBasic = (type) => {
@@ -234,6 +234,7 @@ const StatePropertyTab = () => {
                             User Template
                         </TerminalLabel>
                         <TerminalDropdown
+                            allowEmpty={true}
                             values={templates.map(t => ({id: t.template_id, label: t.template_path}))}
                             onSelect={(value) => onChangeDropDownSelection("user_template", value)}
                             defaultValue={nodeData?.config?.user_template_id}
@@ -246,6 +247,7 @@ const StatePropertyTab = () => {
                             System Template
                         </TerminalLabel>
                         <TerminalDropdown
+                            allowEmpty={true}
                             values={templates.map(t => ({id: t.template_id, label: t.template_path}))}
                             onSelect={(value) => onChangeDropDownSelection("system_template", value)}
                             defaultValue={nodeData?.config?.system_template_id}

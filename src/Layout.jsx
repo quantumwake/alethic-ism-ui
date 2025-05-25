@@ -6,7 +6,7 @@ import {
     List,
     LayoutIcon,
     FolderOpenIcon,
-    BoxesIcon
+    BoxesIcon, ChevronDown, AlarmSmokeIcon
 } from 'lucide-react'
 
 import {
@@ -14,13 +14,19 @@ import {
     TerminalContainer,
     TerminalHeader,
     TerminalSidebar,
-    TerminalFooter, TerminalTabView
+    TerminalFooter, TerminalTabView, TerminalDataTable2
 } from "./components/common"
 
 import {useStore} from "./store"
 
 import {MenuTab, ProjectTab, ProjectFileTab, ComponentTab, PropertyTab}  from "./tabs"
-import {TerminalTemplateEditor, TerminalUsageReport, TerminalSyslog, TerminalUserMenu} from "./components/ism"
+import {
+    TerminalTemplateEditor,
+    TerminalUsageReport,
+    TerminalErrorsDialog,
+    TerminalSyslog,
+    TerminalUserMenu
+} from "./components/ism"
 import Studio from "./Studio"
 import CustomStudio from "./CustomStudio"
 
@@ -43,11 +49,23 @@ export const TerminalTabContent = ({ activeTab, ...props }) => {
 };
 
 const Layout = () => {
+    const theme = useStore(state => state.getCurrentTheme());
     const [isLeftSidebarOpen, setLeftSidebarOpen] = useState(true);
     const [isRightSidebarOpen, setRightSidebarOpen] = useState(true);
     const [activeLeftTab, setActiveLeftTab] = useState("menu");
     const [activeRightTab, setActiveRightTab] = useState("property");
     const {setActiveTheme} = useStore()
+
+    // error messages
+    const { errors, clearErrors } = useStore();
+
+    // error message columns
+    const errorsColumns = {
+        message: { name: "message"},
+        url: { name: "url"}
+    }
+
+    const [isErrorsDialogOpen, setIsErrorsDialogOpen] = useState(false);
 
     const leftTabs = [
         { id: 'menu', icon: <Menu className="w-4 h-4" /> },
@@ -177,12 +195,27 @@ const Layout = () => {
             <TerminalFooter
                 leftContent={<span>SYSTEM STATUS: ACTIVE</span>}
                 rightContent={
-                    <>
+                    <div className="flex">
+
                         <span><TerminalUsageReport /></span>
                         <span className="ml-4">v2.0 ALPHA</span>
-                    </>
+                        <AlarmSmokeIcon className={`ml-4 w-5 h-5 ${errors?.length > 0 ? "bg-yellow-200 text-red-600": ""} ${theme.icon}`} onClick={() => setIsErrorsDialogOpen(true)} />
+                        <span className="ml-2">{errors?.length}</span>
+                    </div>
                 }
             />
+
+            <TerminalDataTable2
+                isOpen={isErrorsDialogOpen}
+                onClose={() => setIsErrorsDialogOpen(false)}
+                table={errors}
+                columns={errorsColumns}
+                className="w-full"
+            />
+            {/*<TerminalErrorsDialog*/}
+            {/*    isOpen={isErrorsDialogOpen}*/}
+            {/*    setIsOpen={setIsErrorsDialogOpen}*/}
+            {/*/>*/}
 
         </TerminalContainer>
     );

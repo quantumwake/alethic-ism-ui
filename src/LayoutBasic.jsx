@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {
+    ChevronDown,
     LayoutGrid,
 } from 'lucide-react'
 
@@ -10,12 +11,10 @@ import {
 } from "./components/common"
 
 import {useStore} from "./store"
-import {TerminalSyslog, TerminalUserMenu} from "./components/ism"
 import {Outlet} from "react-router-dom";
 
 const LayoutBasic = ({}) => {
-    const {setActiveTheme} = useStore()
-
+    const theme = useStore(state => state.getCurrentTheme());
     return (
         <TerminalContainer className="h-screen flex flex-col">
             <TerminalHeader
@@ -31,7 +30,10 @@ const LayoutBasic = ({}) => {
             </main>
 
             <TerminalFooter
-                leftContent={<span>SYSTEM STATUS: ACTIVE</span>}
+                leftContent={
+                <div>
+                    <span>SYSTEM STATUS: ACTIVE</span>
+                </div>}
                 rightContent={
                     <>
                         <span className="ml-4">v2.0 ALPHA</span>

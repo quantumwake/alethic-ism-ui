@@ -20,6 +20,7 @@ const ProjectTab = () => {
         newProject,
         saveProject,
         fetchProjects,
+        fetchStatesByProject,
         fetchWorkflowNodes,
         fetchWorkflowEdges,
         fetchTemplates,
@@ -106,7 +107,11 @@ const ProjectTab = () => {
     const onSelectProject = async (project) => {
         const projectId = project.project_id;
         console.debug(`selecting project id ${projectId}`)
-        await fetchWorkflowNodes(projectId);
+        fetchWorkflowNodes(projectId).then(r => {
+            // fetchStatesByProject(projectId).then(r => {
+            //     console.log("fetched states for project")
+            // })
+        });
         await fetchWorkflowEdges(projectId);
         await fetchTemplates(projectId);
         await fetchProviders();

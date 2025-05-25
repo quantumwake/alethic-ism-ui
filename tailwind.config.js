@@ -1,15 +1,16 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
     mode: 'jit',
     content: ["./src/**/*.{html,js,jsx,ts,tsx}"],
-    plugins: [
-        function({ addUtilities }) {
-            const newUtilities = {
-                '.stroke-nodash': {
-                    strokeDasharray: 'none',
-                },
-            };
-            addUtilities(newUtilities);
-        },
-    ],
+    purge: {
+        enabled: process.env.NODE_ENV === 'production',
+        content: ["./src/**/*.{html,js,jsx,ts,tsx}"]
+    },
+    theme: {
+        extend: {
+            fontFamily: {
+                'vt323': ['VT323', 'monospace'],
+                'ibm-plex': ['IBM Plex Mono', 'monospace']
+            }
+        }
+    }
 }

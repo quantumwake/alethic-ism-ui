@@ -1,9 +1,7 @@
-import React, {useEffect} from "react";
+import React, {lazy, useEffect} from "react";
 import {createBrowserRouter, RouterProvider, useLocation, useNavigationType} from "react-router-dom";
 import {ReactFlowProvider} from "@xyflow/react";
 import RootLayout from "./RootLayout";
-import Login from "./Login";
-import Signup from "./Signup";
 import Layout from "./Layout";
 import {useStore} from "./store";
 import CustomStudio from "./CustomStudio";
@@ -21,6 +19,8 @@ const RouteLogger = () => {
 
     return null; // This component doesn't render anything
 };
+
+const SignupGoogle = lazy(() => import('./SignupGoogle'));
 
 const BASE_PATH = process.env.REACT_APP_BASE_PATH || "/";
 
@@ -44,17 +44,17 @@ const router = createBrowserRouter(
                         <Layout/>
                     </ReactFlowProvider>
             },
-            {
-                path: "login",
-                element: <Login/>
-            },
+            // {
+            //     path: "login",
+            //     element: <Login/>
+            // },
             {
                 path: "signup",
                 element: <LayoutBasic/>,
                 children: [
                     {
                         path: "google",
-                        element: <Signup/>
+                        element: <SignupGoogle/>
                     },
                     {
                         path: "basic",

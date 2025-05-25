@@ -7,7 +7,7 @@ import ProcessorPropertyTab from "./property/ProcessorPropertyTab";
 
 const PropertyTab = () => {
     const {selectedNode} = useStore()
-    const {createState, createProcessor} = useStore()
+    const {updateNode, createState, createProcessor} = useStore()
     const theme = useStore(state => state.getCurrentTheme());
 
     const handleSave = async () => {
@@ -15,9 +15,13 @@ const PropertyTab = () => {
             console.warn("unable to persist node, no node selected.")
             return
         }
+
         if (selectedNode.type === "state") {
-            const newState = await createState(selectedNode.id)
-            console.log('saved state: ' + newState)
+            // updateNode(selectedNode.id).then(() => {
+                const newState = createState(selectedNode.id).then(() => {
+                    console.log('saved state: ' + newState)
+                })
+            // })
         } else if (selectedNode.type.includes("processor")) {
             const processor = await createProcessor(selectedNode.id)
             console.log(`saved processor: ${processor}`)
@@ -26,7 +30,7 @@ const PropertyTab = () => {
 
     return (<div className={`relative flex-grow h-screen flex w-full ${theme.bg}`}>
                 <div className="z-50 absolute top-2 right-6 flex gap-4">
-                    <TerminalButton onClick={handleSave} variant="primary">
+                    <TerminalButton className="bg-yellow-200" onClick={handleSave} variant="primary">
                         <SaveIcon className="w-4 h-h"/>
                     </TerminalButton>
                 </div>

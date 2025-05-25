@@ -19,4 +19,4 @@ function StateNode({ id, data }) {
     );
 }
 
-export default memo(StateNode)
+export default StateNode

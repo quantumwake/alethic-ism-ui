@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React from 'react';
 import BaseProcessorNode from "./base/BaseProcessorNode";
 
 function ProcessorNodeProvider({ id, data }) {
@@ -19,4 +19,4 @@ function ProcessorNodeProvider({ id, data }) {
     );
 }
 
-export default memo(ProcessorNodeProvider);
+export default ProcessorNodeProvider;
