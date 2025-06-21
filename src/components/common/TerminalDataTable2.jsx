@@ -1,7 +1,7 @@
 // DataTable.jsx
 import React, {memo, useEffect, useState} from 'react';
 import { Dialog as HeadlessDialog } from '@headlessui/react';
-import { Search as SearchIcon } from 'lucide-react';
+import { Search as SearchIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import TerminalInput from './TerminalInput';
 import {useStore} from "../../store";
 
@@ -27,11 +27,11 @@ const TableHeader = ({ table, onSearch, isStateFormat }) => {
         columns = table?.length > 0 ? Object.keys(table[0]) : [];
     }
 
-    return (<thead className="sticky top-0 bg-white z-10">
+    return (<thead className={`sticky top-0 ${theme.bg} z-10`}>
         <tr>
             <th className={`${theme.datatable.header} ${theme.border}`}>
                 <div className="flex flex-col">
-                    ??
+
                 </div>
             </th>
             {columns && Object.entries(columns).map(([key, column]) => (
@@ -76,16 +76,16 @@ const TableCell = ({value, rowIndex, columnKey, isExpanded, onExpand}) => {
     )
 }
 
-const TableBody = ({ table, limit, filterData, isExpanded, onExpand, isStateFormat }) => {
+const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isStateFormat }) => {
     const theme = useStore(state => state.getCurrentTheme());
 
     // handle original state column data row value format
     if (isStateFormat && table?.data) {
         return (
             <tbody className="">
-            {Array.from({ length: limit ?? table.count }).map((_, rowIndex) => filterData(rowIndex) && (
+            {Array.from({ length: Math.min(limit ?? table.count, table.count) }).map((_, rowIndex) => filterData(rowIndex) && (
                 <tr key={rowIndex} className={`border-b border-dashed ${theme.border} hover:${theme.button.primary}`}>
-                    <TableCell key={`${rowIndex}-action`} value=""
+                    <TableCell key={`${rowIndex}-action`} value={`${offset + rowIndex + 1}`}
                         rowIndex={rowIndex}
                         columnKey={`${rowIndex}-action`}
                         isExpanded={true}
@@ -142,6 +142,7 @@ const TerminalDataTable2 = ({
     onClose,
     onPreviousOffset = null,
     onForwardOffset = null,
+    offset = null,
     limit = null,
     className = '',
     modalProps = {},
@@ -185,14 +186,36 @@ const TerminalDataTable2 = ({
         <HeadlessDialog open={isOpen} onClose={onClose} className="relative z-50" {...modalProps}>
             <div className="fixed inset-0 bg-black/30" />
             <div className="fixed inset-0 flex items-center justify-center">
-                <HeadlessDialog.Panel className={`w-full max-h-[80vh] overflow-y-auto ${theme.bg} ${theme.border} border shadow-lg`}>
-                    <div className="overflow-x-auto max-h-[calc(100vh-200px)] overflow-y-auto">
+                <HeadlessDialog.Panel className={`w-full max-h-[80vh] flex flex-col ${theme.bg} ${theme.border} border shadow-lg`}>
+                    {(onPreviousOffset || onForwardOffset) && (
+                        <div className={`flex min-h-10 h-10 max-h-10 justify-between items-center p-0 border-b border-dashed ${theme.border}`}>
+                            <button
+                                onClick={() => onPreviousOffset && onPreviousOffset(limit)}
+                                disabled={!onPreviousOffset}
+                                className={`flex items-center gap-2 px-4 py-2 ${theme.button.secondary}`}
+                            >
+                                <ChevronLeft className="w-4 h-4" />Previous
+                            </button>
+                            <span className={`text-sm ${theme.text}`}>
+                                Showing {Math.min(limit ?? table.count, table.count)} of {table.count} rows
+                            </span>
+                            <button
+                                onClick={() => onForwardOffset && onForwardOffset(limit)}
+                                disabled={!onForwardOffset}
+                                className={`flex items-center gap-2 px-4 py-2 ${theme.button.secondary}`}
+                            >
+                                Next<ChevronRight className="w-4 h-4" />
+                            </button>
+                        </div>
+                    )}
+                    <div className="flex-1 overflow-auto relative">
                         <table className="w-full">
                             <TableHeader table={table}
                                          onSearch={handleSearch}
                                          isStateFormat={isStateFormat}/>
                             <TableBody
                                 table={table}
+                                offset={offset}
                                 limit={limit}
                                 filterData={filterData}
                                 isExpanded={isExpanded}

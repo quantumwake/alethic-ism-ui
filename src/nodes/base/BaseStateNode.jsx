@@ -195,12 +195,6 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
                 stateId={nodeId}>
             </TerminalStateImportHgDialog>
 
-            {/*<TerminalDataTable*/}
-            {/*        isOpen={dialogs.view}*/}
-            {/*        onClose={(open) => toggleDialog('view')}*/}
-            {/*        nodeId={nodeId}>*/}
-            {/*</TerminalDataTable>*/}
-
             <TerminalStateDataTable
                 isOpen={dialogs.view}
                 onClose={(open) => toggleDialog('view')}

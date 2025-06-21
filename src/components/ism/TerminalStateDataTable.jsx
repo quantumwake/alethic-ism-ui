@@ -26,7 +26,7 @@ const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => 
         };
 
         fetchData().then(r => console.debug("completed fetch state data"));
-    }, [isOpen, nodeId, fetchState]);
+    }, [isOpen, nodeId, fetchState, offset, limit]);
 
     if (loading) {
         return <div className={`${theme.text}`}>Loading...</div>;
@@ -36,13 +36,27 @@ const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => 
         return <div className={`${theme.text} text-red-500`}>Error: {error}</div>;
     }
 
+    const handlePreviousOffset = (currentLimit) => {
+        const newOffset = Math.max(0, offset - currentLimit);
+        setOffset(newOffset);
+    };
+
+    const handleForwardOffset = (currentLimit) => {
+        if (table && offset + currentLimit < table.count) {
+            setOffset(offset + currentLimit);
+        }
+    };
+
     return (
         <TerminalDataTable2
             isOpen={isOpen}
+            offset={offset}
             limit={limit}
             onClose={onClose}
             table={table}
             className={className}
+            onPreviousOffset={offset > 0 ? handlePreviousOffset : null}
+            onForwardOffset={table && offset + limit < table.count ? handleForwardOffset : null}
         />
     );
 };
