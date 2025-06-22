@@ -4,7 +4,7 @@ import {memo, useEffect, useState} from "react";
 
 const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => {
     const theme = useStore(state => state.getCurrentTheme());
-    const {fetchState} = useStore();
+    const {fetchState, publishQueryState} = useStore();
     const [table, setTable] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -47,6 +47,10 @@ const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => 
         }
     };
 
+    const onCellTrigger = async(key, index, value) => {
+        await publishQueryState(nodeId, value)
+    }
+
     return (
         <TerminalDataTable2
             isOpen={isOpen}
@@ -57,6 +61,7 @@ const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => 
             className={className}
             onPreviousOffset={offset > 0 ? handlePreviousOffset : null}
             onForwardOffset={table && offset + limit < table.count ? handleForwardOffset : null}
+            onCellTrigger={onCellTrigger}
         />
     );
 };

@@ -1,7 +1,7 @@
 // DataTable.jsx
 import React, {memo, useEffect, useState} from 'react';
 import { Dialog as HeadlessDialog } from '@headlessui/react';
-import { Search as SearchIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import {Search as SearchIcon, ChevronLeft, ChevronRight, PlayIcon} from 'lucide-react';
 import TerminalInput from './TerminalInput';
 import {useStore} from "../../store";
 
@@ -76,7 +76,18 @@ const TableCell = ({value, rowIndex, columnKey, isExpanded, onExpand}) => {
     )
 }
 
-const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isStateFormat }) => {
+const TableCellTrigger = ({ key, columnKey, rowIndex, value, onCellTrigger = null }) => {
+    const theme = useStore(state => state.getCurrentTheme());
+    return (<>
+        <td className={`border-r border-dashed ${theme.border} px-2 py-2 ${theme.text}`}>
+            <button onClick={() => onCellTrigger && onCellTrigger(columnKey, rowIndex, value)}>
+                <PlayIcon className="w-3 h-3" />
+            </button>
+        </td>
+    </>)
+}
+
+const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isStateFormat, onCellTrigger = null}) => {
     const theme = useStore(state => state.getCurrentTheme());
 
     // handle original state column data row value format
@@ -85,12 +96,20 @@ const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isS
             <tbody className="">
             {Array.from({ length: Math.min(limit ?? table.count, table.count) }).map((_, rowIndex) => filterData(rowIndex) && (
                 <tr key={rowIndex} className={`border-b border-dashed ${theme.border} hover:${theme.button.primary}`}>
-                    <TableCell key={`${rowIndex}-action`} value={`${offset + rowIndex + 1}`}
-                        rowIndex={rowIndex}
-                        columnKey={`${rowIndex}-action`}
-                        isExpanded={true}
-                        onExpand={() => {}}
-                    />
+                    {/*<TableCell key={`${rowIndex}-action`} value={`${offset + rowIndex + 1}`}*/}
+                    {/*    rowIndex={rowIndex}*/}
+                    {/*    columnKey={`${rowIndex}-action`}*/}
+                    {/*    isExpanded={true}*/}
+                    {/*    onExpand={() => {}}*/}
+                    {/*/>*/}
+
+                    <TableCellTrigger key={`${rowIndex}-action`}
+                                      onCellTrigger={onCellTrigger}
+                                      columnKey={`${rowIndex}-action`} rowIndex={rowIndex}
+                                      value={Object.keys(table.columns).reduce((acc, columnKey) => {
+                        acc[columnKey] = table.data[columnKey]?.values[rowIndex] ?? null;
+                        return acc;
+                    }, {})} />
 
                     {Object.keys(table.columns).map((columnKey) => (
                         <TableCell key={columnKey}
@@ -146,6 +165,7 @@ const TerminalDataTable2 = ({
     limit = null,
     className = '',
     modalProps = {},
+    onCellTrigger = null,
 }) => {
 
     const theme = useStore(state => state.getCurrentTheme());
@@ -221,6 +241,7 @@ const TerminalDataTable2 = ({
                                 isExpanded={isExpanded}
                                 onExpand={handleExpansion}
                                 isStateFormat={isStateFormat}
+                                onCellTrigger={onCellTrigger}
                             />
                         </table>
                     </div>
