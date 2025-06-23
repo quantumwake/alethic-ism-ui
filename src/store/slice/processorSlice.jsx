@@ -12,7 +12,9 @@ export const useProcessorSlice = (set, get) => ({
                 "id": node.id,
                 "provider_id": processorData.provider_id,
                 "status": "CREATED",
-                "project_id": projectId
+                "project_id": projectId,
+                "name": processorData.name || "",
+                "class_name": processorData.class_name || ""
             }
 
         const response = await fetch(`${get().ISM_API_BASE_URL}/processor/create`, {
@@ -40,6 +42,17 @@ export const useProcessorSlice = (set, get) => ({
         try {
             const response = await fetch(`${get().ISM_API_BASE_URL}/processor/${processorId}`)
             const processorData = await response.json();
+            
+            // Enrich the processor data with the class information
+            if (processorData && processorData.provider_id) {
+                const provider = get().getProviderById(processorData.provider_id);
+                if (provider && provider.class_name) {
+                    processorData.class_name = provider.class_name;
+                } else {
+                    console.warn(`Provider ${processorData.provider_id} not found or has no class_name`);
+                }
+            }
+            
             if (set_data) {
                 get().setNodeData(processorId, processorData)
             }

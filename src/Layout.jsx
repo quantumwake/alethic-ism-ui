@@ -55,6 +55,7 @@ const Layout = () => {
     const [activeLeftTab, setActiveLeftTab] = useState("menu");
     const [activeRightTab, setActiveRightTab] = useState("property");
     const {setActiveTheme} = useStore()
+    const selectedProjectId = useStore(state => state.selectedProjectId);
 
     // error messages
     const { errors, clearErrors } = useStore();
@@ -193,7 +194,12 @@ const Layout = () => {
             </div>
 
             <TerminalFooter
-                leftContent={<span>SYSTEM STATUS: ACTIVE</span>}
+                leftContent={
+                    <div className="flex items-center gap-4">
+                        <span>SYSTEM STATUS: ACTIVE</span>
+                        {selectedProjectId && <span>PROJECT: {selectedProjectId}</span>}
+                    </div>
+                }
                 rightContent={
                     <div className="flex">
 

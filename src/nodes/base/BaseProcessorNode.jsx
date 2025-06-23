@@ -15,30 +15,42 @@ function BaseProcessorNode({ providerName, className, nodeId, renderAdditionalCo
     const changeProcessorStatus = useStore(state => state.changeProcessorStatus);
 
     const [isStopped, setIsStopped] = useState(true);
+    const [dataFetched, setDataFetched] = useState(false);
 
     useEffect(() => {
-        (async () => {
-            const processorData = await fetchProcessor(nodeId);
-            console.log(`fetched processor data for processor id: ${nodeId}`);
-        })();
-    }, [nodeId]);
+        if (!dataFetched && nodeId && !localNodeData?.status) {
+            (async () => {
+                const processorData = await fetchProcessor(nodeId);
+                console.log(`fetched processor data for processor id: ${nodeId}`);
+                setDataFetched(true);
+            })();
+        }
+    }, [nodeId, dataFetched, localNodeData?.status, fetchProcessor]);
 
     useEffect(() => {
-        (async () => {
-            const associatedStates = await fetchProcessorStates(nodeId);
-            console.log(`fetched processor state associations for processor id: ${nodeId}`);
-        })();
-    }, [nodeId]);
+        if (nodeId && !localNodeData?.associated_states) {
+            (async () => {
+                const associatedStates = await fetchProcessorStates(nodeId);
+                console.log(`fetched processor state associations for processor id: ${nodeId}`);
+            })();
+        }
+    }, [nodeId, localNodeData?.associated_states, fetchProcessorStates]);
 
     const updateStoppedStatus = useCallback(() => {
-        const currentNode = getNodeData(nodeId);
-        setIsStopped(["TERMINATE", "STOPPED"].includes(currentNode.status));
+        // const currentNode = getNodeData(nodeId);
+        // setIsStopped(["TERMINATE", "STOPPED"].includes(currentNode.status));
     }, [getNodeData, nodeId]);
 
+    useEffect(() => {
+        // if (localNodeData?.status) {
+        //     setIsStopped(["TERMINATE", "STOPPED"].includes(localNodeData.status));
+        // }
+    }, [localNodeData?.status]);
+
     const startOrStopProcessor = async () => {
-        const newStatus = isStopped ? "COMPLETED" : "TERMINATE";
-        await changeProcessorStatus(nodeId, newStatus);
-        updateStoppedStatus();
+        // const newStatus = isStopped ? "COMPLETED" : "TERMINATE";
+        // await changeProcessorStatus(nodeId, newStatus);
+        // updateStoppedStatus();
     };
 
     const renderHeader = () => (

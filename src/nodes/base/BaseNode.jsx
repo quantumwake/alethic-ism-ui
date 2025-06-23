@@ -5,6 +5,8 @@ import {useStore} from "../../store";
 
 function BaseNode({ nodeId, data, type, renderHeader, renderContent, renderControls, onExecute }) {
     const theme = useStore(state => state.getCurrentTheme());
+    const selectedNodeId = useStore(state => state.selectedNodeId);
+    const isSelected = nodeId === selectedNodeId;
 
     const getHandleColors = (handle) => ({
         source: {
@@ -77,6 +79,7 @@ function BaseNode({ nodeId, data, type, renderHeader, renderContent, renderContr
             ${theme?.nodes?.[type]?.size || 'w-60 h-24'}
             border shadow-md whitespace-pre-wrap rounded-none
             text-xs
+            ${isSelected ? 'ring-2 ring-offset-2 ring-blue-500' : ''}
         `}>
             <div className={`
                 flex items-center justify-between p-1 

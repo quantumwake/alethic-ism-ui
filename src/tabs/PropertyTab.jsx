@@ -1,7 +1,7 @@
 import React from "react";
 import {useStore} from '../store';
 import {RefreshCcwIcon, SaveIcon} from "lucide-react";
-import {TerminalButton} from "../components/common";
+import {TerminalButton, TerminalLabel} from "../components/common";
 import StatePropertyTab from "./property/StatePropertyTab";
 import ProcessorPropertyTab from "./property/ProcessorPropertyTab";
 
@@ -39,6 +39,9 @@ const PropertyTab = () => {
                 {/* properties */}
                 <div className={`${theme.font} ${theme.border} w-full overflow-y-auto`}>
                     {selectedNodeId && selectedNode && (<>
+                        <div className={`${theme.text} ${theme.spacing.base} mb-0`}>
+                            <TerminalLabel>{selectedNodeId}</TerminalLabel>
+                        </div>
                         {selectedNode.type === "state" && (
                             <StatePropertyTab/>
                         )}
