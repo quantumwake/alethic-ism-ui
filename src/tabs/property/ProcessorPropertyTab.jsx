@@ -6,9 +6,12 @@ const ProcessorPropertyTab = () => {
     const theme = useStore(state => state.getCurrentTheme());
     const {getNodeData, setNodeData} = useStore()
     const {getProvidersByClass, getProviderById: getProviderById, fetchProcessor} = useStore()
+    const {selectedNodeId} = useStore()
+    const nodeData = useStore(state => state.getNodeData(selectedNodeId))
 
-    const [selectedClass, setSelectedClass] = useState(null);
-    const [isLoadingClass, setIsLoadingClass] = useState(false);
+    // Derive selected class from current provider in nodeData
+    const currentProvider = nodeData?.provider_id ? getProviderById(nodeData.provider_id) : null;
+    const selectedClass = currentProvider?.class_name || null;
     const [filterClasses] = useState([
         {id: "AudioProcessing", label: "Audio Processing" },
         {id: "CodeProcessing", label: "Code Processing" },
@@ -25,14 +28,15 @@ const ProcessorPropertyTab = () => {
     ])
 
     const [filteredProviders, setFilteredProviders] = useState([]);
-
-    // const [localNodeData, setLocalNodeData] = useState([])
-    const {selectedNode} = useStore()
-    const selectedNodeId = selectedNode?.id
-    const nodeData = useStore(state => state.getNodeData(selectedNodeId))
     
     // Debug logging
-    console.log('ProcessorPropertyTab render:', { selectedNode, selectedNodeId, selectedClass })
+    console.log('ProcessorPropertyTab render:', { 
+        selectedNodeId, 
+        nodeData,
+        providerId: nodeData?.provider_id,
+        currentProvider,
+        selectedClass 
+    })
 
     // holds property sections for specific processor type, generated on a section basis by processor details
     const [sections, setSections] = useState({})
@@ -46,29 +50,25 @@ const ProcessorPropertyTab = () => {
     // }, [filteredClass, setFilteredProviders])
     //
 
-// Initialize class when fetching processor data
+    // Fetch processor data when node is selected
     useEffect(() => {
         if (!selectedNodeId) {
-            setSelectedClass(null);
-            setIsLoadingClass(false);
             return
         }
 
-        setIsLoadingClass(true);
+        console.log('Fetching processor data for node:', selectedNodeId);
         fetchProcessor(selectedNodeId).then((data) => {
-            const providerId = data.provider_id;
-            const provider = getProviderById(providerId);
-            const className = provider?.class_name || 'NaturalLanguageProcessing';
-
-            // Only set the class - let the second useEffect handle provider filtering
-            setSelectedClass(className);
-            setIsLoadingClass(false);
+            console.log('Fetched processor data:', data);
+            // The data is automatically stored in nodeData via setNodeData in fetchProcessor
+        }).catch((error) => {
+            console.error('Failed to fetch processor:', error);
         });
-    }, [selectedNodeId]);
+    }, [selectedNodeId, fetchProcessor]);
 
-// Fix the useEffect for filtering providers
+// Filter providers based on selected class
     useEffect(() => {
         if (!selectedClass) {
+            setFilteredProviders([]);
             return
         }
 
@@ -79,16 +79,18 @@ const ProcessorPropertyTab = () => {
 
         setFilteredProviders(classProvidersRemap);
 
-        // Reset provider selection if needed
-        if (classProvidersRemap.length > 0) {
-            const currentProviderId = nodeData?.provider_id;
-            // Only reset if current provider isn't in the new list
+        // Check if current provider is valid for the selected class
+        if (nodeData?.provider_id) {
+            const currentProviderId = nodeData.provider_id;
             const providerExists = classProvidersRemap.some(p => p.id === currentProviderId);
-            if (!providerExists && selectedNode?.id) {
-                setNodeData(selectedNode.id, { provider_id: classProvidersRemap[0].id });
+            
+            // If current provider doesn't match the class, this might be initial load
+            // where fetchProcessor hasn't completed yet
+            if (!providerExists) {
+                console.warn(`Current provider ${currentProviderId} not found in class ${selectedClass}`);
             }
         }
-    }, [selectedClass]); // Remove setFilteredProviders from dependencies
+    }, [selectedClass, nodeData?.provider_id]); // Include provider_id to re-check when it changes
 
 
     const update = () => {
@@ -109,22 +111,47 @@ const ProcessorPropertyTab = () => {
                 <div className={`flex flex-col w-full space-y-4 ${theme.spacing.base}`}>
 
                     <TerminalLabel description="defines class of runtimes">Runtime Class</TerminalLabel>
-                    <TerminalDropdown
-                        key={`class-${selectedNodeId}`}  // Use selectedNodeId instead of selectedClass
-                        values={filterClasses}
-                        onSelect={(item) => setSelectedClass(item.id)}
-                        defaultValue={selectedClass}
-                        placeholder="runtime class">
-                    </TerminalDropdown>
+                    {isWaitingForProvider ? (
+                        <div className={`${theme.text}`}>Loading class...</div>
+                    ) : (
+                        <TerminalDropdown
+                            key={`class-${selectedNodeId}-${nodeData?.provider_id}`}  // Use provider_id to force re-render when it changes
+                            values={filterClasses}
+                            onSelect={(item) => {
+                                console.log('Class selected:', item.id);
+                                // When class changes, find first provider of that class
+                                const classProviders = getProvidersByClass(item.id);
+                                console.log('Available providers for class:', classProviders);
+                                if (classProviders.length > 0) {
+                                    setNodeData(selectedNodeId, { 
+                                        ...nodeData,
+                                        provider_id: classProviders[0].id 
+                                    });
+                                }
+                            }}
+                            defaultValue={selectedClass}
+                            placeholder="runtime class">
+                        </TerminalDropdown>
+                    )}
 
                     <TerminalLabel description="defines runtime provider for class">Runtime Provider</TerminalLabel>
-                    <TerminalDropdown
-                        key={`providers-${selectedClass}-${filteredProviders.length}`} // More robust key
-                        values={filteredProviders}
-                        onSelect={(item) => setNodeData(selectedNode.id, { provider_id: item.id })}
-                        defaultValue={nodeData?.provider_id}
-                        placeholder="provider">
-                    </TerminalDropdown>
+                    {isWaitingForProvider || !selectedClass ? (
+                        <div className={`${theme.text}`}>Loading providers...</div>
+                    ) : (
+                        <TerminalDropdown
+                            key={`providers-${selectedClass}-${nodeData?.provider_id}`}
+                            values={filteredProviders}
+                            onSelect={(item) => {
+                                console.log('Provider selected:', item.id);
+                                setNodeData(selectedNodeId, { 
+                                    ...nodeData,
+                                    provider_id: item.id 
+                                });
+                            }}
+                            defaultValue={nodeData?.provider_id}
+                            placeholder="provider">
+                        </TerminalDropdown>
+                    )}
 
                     <TerminalLabel description="runtime display name">Name</TerminalLabel>
                     <TerminalInput name="name" value={nodeData?.name || ''}
@@ -153,6 +180,14 @@ const ProcessorPropertyTab = () => {
             },
         }
     }
+    
+    // Don't render until we have at least the basic node data structure
+    if (!nodeData || !nodeData.id) {
+        return <div className={`${theme.text} ${theme.spacing.base}`}>Loading processor data...</div>;
+    }
+    
+    // If we have nodeData but no provider_id yet, show a loading state for the class
+    const isWaitingForProvider = nodeData && !nodeData.provider_id;
 
     return (
         <>

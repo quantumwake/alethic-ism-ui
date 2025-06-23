@@ -36,27 +36,49 @@ const StatePropertyTab = () => {
     }, [templates]);
 
 
-    const {selectedNode, setNodeData, fetchState} = useStore()
-    const selectedNodeId = selectedNode?.id
+    const {selectedNodeId, setNodeData, fetchState, getNode, getNodeData} = useStore()
     const node = useStore(state => state.getNode(selectedNodeId))
     const nodeData = useStore(state => state.getNodeData(selectedNodeId))
     const [isAdvancedCollapsed, setIsAdvancedCollapsed] = useState(false);
+    
+    // Debug logging
+    console.log('StatePropertyTab render:', { 
+        selectedNodeId, 
+        nodeData,
+        stateType: nodeData?.state_type,
+        userTemplateId: nodeData?.config?.user_template_id,
+        systemTemplateId: nodeData?.config?.system_template_id,
+        templateId: nodeData?.config?.template_id
+    })
 
     // Extract the flags from the config
     const flags = Object.keys(nodeData?.config || {}).filter(key => key.startsWith('flag_'));
 
     // Fetch state object data if id is provided
     useEffect(() => {
+        if (!selectedNodeId) {
+            return;
+        }
+
         (async () => {
-            const stateData = await fetchState(selectedNodeId)
-            console.log(stateData)
+            try {
+                const stateData = await fetchState(selectedNodeId)
+                console.log('State data loaded:', stateData)
+            } catch (error) {
+                console.error('Failed to fetch state:', error);
+            }
         })();
     }, [fetchState, selectedNodeId])
 
     const onChangeConfigFlag = async (flag_name, value) => {
         console.log(flag_name, value)
-        nodeData.config[flag_name] = value
-        update()
+        setNodeData(selectedNodeId, {
+            ...nodeData,
+            config: {
+                ...(nodeData?.config || {}),
+                [flag_name]: value
+            }
+        })
     }
 
 
@@ -65,23 +87,28 @@ const StatePropertyTab = () => {
 
         console.log(type + ' selected: ' + value);
         // eslint-disable-next-line default-case
+        
+        let updatedConfig = { ...(nodeData?.config || {}) };
 
         switch (type) {
             case "user_template":
-                nodeData.config.user_template_id = value.id
+                updatedConfig.user_template_id = value.id
                 break
             case "system_template":
-                nodeData.config.system_template_id = value.id
+                updatedConfig.system_template_id = value.id
                 break
             // general single template state configurations (e.g. stream, code, visual
             case "template":
-                nodeData.config.template_id = value.id
+                updatedConfig.template_id = value.id
                 break
             case "filter":
-                nodeData.config.filter_id = value.id
+                updatedConfig.filter_id = value.id
                 break
         }
-        setNodeData(selectedNodeId, nodeData)
+        setNodeData(selectedNodeId, {
+            ...nodeData,
+            config: updatedConfig
+        })
     }
 
     const onConfigTypeChange = (state_type) => {
@@ -98,25 +125,41 @@ const StatePropertyTab = () => {
 
     const handleChange = (e) => {
         const value = e.target.value;
+        const fieldName = e.target.name;
+        
+        let updatedNodeData = { ...nodeData };
+        let updatedConfig = { ...(nodeData?.config || {}) };
 
-        switch (e.target.name) {
+        switch (fieldName) {
             case "name":
-                node.data.label = value;
-                nodeData.config.name = value
+                updatedConfig.name = value;
+                // Also update the node label
+                if (node) {
+                    setNodeData(selectedNodeId, {
+                        ...updatedNodeData,
+                        label: value,
+                        config: updatedConfig
+                    });
+                    return;
+                }
                 break;
             case "language":
-                nodeData.config.language = value
+                updatedConfig.language = value;
                 break;
             case "width":
-                nodeData.config.width = value
+                updatedConfig.width = value;
                 break;
             case "height":
-                nodeData.config.height = value
+                updatedConfig.height = value;
                 break;
             default:
-                break
+                return;
         }
-        setNodeData(selectedNodeId, nodeData)
+        
+        setNodeData(selectedNodeId, {
+            ...updatedNodeData,
+            config: updatedConfig
+        });
     }
 
     const generalBasic = (type) => {
@@ -131,8 +174,14 @@ const StatePropertyTab = () => {
                                 State Type
                             </TerminalLabel>
                             <TerminalDropdown
+                                key={`state-type-${selectedNodeId}-${nodeData?.state_type}`}
                                 values={configOptions}
-                                onSelect={(config_type) => setNodeData(selectedNodeId, {state_type: config_type.id})}
+                                onSelect={(config_type) => {
+                                    setNodeData(selectedNodeId, {
+                                        ...nodeData,
+                                        state_type: config_type.id
+                                    });
+                                }}
                                 defaultValue={nodeData?.state_type}
                                 placeholder="Select State Type"
                             />
@@ -198,8 +247,10 @@ const StatePropertyTab = () => {
             content: (
                 <div className={theme.spacing.base}>
                     <TerminalDropdown
+                        key={`template-${selectedNodeId}-${nodeData?.config?.template_id}`}
                         values={internalTemplates}
                         onSelect={(value) => onChangeDropDownSelection("template", value)}
+                        defaultValue={nodeData?.config?.template_id}
                         placeholder="Select function instruction"
                     />
                     {nodeData?.state_type === "StateConfigVisual" && (
@@ -234,6 +285,7 @@ const StatePropertyTab = () => {
                             User Template
                         </TerminalLabel>
                         <TerminalDropdown
+                            key={`user-template-${selectedNodeId}-${nodeData?.config?.user_template_id}`}
                             allowEmpty={true}
                             values={templates.map(t => ({id: t.template_id, label: t.template_path}))}
                             onSelect={(value) => onChangeDropDownSelection("user_template", value)}
@@ -247,6 +299,7 @@ const StatePropertyTab = () => {
                             System Template
                         </TerminalLabel>
                         <TerminalDropdown
+                            key={`system-template-${selectedNodeId}-${nodeData?.config?.system_template_id}`}
                             allowEmpty={true}
                             values={templates.map(t => ({id: t.template_id, label: t.template_path}))}
                             onSelect={(value) => onChangeDropDownSelection("system_template", value)}
@@ -397,6 +450,10 @@ const StatePropertyTab = () => {
         update()
     }, [nodeData])
 
+    // Don't render until we have at least the basic node data structure
+    if (!nodeData || (!nodeData.state_type && !nodeData.id)) {
+        return <div className={`${theme.text} ${theme.spacing.base}`}>Loading state data...</div>;
+    }
 
     return (
         <>

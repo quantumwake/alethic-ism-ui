@@ -58,7 +58,7 @@ const proOptions = { hideAttribution: true };
 
 const Studio = () => {
     // const theme = useStore((state: any) => state.getCurrentTheme().getCurrentTheme());
-    const {selectedProjectId, setSelectedNode, getNode} = useStore()
+    const {selectedProjectId, setSelectedNodeId, getNode} = useStore()
     const {workflowEdges, createStateWithWorkflowNode, createTrainerWithWorkflowNode, createProcessorWithWorkflowNode, createProcessorStateWithWorkflowEdge} = useStore()
     const {userUsageReport, fetchProjectProcessorStates, fetchUsageReportGroupByUser} = useStore()
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
@@ -75,9 +75,9 @@ const Studio = () => {
     const onNodeClick: NodeMouseHandler = useCallback(
         (_, node) => {
             console.debug(node)
-            setSelectedNode(node);
+            setSelectedNodeId(node.id);
         },
-        [setNodes]
+        [setSelectedNodeId]
     );
 
     const onConnect: OnConnect = useCallback(

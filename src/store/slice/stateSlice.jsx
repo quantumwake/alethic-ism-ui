@@ -120,7 +120,7 @@ export const useStateSlice = (set, get) => ({
             }
         }
 
-        const response = get().authPost(`/state/create`, stateObject)
+        const response = await get().authPost(`/state/create`, stateObject)
         if (!response.ok) {
             return stateData
         }
@@ -210,10 +210,11 @@ export const useStateSlice = (set, get) => ({
 
         const nodeData = get().getNodeData(nodeId)
 
-        //
+        // Initialize config if it doesn't exist
         if (!nodeData?.config) {
-            nodeData.config = {
-                name: node?.node_label,
+            // Don't mutate here - return a default config
+            return {
+                name: node?.data?.label || node?.node_label || '',
                 primary_key: [],
                 query_state_inheritance: [],
                 remap_query_state_columns: [],
@@ -235,9 +236,12 @@ export const useStateSlice = (set, get) => ({
     },
 
     setNodeDataColumns: (nodeId, columnsArray) => {
-        const state = get().getNodeData(nodeId)
-        state.columns = get().arrayToMap(columnsArray)
-        get().setNodeData(nodeId, state)
+        const currentNodeData = get().getNodeData(nodeId)
+        const updatedNodeData = {
+            ...currentNodeData,
+            columns: get().arrayToMap(columnsArray)
+        }
+        get().setNodeData(nodeId, updatedNodeData)
     },
 
     // TODO might be obsolete, its a way to send data directly to the api to push data into a state

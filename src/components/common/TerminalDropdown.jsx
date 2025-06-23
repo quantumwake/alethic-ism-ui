@@ -16,7 +16,6 @@ const TerminalDropdown = ({
                           }) => {
     const theme = useStore(state => state.getCurrentTheme());
     const [selected, setSelected] = useState(null);
-    const [isInitialized, setIsInitialized] = useState(false);
 
     const buttonRef = useRef(null);
 
@@ -34,8 +33,6 @@ const TerminalDropdown = ({
 
     // Initialize selected value only once when component mounts or values/defaultValue change significantly
     useEffect(() => {
-        if (isInitialized && values === values) return; // Prevent unnecessary re-initialization
-
         let newSelected = null;
 
         if (defaultValue === null && allowEmpty) {
@@ -44,10 +41,11 @@ const TerminalDropdown = ({
             const defaultItem = values.find(item => item.id === defaultValue);
             if (defaultItem) {
                 newSelected = defaultItem;
-            } else if (values.length > 0) {
+            } else if (!allowEmpty && values.length > 0) {
+                // Only default to first item if allowEmpty is false
                 newSelected = values[0];
             }
-        } else if (values.length > 0) {
+        } else if (!allowEmpty && values.length > 0) {
             newSelected = values[0];
         }
 
@@ -57,9 +55,7 @@ const TerminalDropdown = ({
                 onSelect?.(newSelected);
             }
         }
-
-        setIsInitialized(true);
-    }, [defaultValue, values, allowEmpty, placeholder, isInitialized]);
+    }, [defaultValue, values, allowEmpty, placeholder]);
 
     // External function to set value
     const setValue = useCallback((valueId) => {

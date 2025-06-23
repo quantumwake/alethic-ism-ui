@@ -6,24 +6,25 @@ import StatePropertyTab from "./property/StatePropertyTab";
 import ProcessorPropertyTab from "./property/ProcessorPropertyTab";
 
 const PropertyTab = () => {
-    const {selectedNode} = useStore()
+    const {selectedNodeId, getNode} = useStore()
     const {updateNode, createState, createProcessor} = useStore()
     const theme = useStore(state => state.getCurrentTheme());
+    const selectedNode = useStore(state => state.getNode(selectedNodeId));
 
     const handleSave = async () => {
-        if (!selectedNode) {
+        if (!selectedNodeId || !selectedNode) {
             console.warn("unable to persist node, no node selected.")
             return
         }
 
         if (selectedNode.type === "state") {
-            // updateNode(selectedNode.id).then(() => {
-                const newState = createState(selectedNode.id).then(() => {
+            // updateNode(selectedNodeId).then(() => {
+                const newState = createState(selectedNodeId).then(() => {
                     console.log('saved state: ' + newState)
                 })
             // })
         } else if (selectedNode.type.includes("processor")) {
-            const processor = await createProcessor(selectedNode.id)
+            const processor = await createProcessor(selectedNodeId)
             console.log(`saved processor: ${processor}`)
         }
     }
@@ -37,7 +38,7 @@ const PropertyTab = () => {
 
                 {/* properties */}
                 <div className={`${theme.font} ${theme.border} w-full overflow-y-auto`}>
-                    {selectedNode !== null && (<>
+                    {selectedNodeId && selectedNode && (<>
                         {selectedNode.type === "state" && (
                             <StatePropertyTab/>
                         )}

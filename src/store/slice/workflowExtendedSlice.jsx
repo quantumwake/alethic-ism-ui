@@ -5,7 +5,7 @@ export const useWorkflowExtendedSlice = (set, get) => ({
         const newNode = await get().createNewNode(nodeData)
         const newNodeData = await get().createProcessor(newNode.id)
 
-        get().setNodeData(newNodeData)
+        get().setNodeData(newNode.id, newNodeData)
     },
 
     createStateWithWorkflowNode: async (nodeData) => {

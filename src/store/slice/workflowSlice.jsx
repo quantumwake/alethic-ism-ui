@@ -1,6 +1,6 @@
 export const useWorkflowSlice = (set, get) => ({
-    selectedNode: null,
-    setSelectedNode: (node) => set({ selectedNode: node }),
+    selectedNodeId: null,
+    setSelectedNodeId: (nodeId) => set({ selectedNodeId: nodeId }),
 
     selectedEdgeId: null,
     setSelectedEdgeId: (selectedEdgeId) => set({ selectedEdgeId: selectedEdgeId }),
@@ -40,10 +40,10 @@ export const useWorkflowSlice = (set, get) => ({
     // Use .find() to search for the node with the matching ID
     getNode: (nodeId) => {
         const { workflowNodes } = get(); // Get the current state of workflowNodes
-        if (!workflowNodes) {
-            return []
+        if (!workflowNodes || !nodeId) {
+            return null
         }
-        return workflowNodes.find(node => node.id === nodeId); // This will be the node map if found, or undefined if not
+        return workflowNodes.find(node => node.id === nodeId) || null; // This will be the node if found, or null if not
     },
 
     // Use .find() to search for the node with the matching ID

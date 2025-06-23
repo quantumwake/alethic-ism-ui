@@ -11,7 +11,7 @@ const TerminalFlow = ({
                       }) => {
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState(initialEdges);
-    const [selectedNode, setSelectedNode] = useState(null);
+    const [selectedNodeId, setSelectedNodeId] = useState(null);
     const [drawingEdge, setDrawingEdge] = useState(null);
     const canvasRef = useRef(null);
     const svgRef = useRef(null);
@@ -123,8 +123,8 @@ const TerminalFlow = ({
                 <TerminalFlowNode
                     key={node.id}
                     {...node}
-                    selected={selectedNode === node.id}
-                    onSelect={setSelectedNode}
+                    selected={selectedNodeId === node.id}
+                    onSelect={setSelectedNodeId}
                     onPositionChange={handleNodePositionChange}
                 />
             ))}
