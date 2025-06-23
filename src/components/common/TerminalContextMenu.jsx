@@ -33,6 +33,7 @@ export const TerminalContextMenu = ({
     const handleItemClick = (item, subItem = null) => {
         if (item.subItems) {
             setActiveSubmenu(activeSubmenu === item.id ? null : item.id);
+            onItemClick(item, subItem);
             return
         }
 

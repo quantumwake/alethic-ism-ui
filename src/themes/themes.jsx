@@ -1,11 +1,12 @@
-import amber from "./amber";
-import matrix from "./matrix";
-import pro from "./pro";
+import {amber, pro, matrix, hybrid, light, crimson} from "../themes/index";
 
 const themes = {
     matrix: matrix,
     amber: amber,
-    pro: pro
+    pro: pro,
+    light: light,
+    hybrid: hybrid,
+    crimson: crimson,
 };
 
 export default themes;

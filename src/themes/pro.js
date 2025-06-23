@@ -2,10 +2,10 @@ import edge from "./pro/components/edge";
 import input from "./pro/components/input";
 import toggle from "./pro/components/toggle";
 export const pro = {
-    bg: 'bg-black',
-    text: 'text-amber-400 text-xs',
-    textMuted: 'text-amber-800',
-    textAccent: 'text-amber-300',
+    bg: 'bg-gray-900',
+    text: 'text-gray-100 text-xs',
+    textMuted: 'text-gray-400',
+    textAccent: 'text-white',
     textSize: {
         xs: 'text-xs',
         sm: 'text-sm',
@@ -18,23 +18,41 @@ export const pro = {
         base: 'p-3',
         lg: 'p-4'
     },
-    border: 'border-amber-800',
-    hover: 'hover:bg-amber-950 hover:border-amber-700',
+    border: 'border-gray-700',
+    hover: 'hover:bg-gray-800 hover:text-white',
+    files: {
+        select: 'bg-gray-700 text-white',
+    },
     input: input,
-    icon: 'text-amber-400',
+    icon: 'text-gray-400',
     font: 'font-["VT323"]',
+    hoverMenu: {
+        // the button or icon that you hover to open the menu
+        trigger: 'text-gray-200 hover:bg-gray-700 hover:text-white',
+        // the menu panel itself
+        content: 'bg-gray-900 border-2 border-gray-700 shadow-lg',
+        // each top-level menu item
+        item: 'text-gray-200 hover:bg-gray-700 hover:text-white focus:bg-gray-700',
+        // submenu container & items
+        subItems: {
+            // the submenu panel
+            content: 'bg-gray-900 border border-gray-700',
+            // each submenu item
+            item: 'text-gray-200 hover:bg-gray-700 hover:text-white focus:bg-gray-700'
+        }
+    },
     effects: {
-        enableScanlines: true,
-        enableCrt: true,
-        scanlineClass: 'relative before:pointer-events-none before:absolute before:inset-0 before:bg-scanline before:animate-scanline',
-        crtClass: 'relative rounded-md overflow-hidden before:absolute before:inset-0 before:pointer-events-none before:bg-crt before:animate-crt'
+        enableScanlines: false,
+        enableCrt: false,
+        scanlineClass: '',
+        crtClass: ''
     },
     default: {
         text: {
-            primary: 'text-amber-400',
-            secondary: 'text-amber-300',
-            muted: 'text-amber-800',
-            accent: 'text-amber-200'
+            primary: 'text-gray-100',
+            secondary: 'text-gray-300',
+            muted: 'text-gray-500',
+            accent: 'text-white'
         },
         icon: {
             size: {
@@ -45,29 +63,52 @@ export const pro = {
         },
     },
     button: {
-        primary: 'bg-amber-800 hover:bg-amber-700 text-black border border-amber-600',
-        secondary: 'bg-black hover:bg-amber-950 text-amber-400 border border-amber-700',
-        ghost: 'bg-transparent hover:bg-amber-950 text-amber-400 border border-amber-800',
-        danger: 'bg-red-900 hover:bg-red-800 text-amber-200 border border-red-800',
-        disabled: 'bg-amber-950 text-amber-800 cursor-not-allowed border border-amber-900',
+        primary: 'bg-gray-700 hover:bg-gray-600 hover:text-white text-white border border-gray-600 shadow-sm',
+        secondary: 'bg-gray-800 hover:bg-gray-700 hover:text-white text-gray-100 border border-gray-600',
+        ghost: 'bg-transparent hover:bg-gray-800 hover:text-white text-gray-300 border border-gray-600',
+        danger: 'bg-red-800 hover:bg-red-700 hover:text-white text-white border border-red-600',
+        disabled: 'bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700',
     },
     dropdown: {
-        trigger: 'bg-black hover:bg-amber-950 text-amber-400 border border-amber-800',
-        content: 'bg-black border border-amber-800 shadow-lg',
-        item: 'text-amber-400 hover:bg-amber-950 focus:bg-amber-900',
-        separator: 'bg-amber-800',
-        selected: 'bg-amber-900 text-amber-200',
-        active: 'bg-amber-950 text-amber-300',
-        disabled: 'bg-amber-950 text-amber-800 cursor-not-allowed'
+        trigger: 'bg-gray-800 hover:bg-gray-700 hover:text-white text-gray-200 border border-gray-600',
+        content: 'bg-gray-900 border border-gray-700 shadow-lg',
+        item: 'text-gray-200 hover:bg-gray-700 hover:text-white focus:bg-gray-700',
+        separator: 'bg-gray-700',
+        selected: 'bg-gray-700 text-white',
+        active: 'bg-gray-800 text-gray-100',
+        disabled: 'bg-gray-800 text-gray-600 cursor-not-allowed'
     },
     card: {
-        base: 'bg-black border border-amber-800 shadow-lg rounded-lg',
-        header: 'border-b border-amber-800 bg-amber-950',
-        content: 'bg-black',
-        footer: 'border-t border-amber-800 bg-amber-950',
+        base: 'bg-gray-900 border border-gray-700 shadow-lg rounded-lg',
+        header: 'border-b border-gray-700 bg-gray-800',
+        content: 'bg-gray-900',
+        footer: 'border-t border-gray-700 bg-gray-800',
+    },
+    nodes: {
+        state: {
+            size: 'w-60 h-28',
+            icon: 'text-gray-100',
+            header: 'bg-gray-700',
+            headerText: 'text-gray-100'
+        },
+        processor: {
+            size: 'w-60 h-28',
+            icon: 'text-gray-100',
+            header: 'bg-gray-800',
+            headerText: 'text-gray-100'
+        }
     },
     edge: edge,
-    toggle: toggle
+    toggle: toggle,
+    tab: {
+        section: {
+            header: "bg-gray-800",
+            hover: "hover:bg-gray-700"
+        }
+    },
+    datatable: {
+        header: "bg-gray-800 hover:bg-gray-700 border-b border-r px-2 py-2 text-left text-gray-100",
+    }
 }
 
 export default pro
