@@ -21,3 +21,4 @@ export { default as TerminalLabel } from './TerminalLabel'
 export { default as TerminalContextMenu } from './TerminalContextMenu'
 export { default as TerminalTabView } from "./TerminalTabView"
 export { default as TerminalHoverMenu } from "./TerminalHoverMenu"
+export { default as TerminalAutocomplete } from "./TerminalAutocomplete"

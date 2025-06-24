@@ -1,75 +1,38 @@
 import {useStore} from '../../store';
 import React, { useState, useEffect } from 'react';
-import {TerminalDropdown, TerminalInput, TerminalLabel, TerminalTabViewSection} from "../../components/common";
+import {TerminalInput, TerminalLabel, TerminalTabViewSection, TerminalAutocomplete} from "../../components/common";
 
 const ProcessorPropertyTab = () => {
     const theme = useStore(state => state.getCurrentTheme());
-    const {getNodeData, setNodeData} = useStore()
-    const {getProvidersByClass, getProviderById: getProviderById, fetchProcessor} = useStore()
+    const {setNodeData} = useStore()
+    const {providers, getProviderById} = useStore()
     const {selectedNodeId} = useStore()
     const nodeData = useStore(state => state.getNodeData(selectedNodeId))
 
-    // Use class_name directly from nodeData (set by fetchProcessor)
-    const selectedClass = nodeData?.class_name || null;
-    const [filterClasses] = useState([
-        {id: "AudioProcessing", label: "Audio Processing" },
-        {id: "CodeProcessing", label: "Code Processing" },
-        {id: "DataAnalysis", label: "Data Analysis" },
-        {id: "DataTransformation", label: "Data Transformation" },
-        {id: "DatabaseProcessing", label: "Database Processing" },
-        {id: "ImageProcessing", label: "Image Processing" },
-        {id: "Interaction", label: "Interaction" },
-        {id: "MachineLearning", label: "Machine Learning" },
-        {id: "NaturalLanguageProcessing", label: "Natural Language Processing" },
-        {id: "SignalProcessing", label: "Signal Processing" },
-        {id: "TextProcessing", label: "Text Processing" },
-        {id: "VideoProcessing", label: "Video Processing" },
-    ])
-
-    const [filteredProviders, setFilteredProviders] = useState([]);
-    const [isProvidersLoaded, setIsProvidersLoaded] = useState(false);
+    // Get all providers with formatted display
+    const [allProviders, setAllProviders] = useState([]);
     
     // Debug logging
     console.log('ProcessorPropertyTab render:', { 
         selectedNodeId, 
         nodeData,
         providerId: nodeData?.provider_id,
-        className: nodeData?.class_name,
-        selectedClass,
-        isProvidersLoaded 
+        className: nodeData?.class_name
     })
 
     // holds property sections for specific processor type, generated on a section basis by processor details
     const [sections, setSections] = useState({})
 
-// Filter providers based on selected class
+    // Format providers for autocomplete
     useEffect(() => {
-        if (!selectedClass) {
-            setFilteredProviders([]);
-            setIsProvidersLoaded(false);
-            return
+        if (providers && providers.length > 0) {
+            const formattedProviders = providers.map(provider => ({
+                ...provider,
+                displayName: `${provider.name} (${provider.version}) - ${provider.class_name || 'Unknown Class'}`
+            }));
+            setAllProviders(formattedProviders);
         }
-
-        console.debug(`filtering providers by class: ${selectedClass}`);
-        const classProviders = getProvidersByClass(selectedClass);
-        const classProvidersRemap = classProviders.map(t => ({ id: t.id, label: `${t.name} (${t.version})`}));
-        console.debug(`filtered providers by class: ${selectedClass}, len: ${classProvidersRemap.length}`);
-        console.debug(`Current provider_id: ${nodeData?.provider_id}`);
-        console.debug(`Available provider ids:`, classProvidersRemap.map(p => p.id));
-
-        setFilteredProviders(classProvidersRemap);
-        setIsProvidersLoaded(classProvidersRemap.length > 0);
-
-        // Check if current provider is valid for the selected class
-        if (nodeData?.provider_id && classProvidersRemap.length > 0) {
-            const currentProviderId = nodeData.provider_id;
-            const providerExists = classProvidersRemap.some(p => p.id === currentProviderId);
-
-            if (!providerExists) {
-                console.warn(`Current provider ${currentProviderId} not found in class ${selectedClass}`);
-            }
-        }
-    }, [selectedClass, getProvidersByClass]); // Only re-run when class changes
+    }, [providers]);
 
 
     const update = () => {
@@ -82,54 +45,38 @@ const ProcessorPropertyTab = () => {
         update()
     }, [nodeData])
 
-    const generalBasic = (type) => {
+    const generalBasic = () => {
         // all types have this
         return {
             title: "General",
             content: (
                 <div className={`flex flex-col w-full space-y-4 ${theme.spacing.base}`}>
 
-                    <TerminalLabel description="defines class of runtimes">Runtime Class</TerminalLabel>
-                    <TerminalDropdown
-                        key={`class-${selectedNodeId}-${nodeData?.provider_id}`}  // Use provider_id to force re-render when it changes
-                        values={filterClasses}
-                        onSelect={(item) => {
-                            console.log('Class selected:', item.id);
-                            // Only update provider if class actually changed
-                            if (item.id !== selectedClass) {
-                                const classProviders = getProvidersByClass(item.id);
-                                console.log('Class changed, available providers:', classProviders);
-                                if (classProviders.length > 0) {
-                                    setNodeData(selectedNodeId, { 
-                                        ...nodeData,
-                                        provider_id: classProviders[0].id,
-                                        class_name: item.id 
-                                    });
-                                }
-                            }
+                    <TerminalLabel description="search and select runtime provider">Runtime Provider</TerminalLabel>
+                    <TerminalAutocomplete
+                        placeholder="Search providers by name or class..."
+                        items={allProviders}
+                        value={nodeData?.provider_id}
+                        displayField="displayName"
+                        valueField="id"
+                        onSelect={(provider) => {
+                            console.log('Provider selected:', provider);
+                            setNodeData(selectedNodeId, { 
+                                ...nodeData,
+                                provider_id: provider.id,
+                                class_name: provider.class_name
+                            });
                         }}
-                        defaultValue={selectedClass}
-                        placeholder="runtime class">
-                    </TerminalDropdown>
-
-                    <TerminalLabel description="defines runtime provider for class">Runtime Provider</TerminalLabel>
-                    {isProvidersLoaded && filteredProviders.length > 0 ? (
-                        <TerminalDropdown
-                            key={`providers-${selectedClass}-${isProvidersLoaded}`}
-                            values={filteredProviders}
-                            onSelect={(item) => {
-                                console.log('Provider selected:', item.id);
-                                setNodeData(selectedNodeId, { 
-                                    ...nodeData,
-                                    provider_id: item.id
-                                });
-                            }}
-                            defaultValue={nodeData?.provider_id}
-                            placeholder="provider">
-                        </TerminalDropdown>
-                    ) : (
-                        <div className={`${theme.text}`}>Loading providers...</div>
-                    )}
+                        filterFn={(items, searchTerm) => {
+                            if (!searchTerm) return items;
+                            const lowerSearch = searchTerm.toLowerCase();
+                            return items.filter(provider => 
+                                provider.name.toLowerCase().includes(lowerSearch) ||
+                                provider.class_name?.toLowerCase().includes(lowerSearch) ||
+                                provider.version?.toLowerCase().includes(lowerSearch)
+                            );
+                        }}
+                    />
 
                     <TerminalLabel description="runtime display name">Name</TerminalLabel>
                     <TerminalInput 
@@ -153,7 +100,7 @@ const ProcessorPropertyTab = () => {
             general: {
                 title: "General",
                 items: {
-                    basic: generalBasic(type),
+                    basic: generalBasic(),
                 }
             },
             vault: {
@@ -167,7 +114,7 @@ const ProcessorPropertyTab = () => {
     }
     
     // Don't render until we have complete data from fetchProcessor
-    if (!nodeData || !nodeData.provider_id || !nodeData.class_name) {
+    if (!nodeData || !nodeData.id) {
         return null;
     }
 
