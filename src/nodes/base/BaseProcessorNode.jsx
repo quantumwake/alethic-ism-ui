@@ -23,6 +23,11 @@ function BaseProcessorNode({ providerName, className, nodeId, renderAdditionalCo
                 const processorData = await fetchProcessor(nodeId);
                 console.log(`fetched processor data for processor id: ${nodeId}`);
                 setDataFetched(true);
+                if (processorData?.status) {
+                    setIsStopped(["TERMINATE", "STOPPED"].includes(processorData.status));
+                } else {
+                    setIsStopped(true);
+                }
             })();
         }
     }, [nodeId, dataFetched, localNodeData?.status, fetchProcessor]);
@@ -37,8 +42,8 @@ function BaseProcessorNode({ providerName, className, nodeId, renderAdditionalCo
     }, [nodeId, localNodeData?.associated_states, fetchProcessorStates]);
 
     const updateStoppedStatus = useCallback(() => {
-        // const currentNode = getNodeData(nodeId);
-        // setIsStopped(["TERMINATE", "STOPPED"].includes(currentNode.status));
+        const currentNode = getNodeData(nodeId);
+        setIsStopped(["TERMINATE", "STOPPED"].includes(currentNode.status));
     }, [getNodeData, nodeId]);
 
     useEffect(() => {
@@ -48,9 +53,9 @@ function BaseProcessorNode({ providerName, className, nodeId, renderAdditionalCo
     }, [localNodeData?.status]);
 
     const startOrStopProcessor = async () => {
-        // const newStatus = isStopped ? "COMPLETED" : "TERMINATE";
-        // await changeProcessorStatus(nodeId, newStatus);
-        // updateStoppedStatus();
+        const newStatus = isStopped ? "COMPLETED" : "TERMINATE";
+        await changeProcessorStatus(nodeId, newStatus);
+        updateStoppedStatus();
     };
 
     const renderHeader = () => (
