@@ -1122,12 +1122,6 @@ video {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.scale-125{
-  --tw-scale-x: 1.25;
-  --tw-scale-y: 1.25;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
 .scale-95{
   --tw-scale-x: .95;
   --tw-scale-y: .95;
@@ -2811,15 +2805,10 @@ video {
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 
-.glow-effect {
-  animation: glow-fade 1s ease-out;
-}
-
-@keyframes glow-fade {
+@keyframes row-glow {
   0% {
-    box-shadow: 0 0 20px #fcd34d,
-                        inset 0 0 20px rgba(251, 191, 36, 0.1);
-    background-color: rgba(251, 191, 36, 0.1);
+    box-shadow: 0 0 20px var(--glow-color), inset 0 0 20px var(--glow-color);
+    background-color: rgba(255, 255, 255, 0.05);
   }
 
   100% {
@@ -3423,6 +3412,12 @@ body {
 
 .group:hover .group-hover\:opacity-100{
   opacity: 1;
+}
+
+.group:active .group-active\:scale-125{
+  --tw-scale-x: 1.25;
+  --tw-scale-y: 1.25;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 @media (min-width: 640px){

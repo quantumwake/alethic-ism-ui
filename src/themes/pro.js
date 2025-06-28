@@ -6,6 +6,7 @@ export const pro = {
     text: 'text-gray-100 text-xs',
     textMuted: 'text-gray-400',
     textAccent: 'text-white',
+    glowColor: 'rgb(255, 255, 255)', // white
     textSize: {
         xs: 'text-xs',
         sm: 'text-sm',

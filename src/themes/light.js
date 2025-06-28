@@ -7,6 +7,7 @@ export const light = {
     text: 'text-slate-900 text-xs',
     textMuted: 'text-slate-500',
     textAccent: 'text-blue-600',
+    glowColor: 'rgb(37, 99, 235)', // blue-600
     textSize: {
         xs: 'text-xs',
         sm: 'text-sm',

@@ -45,21 +45,16 @@
                 rgba(0, 0, 0, 0.2) 100%
         );
     }
-    
-    .glow-effect {
-        animation: glow-fade 1s ease-out;
+}
+
+@keyframes row-glow {
+    0% {
+        box-shadow: 0 0 20px var(--glow-color), inset 0 0 20px var(--glow-color);
+        background-color: rgba(255, 255, 255, 0.05);
     }
-    
-    @keyframes glow-fade {
-        0% {
-            box-shadow: 0 0 20px theme('colors.amber.300'),
-                        inset 0 0 20px rgba(251, 191, 36, 0.1);
-            background-color: rgba(251, 191, 36, 0.1);
-        }
-        100% {
-            box-shadow: none;
-            background-color: transparent;
-        }
+    100% {
+        box-shadow: none;
+        background-color: transparent;
     }
 }
 

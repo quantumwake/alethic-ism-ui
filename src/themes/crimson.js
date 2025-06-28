@@ -7,6 +7,7 @@ export const crimson = {
     text: 'text-rose-200 text-xs',
     textMuted: 'text-rose-400',
     textAccent: 'text-rose-100',
+    glowColor: 'rgb(255, 228, 230)', // rose-100
     textSize: {
         xs: 'text-xs',
         sm: 'text-sm',

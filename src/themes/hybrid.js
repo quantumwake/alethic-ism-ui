@@ -7,6 +7,7 @@ export const hybrid = {
     text: 'text-green-500 text-xs',
     textMuted: 'text-green-700',
     textAccent: 'text-amber-400',
+    glowColor: 'rgb(252, 211, 77)', // amber-300
     textSize: {
         xs: 'text-xs',
         sm: 'text-sm',

@@ -78,47 +78,35 @@ const TableCell = ({value, rowIndex, columnKey, isExpanded, onExpand}) => {
 
 const TableCellTrigger = ({ key, columnKey, rowIndex, value, onCellTrigger = null }) => {
     const theme = useStore(state => state.getCurrentTheme());
-    const [isClicked, setIsClicked] = useState(false);
     
-    const handleClick = () => {
+    const handleClick = (e) => {
         if (onCellTrigger) {
-            setIsClicked(true);
             onCellTrigger(columnKey, rowIndex, value);
             
-            // Trigger glow effect on the parent row
-            const button = document.querySelector(`[data-row-trigger="${rowIndex}"]`);
-            if (button) {
-                const row = button.closest('tr');
-                if (row) {
-                    row.classList.add('glow-effect');
-                    setTimeout(() => {
-                        row.classList.remove('glow-effect');
-                    }, 1000);
-                }
+            // Add glow animation to row
+            const row = e.currentTarget.closest('tr');
+            if (row) {
+                row.style.setProperty('--glow-color', theme.glowColor || 'rgb(74, 222, 128)');
+                row.style.animation = 'none';
+                setTimeout(() => {
+                    row.style.animation = 'row-glow 1s ease-out';
+                }, 10);
             }
-            
-            // Reset clicked state after animation
-            setTimeout(() => setIsClicked(false), 300);
         }
     };
     
-    return (<>
+    return (
         <td className={`border-r border-dashed ${theme.border} px-2 py-2 ${theme.text}`}>
             <button 
-                data-row-trigger={rowIndex}
                 onClick={handleClick}
-                className={`transition-all duration-300 ${isClicked ? 'scale-125' : 'scale-100'}`}
+                className="group"
             >
                 <PlayIcon 
-                    className={`w-3 h-3 transition-colors duration-200 ${
-                        isClicked 
-                            ? 'text-amber-300' 
-                            : `${theme.icon} hover:text-amber-300`
-                    }`} 
+                    className={`w-3 h-3 transition-all duration-200 ${theme.icon} ${theme.hover} group-active:scale-125`} 
                 />
             </button>
         </td>
-    </>)
+    )
 }
 
 const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isStateFormat, onCellTrigger = null}) => {
@@ -129,7 +117,7 @@ const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isS
         return (
             <tbody className="">
             {Array.from({ length: Math.min(limit ?? table.count, table.count) }).map((_, rowIndex) => filterData(rowIndex) && (
-                <tr key={rowIndex} className={`border-b border-dashed ${theme.border} hover:${theme.button.primary}`}>
+                <tr key={rowIndex} className={`border-b border-dashed ${theme.border} hover:${theme.button.primary} transition-all duration-300`}>
                     {/*<TableCell key={`${rowIndex}-action`} value={`${offset + rowIndex + 1}`}*/}
                     {/*    rowIndex={rowIndex}*/}
                     {/*    columnKey={`${rowIndex}-action`}*/}
@@ -167,7 +155,7 @@ const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isS
         return (
             <tbody>
             {table?.map((row, rowIndex) => filterData(rowIndex) && (
-                <tr key={rowIndex} className={`border-b border-dashed ${theme.border} hover:${theme.button.primary}`}>
+                <tr key={rowIndex} className={`border-b border-dashed ${theme.border} hover:${theme.button.primary} transition-all duration-300`}>
                     {columns.map((columnKey) => (
                         <TableCell
                             key={columnKey}

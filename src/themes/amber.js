@@ -7,6 +7,7 @@ export const amber= {
     text: 'text-amber-500 text-xs',
     textMuted: 'text-amber-700',
     textAccent: 'text-amber-400',
+    glowColor: 'rgb(252, 211, 77)', // amber-300
     textSize: {
         xs: 'text-xs',
         sm: 'text-sm',
