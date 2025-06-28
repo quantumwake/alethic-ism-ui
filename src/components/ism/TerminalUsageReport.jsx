@@ -36,14 +36,16 @@ function TerminalUsageReport() {
         if (!userUsageReport) {
             return "Pending"
         }
-        const units = userUsageReport['total'] / userProfile?.max_agentic_units
-        setUsageUnits(units)
+        const currentUsage = userUsageReport['total']
+        const maxUnits = userProfile?.max_agentic_units || 1
+        const usageRatio = currentUsage / maxUnits
+        setUsageUnits(usageRatio)
     }, [userUsageReport]);
 
     return (
         <Tippy content="Agent Units (usage)">
-            <span className={usageUnits > 1.0 ? 'text-red-600 animate-fade-in-out mr-10' : 'text-white mr-10'}>
-                ISM UNITS: {usageUnits}
+            <span className={usageUnits > 1.0 ? 'text-red-600 animate-pulse mr-10' : 'text-white mr-10'}>
+                ISM UNITS: {userUsageReport?.total || 0} / {userProfile?.max_agentic_units || 0}
             </span>
         </Tippy>
     )
