@@ -78,10 +78,44 @@ const TableCell = ({value, rowIndex, columnKey, isExpanded, onExpand}) => {
 
 const TableCellTrigger = ({ key, columnKey, rowIndex, value, onCellTrigger = null }) => {
     const theme = useStore(state => state.getCurrentTheme());
+    const [isClicked, setIsClicked] = useState(false);
+    
+    const handleClick = () => {
+        if (onCellTrigger) {
+            setIsClicked(true);
+            onCellTrigger(columnKey, rowIndex, value);
+            
+            // Trigger glow effect on the parent row
+            const button = document.querySelector(`[data-row-trigger="${rowIndex}"]`);
+            if (button) {
+                const row = button.closest('tr');
+                if (row) {
+                    row.classList.add('glow-effect');
+                    setTimeout(() => {
+                        row.classList.remove('glow-effect');
+                    }, 1000);
+                }
+            }
+            
+            // Reset clicked state after animation
+            setTimeout(() => setIsClicked(false), 300);
+        }
+    };
+    
     return (<>
         <td className={`border-r border-dashed ${theme.border} px-2 py-2 ${theme.text}`}>
-            <button onClick={() => onCellTrigger && onCellTrigger(columnKey, rowIndex, value)}>
-                <PlayIcon className="w-3 h-3" />
+            <button 
+                data-row-trigger={rowIndex}
+                onClick={handleClick}
+                className={`transition-all duration-300 ${isClicked ? 'scale-125' : 'scale-100'}`}
+            >
+                <PlayIcon 
+                    className={`w-3 h-3 transition-colors duration-200 ${
+                        isClicked 
+                            ? 'text-amber-300' 
+                            : `${theme.icon} hover:text-amber-300`
+                    }`} 
+                />
             </button>
         </td>
     </>)
