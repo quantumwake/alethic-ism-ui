@@ -5,8 +5,7 @@ export const useProcessorProviderSlice = (set, get) => ({
         // const projectId = get().selectedProjectId
         // const userId = get().selectedProjectId
 
-        const url = `${get().ISM_API_BASE_URL}/provider/list`
-        const response = await fetch(url)
+        const response = await get().authGet('/provider/list')
         const providers = await response.json();
         set({providers});
         return providers

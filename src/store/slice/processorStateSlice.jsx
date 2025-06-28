@@ -5,12 +5,7 @@ export const useProcessorStateSlice = (set, get) => ({
 
     deleteProcessorState: async (routeId) => {
         try {
-            const response = await fetch(`${get().ISM_API_BASE_URL}/processor/state/route/${routeId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
+            const response = await get().authDelete(`/processor/state/route/${routeId}`);
 
             if (!response.ok) {
                 // TODO proper error handling -- throw new Error('Network response was not ok');
@@ -23,13 +18,7 @@ export const useProcessorStateSlice = (set, get) => ({
     // createProcessorState: async (id, processorId, stateId, direction) => {
     createProcessorState: async (processorState) => {
 
-        const response = await fetch(`${get().ISM_API_BASE_URL}/processor/state/route`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(processorState),
-        });
+        const response = await get().authPost('/processor/state/route', processorState);
 
         if (!response.ok) {
             // TODO proper error handling -- throw new Error('Network response was not ok');
@@ -55,7 +44,7 @@ export const useProcessorStateSlice = (set, get) => ({
     // TODO combine these two methods (below), maybe the processor states can be derived from all the associated states or vice versa
     fetchProcessorStates: async (processorId) => {
         try {
-            const response = await fetch(`${get().ISM_API_BASE_URL}/processor/${processorId}/states`);
+            const response = await get().authGet(`/processor/${processorId}/states`);
 
             if (response.ok) {
                 const processor_states = await response.json();
@@ -73,7 +62,7 @@ export const useProcessorStateSlice = (set, get) => ({
 
         // set the project id if not set
         projectId = projectId || get().selectedProjectId
-        const response = await fetch(`${get().ISM_API_BASE_URL}/project/${projectId}/processor/states`)
+        const response = await get().authGet(`/project/${projectId}/processor/states`)
 
         // validate
         if (!response.ok) {
@@ -103,15 +92,7 @@ export const useProcessorStateSlice = (set, get) => ({
         try {
 
             // const response = await fetch(`${get().ISM_API_BASE_URL}/route/${stateId}/${processorId}/forward/complete`, {
-            const response = await fetch(`${get().ISM_API_BASE_URL}/processor/state/route/${route_id}`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                // body: JSON.stringify(queryState),
-                // body: queryState,
-            });
+            const response = await get().authPost(`/processor/state/route/${route_id}`, {});
 
             if (!response.ok) {
                 // TODO proper error handling -- throw new Error('Network response error when trying to submit test query state for routing');

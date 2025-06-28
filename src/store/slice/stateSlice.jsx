@@ -2,12 +2,7 @@ export const useStateSlice = (set, get) => ({
 
     deleteNodeDataStateConfigKeyDefinition: async (nodeId, definition_type, id) => {
         try {
-            const response = await fetch(`${get().ISM_API_BASE_URL}/state/${nodeId}/config/${definition_type}/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
+            const response = await get().authDelete(`/state/${nodeId}/config/${definition_type}/${id}`);
 
             if (!response.ok) {
                 // TODO proper error handling -- throw new Error('Network response was not ok');
@@ -38,12 +33,7 @@ export const useStateSlice = (set, get) => ({
             return
         }
 
-        const response = await fetch(`${get().ISM_API_BASE_URL}/state/${stateId}/data`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
+        const response = await get().authDelete(`/state/${stateId}/data`);
 
         if (!response.ok) {
             // TODO proper error handling -- throw new Error('Network response was not ok');
@@ -56,13 +46,7 @@ export const useStateSlice = (set, get) => ({
             return {}
         }
 
-        const response = await fetch(`${get().ISM_API_BASE_URL}/state/${stateId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${get().jwtToken}`,
-            }
-        });
+        const response = await get().authDelete(`/state/${stateId}`);
 
         if (!response.ok) {
             // TODO proper error handling -- throw new Error('Network response was not ok');
@@ -171,7 +155,7 @@ export const useStateSlice = (set, get) => ({
         formData.append("file", file);
 
         try {
-            const response = await fetch(`${get().ISM_API_BASE_URL}/state/${stateId}/data/upload`, {
+            const response = await get().authFetch(`/state/${stateId}/data/upload`, {
                 method: "POST",
                 body: formData,
             });
@@ -246,15 +230,7 @@ export const useStateSlice = (set, get) => ({
 
     // TODO might be obsolete, its a way to send data directly to the api to push data into a state
     publishQueryState: async(stateId, queryState) => {
-        const response = await fetch(`${get().ISM_API_BASE_URL}/state/${stateId}/forward/entry`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            // body: JSON.stringify(queryState),
-            body: JSON.stringify(queryState),
-        });
+        const response = await get().authPost(`/state/${stateId}/forward/entry`, queryState);
 
         if (!response.ok) {
             // TODO proper error handling -- throw new Error('Network response error when trying to submit test query state for routing');

@@ -4,14 +4,7 @@ export const useLoggerSlice = (set, get) => ({
         if (!projectId)
             projectId = get().selectedProjectId
 
-        const response = await fetch(`${get().ISM_API_BASE_URL}/monitor/project/${projectId}`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${get().jwtToken}`,
-            },
-        });
+        const response = await get().authPost(`/monitor/project/${projectId}`, {});
 
         // TODO check to make sure it is a not found error
         if (response.status === 404) {
@@ -24,14 +17,7 @@ export const useLoggerSlice = (set, get) => ({
     },
 
     fetchMonitorLogEventsByRouteId: async(routeId) => {
-        const response = await fetch(`${get().ISM_API_BASE_URL}/monitor/route/${routeId}`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${get().jwtToken}`,
-            },
-        });
+        const response = await get().authPost(`/monitor/route/${routeId}`, {});
 
         // TODO check to make sure it is a not found error
         if (response.status === 404) {

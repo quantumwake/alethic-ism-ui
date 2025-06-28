@@ -31,14 +31,7 @@ export const useTemplateSlice = (set, get) => ({
     saveTemplate: async (template) => {
         try {
             // invoke the new project api
-            const response = await fetch(`${get().ISM_API_BASE_URL}/template/create`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(template),
-            });
+            const response = await get().authPost('/template/create', template);
 
             // ensure the response is ok 20x
             if (!response.ok) {
@@ -57,13 +50,7 @@ export const useTemplateSlice = (set, get) => ({
     renameTemplate: async (template, new_name) => {
         try {
             // invoke the new project api
-            const response = await fetch(`${get().ISM_API_BASE_URL}/template/${template.template_id}/rename/${new_name}`, {
-                method: 'PUT',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await get().authPut(`/template/${template.template_id}/rename/${new_name}`, null);
 
             // ensure the response is ok 20x
             if (!response.ok) {
@@ -84,7 +71,7 @@ export const useTemplateSlice = (set, get) => ({
             set({ setTemplates: []});
 
             let templates = []
-            const response = await fetch(`${get().ISM_API_BASE_URL}/project/${projectId}/templates`);
+            const response = await get().authGet(`/project/${projectId}/templates`);
             if (response.ok) {
                 templates = await response.json();
                 set({templates});

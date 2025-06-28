@@ -125,7 +125,10 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
     const renderContent = () => (
         <div className={`flex flex-col ${theme.text}`}>
             <div className="p-2">
-                {nodeData?.config?.name}
+                <div>{nodeData?.config?.name}</div>
+                <div className="text-xs text-gray-500">
+                    {nodeData?.count ? `${nodeData.count} rows` : 'Empty - double-click to upload'}
+                </div>
             </div>
 
             {renderAdditionalContent}
@@ -148,16 +151,29 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
         </div>
     );
 
+    const handleNodeDoubleClick = () => {
+        // Check if state is empty using count
+        if (!nodeData?.count || nodeData.count === 0) {
+            // If empty, show upload dialog
+            toggleDialog('upload');
+        } else {
+            // If has data, show table view
+            toggleDialog('view');
+        }
+    };
+
     return (
         <>
-            <BaseNode
-                type="state"
-                nodeId={nodeId}
-                renderHeader={renderHeader}
-                renderControls={renderControls}
-                renderContent={renderContent}
-                theme={theme}>
-            </BaseNode>
+            <div onDoubleClick={handleNodeDoubleClick}>
+                <BaseNode
+                    type="state"
+                    nodeId={nodeId}
+                    renderHeader={renderHeader}
+                    renderControls={renderControls}
+                    renderContent={renderContent}
+                    theme={theme}>
+                </BaseNode>
+            </div>
 
             <TerminalDialogConfirmation
                 isOpen={dialogs.purgeConfirm}

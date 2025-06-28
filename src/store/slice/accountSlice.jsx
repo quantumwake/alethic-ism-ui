@@ -38,7 +38,7 @@ export const useAccountSlice = (set, get) => ({
     userId: null,
     userProfile: null,
     setUserId: userId => set({ userId }),
-    setUserProfile: profile => set({ userProfile: profile }),
+    setUserProfile: userProfile => set({ userProfile }),
 
     // POST /user/basic
     createUserProfileBasic: async userCreate => {

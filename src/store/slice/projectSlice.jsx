@@ -11,15 +11,7 @@ export const useProjectSlice = (set, get) => ({
         }));
     },
     fetchProjects: async (userId) => {
-        const { authenticatedFetch } = get();
-        const response = await authenticatedFetch(`${get().ISM_API_BASE_URL}/user/${userId}/projects`, {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${get().jwtToken}`,
-            },
-        });
+        const response = await get().authGet(`/user/${userId}/projects`);
 
         if (response.ok) {
             const projects = await response.json();
@@ -57,12 +49,7 @@ export const useProjectSlice = (set, get) => ({
             const isNew = project?.project_id === undefined || project?.project_id === null
 
             // invoke the new project api
-            const response = await fetch(`${get().ISM_API_BASE_URL}/project/create`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(project),
-            });
+            const response = await get().authPost('/project/create', project);
 
             // ensure the response is ok 20x
             if (!response.ok) {

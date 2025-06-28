@@ -17,13 +17,7 @@ export const useProcessorSlice = (set, get) => ({
                 "class_name": processorData.class_name || ""
             }
 
-        const response = await fetch(`${get().ISM_API_BASE_URL}/processor/create`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(processorObject),
-        });
+        const response = await get().authPost('/processor/create', processorObject);
 
         if (!response.ok) {
             // TODO proper error handling -- throw new Error('Network response was not ok');
@@ -40,7 +34,7 @@ export const useProcessorSlice = (set, get) => ({
         }
 
         try {
-            const response = await fetch(`${get().ISM_API_BASE_URL}/processor/${processorId}`)
+            const response = await get().authGet(`/processor/${processorId}`)
             const processorData = await response.json();
             
             // Enrich the processor data with the class information
@@ -62,13 +56,7 @@ export const useProcessorSlice = (set, get) => ({
         }
     },
     changeProcessorStatus: async (processorId, statusCode) => {
-        const response = await fetch(`${get().ISM_API_BASE_URL}/processor/${processorId}/status/${statusCode}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            // body: {},
-        });
+        const response = await get().authPost(`/processor/${processorId}/status/${statusCode}`, {});
 
         if (!response.ok) {
             // TODO proper error handling -- throw new Error('Network response was not ok');
@@ -80,7 +68,7 @@ export const useProcessorSlice = (set, get) => ({
     },
     fetchProcessors: async (project_id) => {
         try {
-            const response = await fetch(`${get().ISM_API_BASE_URL}/project/${project_id}/processors`);
+            const response = await get().authGet(`/project/${project_id}/processors`);
             const processors = await response.json();
             set({ processors });
         } catch (error) {
@@ -88,12 +76,7 @@ export const useProcessorSlice = (set, get) => ({
         }
     },
     deleteProcessor: async (processorId) => {
-        const response = await fetch(`${get().ISM_API_BASE_URL}/processor/${processorId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+        const response = await get().authDelete(`/processor/${processorId}`);
 
         if (!response.ok) {
             // TODO proper error handling -- throw new Error('Network response was not ok');

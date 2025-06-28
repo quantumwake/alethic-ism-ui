@@ -13,7 +13,7 @@ export const useWorkflowSlice = (set, get) => ({
         try {
             set({ workflowNodes: []});
 
-            const response = await fetch(`${get().ISM_API_BASE_URL}/project/${projectId}/workflow/nodes`);
+            const response = await get().authGet(`/project/${projectId}/workflow/nodes`);
             const nodes = await response.json();
 
             // remap the api data structure to the internal reactflow data structure
@@ -54,13 +54,7 @@ export const useWorkflowSlice = (set, get) => ({
     setWorkflowEdges: (edges) => set({ workflowEdges: edges }),
 
     createNewEdge: async (edge) => {
-        const response = await fetch(`${get().ISM_API_BASE_URL}/workflow/edge/create`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(edge),
-        });
+        const response = await get().authPost('/workflow/edge/create', edge);
 
         if (!response.ok) {
             // TODO proper error handling -- throw new Error('Network response was not ok');
@@ -110,12 +104,7 @@ export const useWorkflowSlice = (set, get) => ({
 
     deleteNode: async (nodeId) => {
         try {
-            const response = await fetch(`${get().ISM_API_BASE_URL}/workflow/node/${nodeId}/delete`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
+            const response = await get().authDelete(`/workflow/node/${nodeId}/delete`);
 
             if (!response.ok) {
                 // TODO proper error handling -- throw new Error('Network response was not ok');
@@ -141,13 +130,7 @@ export const useWorkflowSlice = (set, get) => ({
                 height: node.data.height,
             };
 
-            const response = await fetch(`${get().ISM_API_BASE_URL}/workflow/node/create`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updatedNode),
-            });
+            const response = await get().authPost('/workflow/node/create', updatedNode);
 
             if (!response.ok) {
                 // TODO proper error handling -- throw new Error('Network response was not ok');
@@ -160,13 +143,7 @@ export const useWorkflowSlice = (set, get) => ({
     createNewNode: async (newNode) => {
         try {
             // Assuming `newNode` is an object that matches the backend's expected request body
-            const response = await fetch(`${get().ISM_API_BASE_URL}/workflow/node/create`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newNode),
-            });
+            const response = await get().authPost('/workflow/node/create', newNode);
 
             if (!response.ok) {
                 // TODO proper error handling -- throw new Error('Network response was not ok');
@@ -211,7 +188,7 @@ export const useWorkflowSlice = (set, get) => ({
         try {
             set({ workflowEdges: []});
 
-            const response = await fetch(`${get().ISM_API_BASE_URL}/project/${projectId}/workflow/edges`);
+            const response = await get().authGet(`/project/${projectId}/workflow/edges`);
             const edges = await response.json();
 
             // remap the api data structure to the internal reactflow data structure
@@ -241,11 +218,8 @@ export const useWorkflowSlice = (set, get) => ({
         try {
             const edge = get().findWorkflowEdgeById(edgeId)
 
-            const response = await fetch(`${get().ISM_API_BASE_URL}/workflow/edge`, {
+            const response = await get().authFetch('/workflow/edge', {
                 method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify({
                     source_node_id: edge.source,
                     target_node_id: edge.target

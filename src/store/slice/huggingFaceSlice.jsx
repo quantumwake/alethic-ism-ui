@@ -10,18 +10,16 @@ export const useHuggingFaceSlice = (set, get) => ({
         const vaultKeyId = ""
 
         try {
-
-            const response = await fetch(`${get().ISM_API_BASE_URL}/dataset/state/${stateId}/load/hg`, {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    "path": path,
-                    "revision": revision,
-                    "split": split,
-                    "subset": subset,
-                    "vaultKeyId": vaultKeyId
-                })
-            })
+            const response = await get().authPost(
+                `/dataset/state/${stateId}/load/hg`,
+                {
+                    path: path,
+                    revision: revision,
+                    split: split,
+                    subset: subset,
+                    vaultKeyId: vaultKeyId
+                }
+            )
 
             if (response.ok) {
                 return await response.json();

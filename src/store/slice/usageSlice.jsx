@@ -12,9 +12,7 @@ export const useUsageSlice = (set, get) => ({
     setProjectUsageReport: (projectUsageReport) => set({ projectUsageReport: projectUsageReport }),
 
     fetchUsageReportGroupByUser: async() => {
-        const user_id = get().userId
-        const { authenticatedFetch } = get();
-        const response = await authenticatedFetch(`${get().ISM_API_BASE_URL}/usage/user/${user_id}`);
+        const response = await get().authGet(`/usage/user`);
         let usage = []
 
         // TODO check to make sure it is a not found error
@@ -30,7 +28,7 @@ export const useUsageSlice = (set, get) => ({
 
     fetchUsageReportGroupForCharts: async() => {
         const user_id = get().userId
-        const response = await fetch(`${get().ISM_API_BASE_URL}/usage/user/${user_id}/charts`);
+        const response = await get().authGet(`/usage/user/${user_id}/charts`);
         let usage = []
         // TODO check to make sure it is a not found error
         if (!response.ok) {
