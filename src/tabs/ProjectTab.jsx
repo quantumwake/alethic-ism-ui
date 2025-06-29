@@ -171,7 +171,7 @@ const ProjectTab = () => {
 
     const filteredProjects = projects?.filter(project =>
         project?.project_name?.toLowerCase().includes(searchTerm?.toLowerCase())
-    ) || [searchTerm];
+    ) || [];
 
     // const groupedProjects = groupProjectsByTime(filteredProjects);
 
@@ -180,7 +180,7 @@ const ProjectTab = () => {
     useEffect(() => {
         const grouped = groupProjectsByTime(filteredProjects);
         setGroupedProjects(grouped)
-    }, [projects]);
+    }, [filteredProjects]);
 
     const handleContextMenu = (e) => {
         e.preventDefault();
