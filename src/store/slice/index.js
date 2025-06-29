@@ -18,5 +18,6 @@ export { default as useFileSystemSlice } from './filesystemSlice'
 export { default as useNotificationSlice } from './notificationSlice'
 export { default as useStudioSlice } from './studioSlice'
 export { default as useHuggingFaceSlice } from './huggingFaceSlice'
+export { useFilterSlice } from './filterSlice'
 
 

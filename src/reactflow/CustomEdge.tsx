@@ -4,6 +4,7 @@ import {faFilter, faPlay, faRemove} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {EdgeLabelRenderer, EdgeProps, getBezierPath} from "@xyflow/react";
 import TerminalSyslog from "../components/ism/TerminalSyslog";
+import TerminalStateFilterDialog from "../components/ism/TerminalStateFilterDialog";
 
 function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                                                         sourcePosition, targetPosition,
@@ -235,11 +236,12 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
         </EdgeLabelRenderer>
 
 
-        {/*<StateDataFilterDialog*/}
-        {/*    isOpen={isOpenStateDataFilterDialog}*/}
-        {/*    setIsOpen={setIsOpenStateDataFilterDialog}*/}
-        {/*    filterId={id}*/}
-        {/*/>*/}
+        <TerminalStateFilterDialog
+            isOpen={isOpenStateDataFilterDialog}
+            onClose={() => setIsOpenStateDataFilterDialog(false)}
+            filterId={id}
+            direction="input"
+        />
     </>);
 }
 

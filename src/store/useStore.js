@@ -19,8 +19,9 @@ import {
     useLoggerSlice,
     useFileSystemSlice,
     useNotificationSlice,
-    useStudioSlice, useHuggingFaceSlice,
-
+    useStudioSlice, 
+    useHuggingFaceSlice,
+    useFilterSlice,
 } from "./slice";
 
 import {authFetch} from "."
@@ -66,6 +67,7 @@ const useStore = create(
             ...useNotificationSlice(set, get),
             ...useStudioSlice(set, get),
             ...useHuggingFaceSlice(set, get),
+            ...useFilterSlice(set, get),
 
         }),
         {
