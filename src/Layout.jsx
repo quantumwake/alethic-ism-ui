@@ -197,7 +197,7 @@ const Layout = () => {
                 leftContent={
                     <div className="flex items-center gap-4">
                         <span>SYSTEM STATUS: ACTIVE</span>
-                        {selectedProjectId && <span>PROJECT: {selectedProjectId}</span>}
+                        {selectedProjectId && <span>Project: {selectedProjectId}</span>}
                     </div>
                 }
                 rightContent={

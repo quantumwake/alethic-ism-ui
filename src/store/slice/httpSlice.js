@@ -62,28 +62,52 @@ const useHttpSlice = (set, get) => {
 
         fetch: async (url, opts) => {
             try {
-                const res = await standardFetch(buildUrl(url), opts)
+                const fullUrl = buildUrl(url)
+                const res = await standardFetch(fullUrl, opts)
                 if (!res.ok) {
                     const text = await res.text().catch(() => '')
-                    get().addError({ url, status: res.status, message: text })
+                    get().addError({ 
+                        url: fullUrl, 
+                        method: opts?.method || 'GET',
+                        body: opts?.body || null,
+                        status: res.status, 
+                        message: text 
+                    })
                 }
                 return res
             } catch (err) {
-                get().addError({ url, message: err.message || err })
+                get().addError({ 
+                    url: buildUrl(url), 
+                    method: opts?.method || 'GET',
+                    body: opts?.body || null,
+                    message: err.message || err 
+                })
                 throw err
             }
         },
 
         authFetch: async (url, opts) => {
             try {
-                const res = await fetchAuth(buildUrl(url), opts)
+                const fullUrl = buildUrl(url)
+                const res = await fetchAuth(fullUrl, opts)
                 if (!res.ok) {
                     const text = await res.text().catch(() => '')
-                    get().addError({ url, status: res.status, message: text })
+                    get().addError({ 
+                        url: fullUrl, 
+                        method: opts?.method || 'GET',
+                        body: opts?.body || null,
+                        status: res.status, 
+                        message: text 
+                    })
                 }
                 return res
             } catch (err) {
-                get().addError({ url, message: err.message || err })
+                get().addError({ 
+                    url: buildUrl(url), 
+                    method: opts?.method || 'GET',
+                    body: opts?.body || null,
+                    message: err.message || err 
+                })
                 throw err
             }
         },
@@ -125,11 +149,21 @@ const useHttpSlice = (set, get) => {
                 ...opts,
             }),
 
-        noAuthDelete: (url, opts = {}) =>
-            get().fetch(url, { method: 'DELETE', ...opts }),
+        noAuthDelete: (url, body, opts = {}) =>
+            get().fetch(url, {
+                method: 'DELETE',
+                headers: { ...jsonHeaders, ...opts.headers },
+                body: JSON.stringify(body),
+                ...opts,
+            }),
 
-        authDelete: (url, opts = {}) =>
-            get().authFetch(url, { method: 'DELETE', ...opts }),
+        authDelete: (url, body, opts = {}) =>
+            get().authFetch(url, {
+                method: 'DELETE',
+                headers: { ...jsonHeaders, ...opts.headers },
+                body: JSON.stringify(body),
+                ...opts,
+            }),
 
     }
 }

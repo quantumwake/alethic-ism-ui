@@ -218,12 +218,9 @@ export const useWorkflowSlice = (set, get) => ({
         try {
             const edge = get().findWorkflowEdgeById(edgeId)
 
-            const response = await get().authFetch('/workflow/edge', {
-                method: 'DELETE',
-                body: JSON.stringify({
-                    source_node_id: edge.source,
-                    target_node_id: edge.target
-                }),
+            const response = await get().authDelete('/workflow/edge', {
+                source_node_id: edge.source,
+                target_node_id: edge.target
             });
 
             if (!response.ok) {

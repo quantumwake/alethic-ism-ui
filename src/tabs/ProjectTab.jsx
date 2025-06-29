@@ -180,7 +180,7 @@ const ProjectTab = () => {
     useEffect(() => {
         const grouped = groupProjectsByTime(filteredProjects);
         setGroupedProjects(grouped)
-    }, [filteredProjects]);
+    }, [projects, searchTerm]);
 
     const handleContextMenu = (e) => {
         e.preventDefault();
