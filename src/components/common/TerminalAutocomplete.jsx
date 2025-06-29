@@ -137,11 +137,12 @@ export const TerminalAutocomplete = ({
 
             {isOpen && filteredItems.length > 0 && (
                 <div className={`
-                    absolute z-50 w-full mt-1
+                    absolute z-[100] w-full mt-1
                     ${theme.bg} ${theme.border}
                     border rounded-none
                     shadow-lg
                     max-h-60 overflow-y-auto
+                    overflow-x-hidden
                 `}>
                     {filteredItems.map((item, index) => {
                         const display = formatDisplay ? formatDisplay(item) : item[displayField];
@@ -169,7 +170,7 @@ export const TerminalAutocomplete = ({
 
             {isOpen && searchTerm && filteredItems.length === 0 && (
                 <div className={`
-                    absolute z-50 w-full mt-1
+                    absolute z-[100] w-full mt-1
                     ${theme.bg} ${theme.border}
                     border rounded-none
                     shadow-lg

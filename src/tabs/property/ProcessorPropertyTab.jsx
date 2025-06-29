@@ -5,12 +5,13 @@ import {TerminalInput, TerminalLabel, TerminalTabViewSection, TerminalAutocomple
 const ProcessorPropertyTab = () => {
     const theme = useStore(state => state.getCurrentTheme());
     const {setNodeData} = useStore()
-    const {providers, getProviderById} = useStore()
+    const {providers, getProviderById, fetchProviders} = useStore()
     const {selectedNodeId} = useStore()
     const nodeData = useStore(state => state.getNodeData(selectedNodeId))
 
     // Get all providers with formatted display
     const [allProviders, setAllProviders] = useState([]);
+    const [providersLoading, setProvidersLoading] = useState(true);
     
     // Debug logging
     console.log('ProcessorPropertyTab render:', { 
@@ -22,6 +23,25 @@ const ProcessorPropertyTab = () => {
 
     // holds property sections for specific processor type, generated on a section basis by processor details
     const [sections, setSections] = useState({})
+
+    // Fetch providers when a processor node is selected
+    useEffect(() => {
+        if (selectedNodeId && nodeData) {
+            // Only fetch if we don't already have providers
+            if (!providers || providers.length === 0) {
+                setProvidersLoading(true);
+                fetchProviders().then(() => {
+                    console.log('Providers fetched for processor node:', selectedNodeId);
+                    setProvidersLoading(false);
+                }).catch((error) => {
+                    console.error('Failed to fetch providers:', error);
+                    setProvidersLoading(false);
+                });
+            } else {
+                setProvidersLoading(false);
+            }
+        }
+    }, [selectedNodeId, nodeData?.id]);
 
     // Format providers for autocomplete
     useEffect(() => {
@@ -50,35 +70,47 @@ const ProcessorPropertyTab = () => {
         return {
             title: "General",
             content: (
-                <div className={`flex flex-col w-full space-y-4 ${theme.spacing.base}`}>
+                <div className={`flex flex-col w-full space-y-2 ${theme.spacing.base}`}>
 
-                    <TerminalLabel description="search and select runtime provider">Runtime Provider</TerminalLabel>
-                    <TerminalAutocomplete
-                        placeholder="Search providers by name or class..."
-                        items={allProviders}
-                        value={nodeData?.provider_id}
-                        displayField="displayName"
-                        valueField="id"
-                        onSelect={(provider) => {
-                            console.log('Provider selected:', provider);
-                            setNodeData(selectedNodeId, { 
-                                ...nodeData,
-                                provider_id: provider.id,
-                                class_name: provider.class_name
-                            });
-                        }}
-                        filterFn={(items, searchTerm) => {
-                            if (!searchTerm) return items;
-                            const lowerSearch = searchTerm.toLowerCase();
-                            return items.filter(provider => 
-                                provider.name.toLowerCase().includes(lowerSearch) ||
-                                provider.class_name?.toLowerCase().includes(lowerSearch) ||
-                                provider.version?.toLowerCase().includes(lowerSearch)
-                            );
-                        }}
-                    />
+                    <div className="mb-2">
+                        <TerminalLabel description="search and select runtime provider">Runtime Provider</TerminalLabel>
+                    </div>
+                    {!providersLoading && (
+                        <TerminalAutocomplete
+                            key={`provider-autocomplete-${nodeData?.provider_id}`}
+                            placeholder="Search providers by name or class..."
+                            items={allProviders}
+                            value={nodeData?.provider_id}
+                            displayField="displayName"
+                            valueField="id"
+                            onSelect={(provider) => {
+                                console.log('Provider selected:', provider);
+                                setNodeData(selectedNodeId, { 
+                                    ...nodeData,
+                                    provider_id: provider.id,
+                                    class_name: provider.class_name
+                                });
+                            }}
+                            filterFn={(items, searchTerm) => {
+                                if (!searchTerm) return items;
+                                const lowerSearch = searchTerm.toLowerCase();
+                                return items.filter(provider => 
+                                    provider.name.toLowerCase().includes(lowerSearch) ||
+                                    provider.class_name?.toLowerCase().includes(lowerSearch) ||
+                                    provider.version?.toLowerCase().includes(lowerSearch)
+                                );
+                            }}
+                        />
+                    )}
+                    {providersLoading && (
+                        <div className={`w-full px-3 py-1 text-sm font-mono ${theme.input.primary} ${theme.font} border rounded-none opacity-50`}>
+                            Loading providers...
+                        </div>
+                    )}
 
-                    <TerminalLabel description="runtime display name">Name</TerminalLabel>
+                    <div className="mt-4 mb-2">
+                        <TerminalLabel description="runtime display name">Name</TerminalLabel>
+                    </div>
                     <TerminalInput 
                         name="name" 
                         value={nodeData?.name || ''}
@@ -95,7 +127,7 @@ const ProcessorPropertyTab = () => {
         }
     }
 
-    const generateSections = (type) => {
+    const generateSections = () => {
         return {
             general: {
                 title: "General",
@@ -120,8 +152,9 @@ const ProcessorPropertyTab = () => {
 
     return (
         <>
-            {Object.entries(sections).map(([index, section]) => (
+            {Object.entries(sections).map(([key, section]) => (
                 <TerminalTabViewSection
+                    key={key}
                     title={section.title}
                     items={section.items}
                 />

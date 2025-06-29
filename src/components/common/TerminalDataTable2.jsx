@@ -18,14 +18,33 @@ const SearchField = ({ columnKey, onSearch, placeholder }) => {
     )
 }
 
+// Helper function to get sorted columns
+const getSortedColumns = (table, isStateFormat) => {
+    if (isStateFormat && table?.columns) {
+        return Object.entries(table.columns).sort(([, columnA], [, columnB]) => {
+            const orderA = columnA?.display_order ?? Number.MAX_SAFE_INTEGER;
+            const orderB = columnB?.display_order ?? Number.MAX_SAFE_INTEGER;
+            
+            // Primary sort by display_order
+            if (orderA !== orderB) {
+                return orderA - orderB;
+            }
+            
+            // Secondary sort by column name (alphabetically)
+            const nameA = columnA?.name || '';
+            const nameB = columnB?.name || '';
+            return nameA.localeCompare(nameB);
+        });
+    } else if (!isStateFormat && table?.length > 0) {
+        const columns = Object.keys(table[0]);
+        return columns.map(key => [key, { name: key }]);
+    }
+    return [];
+}
+
 const TableHeader = ({ table, onSearch, isStateFormat }) => {
     const theme = useStore(state => state.getCurrentTheme());
-    let columns = {}
-    if (isStateFormat) {
-        columns = table?.columns
-    } else {
-        columns = table?.length > 0 ? Object.keys(table[0]) : [];
-    }
+    const sortedColumns = getSortedColumns(table, isStateFormat);
 
     return (<thead className={`sticky top-0 ${theme.bg} z-10`}>
         <tr>
@@ -34,12 +53,12 @@ const TableHeader = ({ table, onSearch, isStateFormat }) => {
 
                 </div>
             </th>
-            {columns && Object.entries(columns).map(([key, column]) => (
+            {sortedColumns.map(([key, column]) => (
                 <th key={key} className={`${theme.datatable.header} ${theme.border}`}>
                     <div className="flex flex-col">
                         <div className="flex min-w-[50px]">
                             <div className="text-sm pr-4 uppercase">{column.name}</div>
-                            <SearchField placeholder={column.name} columnKey={key} theme={theme} onSearch={onSearch}/>
+                            <SearchField placeholder={column.name} columnKey={key} onSearch={onSearch}/>
                         </div>
                     </div>
                 </th>
@@ -76,12 +95,19 @@ const TableCell = ({value, rowIndex, columnKey, isExpanded, onExpand}) => {
     )
 }
 
-const TableCellTrigger = ({ key, columnKey, rowIndex, value, onCellTrigger = null }) => {
+const TableCellTrigger = ({ key, columnKey, rowIndex, table, isStateFormat, onCellTrigger = null }) => {
     const theme = useStore(state => state.getCurrentTheme());
     
     const handleClick = (e) => {
         if (onCellTrigger) {
-            onCellTrigger(columnKey, rowIndex, value);
+            // Build row data only when clicked using the sorted columns
+            const sortedColumns = getSortedColumns(table, isStateFormat);
+            const rowData = sortedColumns.reduce((acc, [colKey]) => {
+                acc[colKey] = table.data[colKey]?.values[rowIndex] ?? null;
+                return acc;
+            }, {});
+            
+            onCellTrigger(columnKey, rowIndex, rowData);
             
             // Add glow animation to row
             const row = e.currentTarget.closest('tr');
@@ -114,6 +140,9 @@ const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isS
 
     // handle original state column data row value format
     if (isStateFormat && table?.data) {
+        const sortedColumns = getSortedColumns(table, isStateFormat);
+        const sortedColumnKeys = sortedColumns.map(([key]) => key);
+
         return (
             <tbody className="">
             {Array.from({ length: Math.min(limit ?? table.count, table.count) }).map((_, rowIndex) => filterData(rowIndex) && (
@@ -128,12 +157,9 @@ const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isS
                     <TableCellTrigger key={`${rowIndex}-action`}
                                       onCellTrigger={onCellTrigger}
                                       columnKey={`${rowIndex}-action`} rowIndex={rowIndex}
-                                      value={Object.keys(table.columns).reduce((acc, columnKey) => {
-                        acc[columnKey] = table.data[columnKey]?.values[rowIndex] ?? null;
-                        return acc;
-                    }, {})} />
+                                      isStateFormat={isStateFormat} table={table} />
 
-                    {Object.keys(table.columns).map((columnKey) => (
+                    {sortedColumnKeys.map((columnKey) => (
                         <TableCell key={columnKey}
                             value={table.data[columnKey]?.values[rowIndex] ?? null}
                             rowIndex={rowIndex}
@@ -151,18 +177,18 @@ const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isS
     // as opposed to a set of dictionary rows composed of [{column=value, ...}].
     if (!isStateFormat && table?.length) {
         // Handle array of objects format
-        const columns = table?.length > 0 ? Object.keys(table[0]) : [];
+        const sortedColumns = getSortedColumns(table, isStateFormat);
+        const sortedColumnKeys = sortedColumns.map(([key]) => key);
         return (
             <tbody>
             {table?.map((row, rowIndex) => filterData(rowIndex) && (
                 <tr key={rowIndex} className={`border-b border-dashed ${theme.border} hover:${theme.button.primary} transition-all duration-300`}>
-                    {columns.map((columnKey) => (
+                    {sortedColumnKeys.map((columnKey) => (
                         <TableCell
                             key={columnKey}
                             value={row[columnKey] ?? null}
                             rowIndex={rowIndex}
                             columnKey={columnKey}
-                            theme={theme}
                             isExpanded={isExpanded}
                             onExpand={onExpand}
                         />

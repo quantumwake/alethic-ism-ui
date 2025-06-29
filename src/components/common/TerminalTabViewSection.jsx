@@ -40,9 +40,9 @@ const TerminalTabViewSection = ({title, items, sub = false}) => {
 
             {/* section items */}
             {!isCollapsed && (
-                <div className={`py-0.5 overflow-y-auto h-full`}>
+                <div className={`py-0.5 overflow-visible h-full`}>
                     {Object.entries(items).map(([key, sub]) => (
-                        <div key={key}>{sub.content}</div>
+                        <div key={key} className="overflow-visible">{sub.content}</div>
                     ))}
                 </div>
             )}

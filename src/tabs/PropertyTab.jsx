@@ -37,7 +37,7 @@ const PropertyTab = () => {
                 </div>
 
                 {/* properties */}
-                <div className={`${theme.font} ${theme.border} w-full overflow-y-auto`}>
+                <div className={`${theme.font} ${theme.border} w-full overflow-y-auto`} style={{overflowX: 'visible'}}>
                     {selectedNodeId && selectedNode && (<>
                         <div className={`${theme.text} ${theme.spacing.base} mb-0`}>
                             <TerminalLabel>{selectedNodeId}</TerminalLabel>
