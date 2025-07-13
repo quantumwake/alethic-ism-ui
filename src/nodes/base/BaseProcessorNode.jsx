@@ -1,7 +1,7 @@
-import React, {memo, useCallback, useEffect, useState} from 'react';
+import React, {memo, useCallback, useEffect, useState, useMemo} from 'react';
 import BaseNode from './BaseNode';
 import {useStore} from "../../store";
-import {Download, Eraser, Pause, Play, PlayIcon, Trash2, Upload} from 'lucide-react';
+import {Download, Eraser, Pause, Play, PlayIcon, Trash2, Upload, ChevronDown, ChevronRight} from 'lucide-react';
 import {TerminalInfoButton} from "../../components/common";
 import TerminalDialogConfirmation from "../../components/common/TerminalDialogConfirmation";
 
@@ -9,10 +9,17 @@ function BaseProcessorNode({ providerName, className, nodeId, renderAdditionalCo
 
     const theme = useStore(state => state.getCurrentTheme());
     const {fetchProcessor, deleteProcessor, fetchProcessorStates, getProviderById, getNodeData} = useStore();
+    const {toggleNodeCollapse, isNodeCollapsed, nodeHasChildren, getDescendantNodes} = useStore();
 
     const localNodeData = useStore(state => getNodeData(nodeId));
     const localProvider = useStore(state => getProviderById(localNodeData?.provider_id));
     const changeProcessorStatus = useStore(state => state.changeProcessorStatus);
+    
+    const hasChildren = useStore(state => state.nodeHasChildren(nodeId));
+    const isCollapsed = useStore(state => state.isNodeCollapsed(nodeId));
+    const descendantCount = useMemo(() => {
+        return isCollapsed ? getDescendantNodes(nodeId).length : 0;
+    }, [isCollapsed, nodeId, getDescendantNodes]);
 
     const [isStopped, setIsStopped] = useState(true);
     const [dataFetched, setDataFetched] = useState(false);
@@ -111,6 +118,19 @@ function BaseProcessorNode({ providerName, className, nodeId, renderAdditionalCo
 
     const renderControls = () => (
         <div className="flex items-center gap-1">
+        {hasChildren ? (
+            <button
+                onClick={() => toggleNodeCollapse(nodeId)}
+                className={`p-1 min-w-[3rem] h-5 flex items-center justify-center rounded-sm ${isCollapsed ? 'bg-purple-600 bg-opacity-60 text-white' : 'bg-purple-900 bg-opacity-20 text-white text-opacity-40'} hover:bg-purple-600 hover:bg-opacity-100 hover:text-white`}
+                title={isCollapsed ? `Expand (${descendantCount} hidden)` : 'Collapse'}>
+                {isCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                {isCollapsed && descendantCount > 0 && (
+                    <span className="ml-1 text-xs">{descendantCount}</span>
+                )}
+            </button>
+        ) : (
+            <div className="p-1 min-w-[3rem] h-5" />
+        )}
         {renderAdditionalControls({})}
             {actionButtons.map((button, index) => {
                 const Icon = button.icon;

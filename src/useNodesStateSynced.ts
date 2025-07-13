@@ -1,9 +1,15 @@
-import {useCallback} from 'react';
+import {useCallback, useMemo} from 'react';
 import {useStore} from "./store";
 import {applyNodeChanges, OnNodesChange} from "@xyflow/react"; // Path to your Zustand store
 
 const useNodesStateSynced = () => {
-    const { workflowNodes, setWorkflowNodes, updateNode } = useStore();
+    const { workflowNodes, setWorkflowNodes, updateNode, getVisibleNodesAndEdges, collapsedNodes } = useStore();
+
+    // Get visible nodes based on collapse state
+    const visibleNodes = useMemo(() => {
+        const { visibleNodes } = getVisibleNodesAndEdges();
+        return visibleNodes;
+    }, [workflowNodes, getVisibleNodesAndEdges, collapsedNodes]);
 
     const onNodesChanges: OnNodesChange = useCallback((changes: any) => {
         // console.log('Node changes:', changes);
@@ -23,7 +29,7 @@ const useNodesStateSynced = () => {
 
     }, [workflowNodes, setWorkflowNodes, updateNode]);
 
-    return [workflowNodes, setWorkflowNodes, onNodesChanges]
+    return [visibleNodes, setWorkflowNodes, onNodesChanges]
 }
 
 export default useNodesStateSynced;

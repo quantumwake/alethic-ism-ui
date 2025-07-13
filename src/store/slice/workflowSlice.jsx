@@ -7,6 +7,9 @@ export const useWorkflowSlice = (set, get) => ({
 
     // workflow -> edges
     workflowEdges: [],
+    
+    // collapsed nodes state - stores which nodes are collapsed
+    collapsedNodes: {},
 
     workflowNodes: [],
     fetchWorkflowNodes: async (projectId) => {
@@ -229,6 +232,103 @@ export const useWorkflowSlice = (set, get) => ({
         } catch (error) {
             console.error('Failed to delete node:', error);
         }
+    },
+    
+    // Toggle collapse state for a node
+    toggleNodeCollapse: (nodeId) => {
+        if (!nodeId) return;
+        
+        set((state) => ({
+            collapsedNodes: {
+                ...state.collapsedNodes,
+                [nodeId]: !state.collapsedNodes[nodeId]
+            }
+        }));
+    },
+    
+    // Check if a node is collapsed
+    isNodeCollapsed: (nodeId) => {
+        if (!nodeId) return false;
+        return get().collapsedNodes[nodeId] || false;
+    },
+    
+    // Check if a node has children (outgoing edges)
+    nodeHasChildren: (nodeId) => {
+        if (!nodeId) return false;
+        const { workflowEdges } = get();
+        return workflowEdges.some(e => e.source === nodeId);
+    },
+    
+    // Get all descendant nodes that should be hidden when a node is collapsed
+    getDescendantNodes: (nodeId) => {
+        if (!nodeId) return [];
+        
+        const { workflowEdges } = get();
+        const descendants = new Set();
+        const visited = new Set([nodeId]);
+        const queue = [];
+        
+        // Find direct children of the collapse point
+        workflowEdges.forEach(edge => {
+            if (edge.source === nodeId && edge.target !== nodeId) {
+                descendants.add(edge.target);
+                queue.push(edge.target);
+            }
+        });
+        
+        // BFS traversal to find all nodes in the forward graph
+        while (queue.length > 0) {
+            const currentNodeId = queue.shift();
+            
+            if (visited.has(currentNodeId)) continue;
+            visited.add(currentNodeId);
+            
+            // Process all edges connected to current node
+            workflowEdges.forEach(edge => {
+                // Outgoing edges: add targets to descendants
+                if (edge.source === currentNodeId && 
+                    edge.target !== nodeId && 
+                    !descendants.has(edge.target)) {
+                    descendants.add(edge.target);
+                    if (!visited.has(edge.target)) {
+                        queue.push(edge.target);
+                    }
+                }
+                
+                // Incoming edges: if current node is a descendant,
+                // its sources should also be hidden (except the original node)
+                if (edge.target === currentNodeId && 
+                    edge.source !== nodeId && 
+                    descendants.has(currentNodeId) && 
+                    !descendants.has(edge.source)) {
+                    descendants.add(edge.source);
+                    if (!visited.has(edge.source)) {
+                        queue.push(edge.source);
+                    }
+                }
+            });
+        }
+        
+        return Array.from(descendants);
+    },
+    
+    // Get visible nodes and edges based on collapse state
+    getVisibleNodesAndEdges: () => {
+        const { workflowNodes, workflowEdges, collapsedNodes } = get();
+        const hiddenNodes = new Set();
+        
+        // Collect all hidden nodes from collapsed parents
+        Object.entries(collapsedNodes).forEach(([nodeId, isCollapsed]) => {
+            if (isCollapsed) {
+                const descendants = get().getDescendantNodes(nodeId);
+                descendants.forEach(id => hiddenNodes.add(id));
+            }
+        });
+        
+        const visibleNodes = workflowNodes.filter(node => !hiddenNodes.has(node.id));
+        
+        // ReactFlow automatically hides edges when nodes are hidden
+        return { visibleNodes, visibleEdges: workflowEdges };
     },
 
 });

@@ -1,9 +1,15 @@
-import {useCallback} from 'react';
+import {useCallback, useMemo} from 'react';
 import {applyNodeChanges} from "@xyflow/react"; // Adjust the path as necessary
 import {useStore} from "./store";
 
 const useEdgesStateSynced = () => {
-    const { workflowEdges, setWorkflowEdges } = useStore()
+    const { workflowEdges, setWorkflowEdges, getVisibleNodesAndEdges, collapsedNodes } = useStore()
+
+    // Get visible edges based on collapse state
+    const visibleEdges = useMemo(() => {
+        const { visibleEdges } = getVisibleNodesAndEdges();
+        return visibleEdges;
+    }, [workflowEdges, getVisibleNodesAndEdges, collapsedNodes]);
 
     const onEdgesChange = useCallback((changes: any) => {
         console.log('Edge changes:', changes);
@@ -26,7 +32,7 @@ const useEdgesStateSynced = () => {
 
     }, [workflowEdges, setWorkflowEdges]);
 
-    return [workflowEdges, setWorkflowEdges, onEdgesChange];
+    return [visibleEdges, setWorkflowEdges, onEdgesChange];
 }
 
 export default useEdgesStateSynced;

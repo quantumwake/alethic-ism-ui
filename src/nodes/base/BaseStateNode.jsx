@@ -1,4 +1,4 @@
-import React, {memo, useEffect, useRef, useState} from 'react';
+import React, {memo, useEffect, useRef, useState, useMemo} from 'react';
 import BaseNode from "./BaseNode";
 import {useStore} from "../../store";
 import {
@@ -22,6 +22,8 @@ import {
     FileSpreadsheetIcon,
     HardDriveDownloadIcon,
     HardDriveUploadIcon,
+    ChevronDown,
+    ChevronRight,
 } from 'lucide-react';
 
 import {TerminalDialogConfirmation, TerminalHoverMenu, TerminalInfoButton} from "../../components/common";
@@ -38,6 +40,13 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
     const nodeData = useStore(state => state.getNodeData(nodeId));
     // const [nodeData, setNodeData] = useState()
     const {purgeStateData, deleteState, setChannelInputId, setChannelOutputId} = useStore();
+    const {toggleNodeCollapse, isNodeCollapsed, nodeHasChildren, getDescendantNodes} = useStore();
+    
+    const hasChildren = useStore(state => state.nodeHasChildren(nodeId));
+    const isCollapsed = useStore(state => state.isNodeCollapsed(nodeId));
+    const descendantCount = useMemo(() => {
+        return isCollapsed ? getDescendantNodes(nodeId).length : 0;
+    }, [isCollapsed, nodeId, getDescendantNodes]);
 
     useEffect(() => {
         fetchState(nodeId).then(r => {});
@@ -119,7 +128,22 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
 
 
     const renderControls = () => (
-        <TerminalHoverMenu actionButtons={actionButtons} theme={theme} />
+        <div className="flex items-center gap-1">
+            {hasChildren ? (
+                <button
+                    onClick={() => toggleNodeCollapse(nodeId)}
+                    className={`p-1 min-w-[3rem] h-5 flex items-center justify-center rounded-sm ${isCollapsed ? 'bg-purple-600 bg-opacity-60 text-white' : 'bg-purple-900 bg-opacity-20 text-white text-opacity-40'} hover:bg-purple-600 hover:bg-opacity-100 hover:text-white`}
+                    title={isCollapsed ? `Expand (${descendantCount} hidden)` : 'Collapse'}>
+                    {isCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    {isCollapsed && descendantCount > 0 && (
+                        <span className="ml-1 text-xs">{descendantCount}</span>
+                    )}
+                </button>
+            ) : (
+                <div className="p-1 min-w-[3rem] h-5" />
+            )}
+            <TerminalHoverMenu actionButtons={actionButtons} theme={theme} />
+        </div>
     );
 
     const renderContent = () => (
