@@ -10,6 +10,16 @@ export const useProjectSlice = (set, get) => ({
             projects: [project, ...state.projects],
         }));
     },
+    deleteProject: async(id) => {
+
+    },
+    fetchProject: async (projectId) => {
+      const response = await get().authGet(`/project/${projectId}`);
+        if (response.ok) {
+            return await response.json();
+        }
+        return null
+    },
     fetchProjects: async (userId) => {
         const response = await get().authGet(`/user/${userId}/projects`);
 
@@ -20,7 +30,6 @@ export const useProjectSlice = (set, get) => ({
             return projects;
         }
 
-        // TODO proper error handling -- throw new Error('Network response was not ok');
         if (response.status === 404) {
             set({projects: []});
         }

@@ -125,6 +125,8 @@ const ProjectTab = () => {
             case "new":
                 setNewProjectName("project name") // this enables the terminal input for a new project
                 break
+            case "clone":
+
         }
     }
 
