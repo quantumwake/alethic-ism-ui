@@ -79,6 +79,34 @@ export const useProjectSlice = (set, get) => ({
             return false;
         }
     },
+    
+    cloneProject: async (projectId, toUserId, projectName, copyColumns = true, copyData = false) => {
+        try {
+            // Build request body
+            const requestBody = {
+                to_user_id: toUserId,
+                project_name: projectName || null,
+                copy_columns: copyColumns,
+                copy_data: copyData
+            };
+            
+            const response = await get().authPost(`/project/${projectId}/clone`, requestBody);
+            
+            if (!response.ok) {
+                throw new Error('Failed to clone project');
+            }
+            
+            const clonedProject = await response.json();
+            
+            // Add the cloned project to the projects list
+            await get().upsertProject(clonedProject);
+            
+            return clonedProject;
+        } catch (error) {
+            console.error('Failed to clone project:', error);
+            return null;
+        }
+    },
 
 });
 

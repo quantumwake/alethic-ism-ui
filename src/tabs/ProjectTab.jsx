@@ -9,6 +9,7 @@ import {
     File, PencilIcon, TrashIcon, CopyIcon, LogsIcon, ShareIcon, Share2Icon, ScaleIcon, PlusSquareIcon, SquareMenuIcon,
 } from 'lucide-react';
 import {TerminalInput, TerminalContextMenu, TerminalInfoButton} from "../components/common";
+import TerminalProjectCloneDialog from "../components/ism/TerminalProjectCloneDialog";
 
 const ProjectTab = () => {
     const theme = useStore(state => state.getCurrentTheme());
@@ -37,6 +38,8 @@ const ProjectTab = () => {
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const [contextMenuItems, setContextMenuItems] = useState([])
     const contextMenuRef = useRef(null)
+    const [contextMenuProjectId, setContextMenuProjectId] = useState(null)
+    const [isCloneDialogOpen, setIsCloneDialogOpen] = useState(false)
 
     //
     useEffect(() => {
@@ -79,22 +82,22 @@ const ProjectTab = () => {
                     icon: CopyIcon
                 },
                 {
-                    id: 'clone',
+                    id: 'share',
                     label: 'Share Project',
                     icon: Share2Icon
                 },
                 {
-                    id: 'clone',
+                    id: 'publish',
                     label: 'Publish as Component',
                     icon: ShareIcon
                 },
                 {
-                    id: 'clone',
+                    id: 'scale',
                     label: 'Scale',
                     icon: ScaleIcon
                 },
                 {
-                    id: 'clone',
+                    id: 'logs',
                     label: 'Event Log',
                     icon: LogsIcon
                 }
@@ -120,14 +123,17 @@ const ProjectTab = () => {
     };
 
     const handleItemClick = (item) => {
-        console.debug(`item: ${item}`)
+        console.debug(`item: ${item.id}, project: ${contextMenuProjectId}`)
         switch (item.id) {
             case "new":
                 setNewProjectName("project name") // this enables the terminal input for a new project
                 break
             case "clone":
-
+                console.debug(`cloning project ${contextMenuProjectId}`)
+                setIsCloneDialogOpen(true)
+                break
         }
+        setIsContextMenuOpen(false)
     }
 
     const groupProjectsByTime = (projects) => {
@@ -184,7 +190,7 @@ const ProjectTab = () => {
         setGroupedProjects(grouped)
     }, [projects, searchTerm]);
 
-    const handleContextMenu = (e) => {
+    const handleContextMenu = (e, project) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -193,6 +199,7 @@ const ProjectTab = () => {
         const clickY = e.clientY;
 
         setContextMenuPosition({ x: clickX, y: clickY });
+        setContextMenuProjectId(project.project_id);
         setIsContextMenuOpen(true)
     };
 
@@ -234,7 +241,7 @@ const ProjectTab = () => {
                             <button
                                 key={project.project_id}
                                 onClick={() => onSelectProject(project)}
-                                onContextMenu={(e) => handleContextMenu(e)}  // Add this line
+                                onContextMenu={(e) => handleContextMenu(e, project)}
                                 className={`w-full text-left px-3 py-1 ${theme.hover} flex items-center gap-2`}
                             >
                                 {/*<File className={`w-3 h-3 ${theme.icon}`}/>*/}
@@ -307,6 +314,12 @@ const ProjectTab = () => {
                                  menuItems={contextMenuItems}
                                  onItemClick={handleItemClick}
                                  menuPosition={contextMenuPosition}/>
+            
+            <TerminalProjectCloneDialog 
+                isOpen={isCloneDialogOpen}
+                setIsOpen={setIsCloneDialogOpen}
+                projectId={contextMenuProjectId}
+            />
         </div>
     );
 };

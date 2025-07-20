@@ -1,47 +1,116 @@
 import React, {memo, useEffect, useState} from "react";
-import {TerminalDialog, TerminalButton, TerminalLabel, TerminalInput} from "../common";
+import {TerminalDialog, TerminalButton, TerminalLabel, TerminalInput, TerminalCheckbox} from "../common";
 import {useStore} from "../../store";
-import {TerminalDropdown} from "../common";
 
 function TerminalProjectCloneDialog({ isOpen, setIsOpen, projectId }) {
     const theme = useStore(state => state.getCurrentTheme());
-    // const {renameSelectedFile, selectedFile} = useStore()
-    const [fileName, setFileName] = useState(selectedFile?.name)
+    const { fetchProject, cloneProject, userId } = useStore();
+    
+    const [originalProject, setOriginalProject] = useState(null);
+    const [clonedProjectName, setClonedProjectName] = useState("");
+    const [copyColumns, setCopyColumns] = useState(true);
+    const [copyData, setCopyData] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        fetchProjectDetails();
-    }, [projectId]);
+        if (projectId && isOpen) {
+            fetchProjectDetails().then(
+                () => console.debug(`Fetched project details for cloning: ${projectId}`),
+            );
+        }
+    }, [projectId, isOpen]);
 
-    const handleClone = async() => {
-        const result = await renameSelectedFile(fileName)
-        console.debug(`created new file: ${selectedFile})`)
-    }
+    const fetchProjectDetails = async () => {
+        if (!projectId) return;
+        
+        const project = await fetchProject(projectId);
+        if (project) {
+            setOriginalProject(project);
+            setClonedProjectName(`${project.project_name} (Copy)`);
+        }
+    };
 
-    const handleClose = async() => {
-        setIsOpen(false)
-    }
+    const handleClone = async () => {
+        if (!originalProject || !clonedProjectName.trim()) return;
+        
+        setIsLoading(true);
+        const clonedProject = await cloneProject(
+            projectId,
+            userId,
+            clonedProjectName,
+            copyColumns,
+            copyData
+        );
+        
+        setIsLoading(false);
+        
+        if (clonedProject) {
+            handleClose();
+        }
+    };
+
+    const handleClose = () => {
+        setIsOpen(false);
+        setOriginalProject(null);
+        setClonedProjectName("");
+        setCopyColumns(true);
+        setCopyData(false);
+        setIsLoading(false);
+    };
 
     return (
-        <TerminalDialog isOpen={isOpen} onClose={handleClose} title="RENAME FILE">
+        <TerminalDialog isOpen={isOpen} onClose={handleClose} title="CLONE PROJECT">
             <div className="space-y-4">
-                <TerminalLabel>Project Name</TerminalLabel>
-                <TerminalInput disabled={true} value={?.name}></TerminalInput>
-                <TerminalLabel>Rename To</TerminalLabel>
-                <TerminalInput name="name"
-                               value={fileName}
-                               onChange={(o) => setFileName(o.target.value)}
-                               placeholder="Enter new file name..."
-                >
-                </TerminalInput>
+                <div>
+                    <TerminalLabel>Original Project</TerminalLabel>
+                    <TerminalInput 
+                        disabled={true} 
+                        value={originalProject?.project_name || ""}
+                    />
+                </div>
+                
+                <div>
+                    <TerminalLabel>Clone Name</TerminalLabel>
+                    <TerminalInput 
+                        name="name"
+                        value={clonedProjectName}
+                        onChange={(e) => setClonedProjectName(e.target.value)}
+                        placeholder="Enter cloned project name..."
+                    />
+                </div>
+                
+                <div className="space-y-2">
+                    <TerminalCheckbox
+                        checked={copyColumns}
+                        onChange={(e) => setCopyColumns(e.target.checked)}
+                        label="Copy columns"
+                    />
+                    <TerminalCheckbox
+                        checked={copyData}
+                        onChange={(e) => setCopyData(e.target.checked)}
+                        label="Copy data"
+                    />
+                </div>
 
-                {/*<TerminalFileUpload onChange={handleFileChange} accept=".csv" icon={<Upload className={`w-4 h-4 ${theme.icon}`} />} />*/}
                 <div className="flex justify-end gap-2">
-                    <TerminalButton variant="primary" onClick={handleClose}>Discard</TerminalButton>
-                    <TerminalButton variant="primary" onClick={handleRename}>Rename</TerminalButton>
+                    <TerminalButton 
+                        variant="secondary" 
+                        onClick={handleClose}
+                        disabled={isLoading}
+                    >
+                        Cancel
+                    </TerminalButton>
+                    <TerminalButton 
+                        variant="primary" 
+                        onClick={handleClone}
+                        disabled={isLoading || !clonedProjectName.trim()}
+                    >
+                        {isLoading ? "Cloning..." : "Clone"}
+                    </TerminalButton>
                 </div>
             </div>
         </TerminalDialog>
     );
 }
 
-export default memo(TerminalFileRenameDialog);
+export default memo(TerminalProjectCloneDialog);
