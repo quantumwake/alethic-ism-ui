@@ -1,11 +1,12 @@
 import {useStore} from '../../store';
 import React, { useState, useEffect } from 'react';
 import {TerminalInput, TerminalLabel, TerminalTabViewSection, TerminalAutocomplete} from "../../components/common";
+import ProcessorJoinConfig from "./processor/ProcessorJoinConfig";
 
 const ProcessorPropertyTab = () => {
     const theme = useStore(state => state.getCurrentTheme());
     const {setNodeData} = useStore()
-    const {providers, getProviderById, fetchProviders} = useStore()
+    const {providers, getProviderById, fetchProviders, fetchProcessor} = useStore()
     const {selectedNodeId} = useStore()
     const nodeData = useStore(state => state.getNodeData(selectedNodeId))
 
@@ -13,16 +14,16 @@ const ProcessorPropertyTab = () => {
     const [allProviders, setAllProviders] = useState([]);
     const [providersLoading, setProvidersLoading] = useState(true);
     
-    // Debug logging
-    console.log('ProcessorPropertyTab render:', { 
-        selectedNodeId, 
-        nodeData,
-        providerId: nodeData?.provider_id,
-        className: nodeData?.class_name
-    })
 
     // holds property sections for specific processor type, generated on a section basis by processor details
     const [sections, setSections] = useState({})
+
+    // Fetch processor data when a processor node is selected
+    useEffect(() => {
+        if (selectedNodeId && nodeData?.id) {
+            fetchProcessor(selectedNodeId);
+        }
+    }, [selectedNodeId]);
 
     // Fetch providers when a processor node is selected
     useEffect(() => {
@@ -128,21 +129,39 @@ const ProcessorPropertyTab = () => {
     }
 
     const generateSections = () => {
-        return {
+        const sections = {
             general: {
                 title: "General",
                 items: {
                     basic: generalBasic(),
                 }
             },
-            vault: {
-                title: "Vault",
+        };
+
+        // Add processor-specific configuration
+        // Show join configuration if provider_id contains 'join'
+        if (nodeData?.provider_id?.includes('join')) {
+            sections.configuration = {
+                title: "Join Configuration",
                 items: {
-                    config_map: <div>config map goes here</div>,
-                    secrets: <div>secrets goes here</div>
+                    joinConfig: {
+                        title: "",
+                        content: <ProcessorJoinConfig nodeId={selectedNodeId} />
+                    }
                 }
-            },
+            };
         }
+
+        // Always add vault section
+        sections.vault = {
+            title: "Vault",
+            items: {
+                config_map: <div>config map goes here</div>,
+                secrets: <div>secrets goes here</div>
+            }
+        };
+
+        return sections;
     }
     
     // Don't render until we have complete data from fetchProcessor

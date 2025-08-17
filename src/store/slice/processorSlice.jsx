@@ -2,30 +2,44 @@ export const useProcessorSlice = (set, get) => ({
     createProcessor: async (nodeId) => {
         if (!nodeId) {
             console.log('warning: no node data found')
+            return null;
         }
 
         const node = get().getNode(nodeId)
         const projectId = get().selectedProjectId
         let processorData = get().getNodeData(nodeId)
-        const processorObject =
-            {
-                "id": node.id,
-                "provider_id": processorData.provider_id,
-                "status": "CREATED",
-                "project_id": projectId,
-                "name": processorData.name || "",
-                "class_name": processorData.class_name || ""
+        
+        const processorObject = {
+            "id": node.id,
+            "provider_id": processorData.provider_id,
+            "status": "CREATED",
+            "project_id": projectId,
+            "name": processorData.name || "",
+            "class_name": processorData.class_name || "",
+            "properties": processorData.properties || {}  // Send as object since DB uses jsonb
+        };
+
+        try {
+            const response = await get().authPost('/processor/create', processorObject);
+
+            if (!response.ok) {
+                console.error('Failed to create processor:', response.status);
+                return processorData;
             }
 
-        const response = await get().authPost('/processor/create', processorObject);
-
-        if (!response.ok) {
-            // TODO proper error handling -- throw new Error('Network response was not ok');
+            const updatedProcessorData = await response.json();
+            
+            // Ensure properties is always an object
+            if (!updatedProcessorData.properties) {
+                updatedProcessorData.properties = {};
+            }
+            
+            get().setNodeData(nodeId, updatedProcessorData)
+            return updatedProcessorData;
+        } catch (error) {
+            console.error('Error creating processor:', error);
+            return processorData;
         }
-
-        // reassign the new state data returned, this will provide an updated list of ids if any
-        processorData = await response.json();
-        get().setNodeData(nodeId, processorData)
     },
 
     fetchProcessor: async (processorId, set_data = true) => {
@@ -37,13 +51,16 @@ export const useProcessorSlice = (set, get) => ({
             const response = await get().authGet(`/processor/${processorId}`)
             const processorData = await response.json();
             
-            // Enrich the processor data with the class information
-            if (processorData && processorData.provider_id) {
+            // Ensure properties is always an object
+            if (!processorData.properties) {
+                processorData.properties = {};
+            }
+            
+            // Enrich with provider class information
+            if (processorData.provider_id) {
                 const provider = get().getProviderById(processorData.provider_id);
-                if (provider && provider.class_name) {
+                if (provider) {
                     processorData.class_name = provider.class_name;
-                } else {
-                    console.warn(`Provider ${processorData.provider_id} not found or has no class_name`);
                 }
             }
             
@@ -52,7 +69,7 @@ export const useProcessorSlice = (set, get) => ({
             }
             return processorData
         } catch (error) {
-            console.warn(`Warning, unable to fetch data for processor id: ${processorId} with error`, error);
+            console.warn(`Unable to fetch processor ${processorId}:`, error);
         }
     },
     changeProcessorStatus: async (processorId, statusCode) => {
