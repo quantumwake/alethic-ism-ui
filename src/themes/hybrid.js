@@ -110,6 +110,13 @@ export const hybrid = {
     },
     datatable: {
         header: "bg-black hover:bg-green-950 border-b border-r px-2 py-2 text-left text-amber-300",
+    },
+    checkbox: {
+        base: 'border-green-700 bg-black',
+        checked: 'bg-amber-600 border-amber-500',
+        disabled: 'border-green-900 bg-black opacity-50',
+        checkColor: '#ffffff',
+        checkedBg: 'rgb(245, 158, 11)'
     }
 }
 

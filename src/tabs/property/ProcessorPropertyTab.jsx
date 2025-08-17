@@ -2,6 +2,7 @@ import {useStore} from '../../store';
 import React, { useState, useEffect } from 'react';
 import {TerminalInput, TerminalLabel, TerminalTabViewSection, TerminalAutocomplete} from "../../components/common";
 import ProcessorJoinConfig from "./processor/ProcessorJoinConfig";
+import ProcessorStateTablesConfig from "./processor/ProcessorStateTablesConfig";
 
 const ProcessorPropertyTab = () => {
     const theme = useStore(state => state.getCurrentTheme());
@@ -147,6 +148,19 @@ const ProcessorPropertyTab = () => {
                     joinConfig: {
                         title: "",
                         content: <ProcessorJoinConfig nodeId={selectedNodeId} />
+                    }
+                }
+            };
+        }
+        
+        // Show state tables configuration if provider_id contains 'state-tables'
+        if (nodeData?.provider_id?.includes('state-tables')) {
+            sections.stateTablesConfig = {
+                title: "State Tables Configuration",
+                items: {
+                    stateTablesConfig: {
+                        title: "",
+                        content: <ProcessorStateTablesConfig nodeId={selectedNodeId} />
                     }
                 }
             };

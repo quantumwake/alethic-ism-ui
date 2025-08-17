@@ -110,6 +110,13 @@ export const light = {
     },
     datatable: {
         header: "bg-slate-100 hover:bg-slate-200 border-b border-r px-2 py-2 text-left text-slate-700",
+    },
+    checkbox: {
+        base: 'border-slate-400 bg-white',
+        checked: 'bg-blue-600 border-blue-500',
+        disabled: 'border-slate-300 bg-slate-100 opacity-50',
+        checkColor: '#ffffff',
+        checkedBg: 'rgb(59, 130, 246)'
     }
 }
 

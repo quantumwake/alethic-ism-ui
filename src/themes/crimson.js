@@ -110,6 +110,13 @@ export const crimson = {
     },
     datatable: {
         header: "bg-gray-900 hover:bg-gray-800 border-b border-r px-2 py-2 text-left text-rose-100",
+    },
+    checkbox: {
+        base: 'border-rose-800 bg-gray-950',
+        checked: 'bg-rose-700 border-rose-600',
+        disabled: 'border-rose-950 bg-gray-900 opacity-50',
+        checkColor: '#ffffff',
+        checkedBg: 'rgb(225, 29, 72)'
     }
 }
 

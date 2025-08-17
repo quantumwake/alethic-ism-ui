@@ -22,7 +22,12 @@ export const TerminalCheckbox = ({
     
     const checkboxStyle = disabled 
         ? `${checkboxBaseStyle} ${theme.checkbox?.disabled || theme.input.disabled}`
-        : `${checkboxBaseStyle} ${theme.checkbox?.primary || theme.input.primary}`;
+        : checked 
+            ? `${checkboxBaseStyle} ${theme.checkbox?.checked || theme.checkbox?.base || theme.input.primary}`
+            : `${checkboxBaseStyle} ${theme.checkbox?.base || theme.input.primary}`;
+    
+    const checkColor = theme.checkbox?.checkColor || '#ffffff';
+    const checkedBg = theme.checkbox?.checkedBg || 'rgb(107, 114, 128)';
 
     return (
         <label 
@@ -38,10 +43,11 @@ export const TerminalCheckbox = ({
                 disabled={disabled}
                 className={checkboxStyle}
                 style={{
-                    backgroundImage: checked ? 'url("data:image/svg+xml,%3csvg viewBox=\'0 0 16 16\' fill=\'currentColor\' xmlns=\'http://www.w3.org/2000/svg\'%3e%3cpath d=\'M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z\'/%3e%3c/svg%3e")' : 'none',
+                    backgroundImage: checked ? `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='${encodeURIComponent(checkColor)}' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z'/%3e%3c/svg%3e")` : 'none',
                     backgroundSize: '100% 100%',
                     backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat'
+                    backgroundRepeat: 'no-repeat',
+                    backgroundColor: checked ? checkedBg : 'transparent'
                 }}
             />
             {label && (

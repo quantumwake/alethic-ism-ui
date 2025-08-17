@@ -109,6 +109,13 @@ export const pro = {
     },
     datatable: {
         header: "bg-gray-800 hover:bg-gray-700 border-b border-r px-2 py-2 text-left text-gray-100",
+    },
+    checkbox: {
+        base: 'border-gray-600 bg-gray-900',
+        checked: 'bg-blue-600 border-blue-500',
+        disabled: 'border-gray-700 bg-gray-800 opacity-50',
+        checkColor: '#ffffff',
+        checkedBg: 'rgb(59, 130, 246)'
     }
 }
 

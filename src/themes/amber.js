@@ -110,6 +110,13 @@ export const amber= {
     },
     datatable: {
         header: "bg-amber-950 hover:bg-amber-800 border-b border-r px-2 py-2 text-left text-amber-200",
+    },
+    checkbox: {
+        base: 'border-amber-700 bg-black',
+        checked: 'bg-amber-600 border-amber-500',
+        disabled: 'border-amber-900 bg-amber-950 opacity-50',
+        checkColor: '#ffffff',
+        checkedBg: 'rgb(245, 158, 11)'
     }
 }
 

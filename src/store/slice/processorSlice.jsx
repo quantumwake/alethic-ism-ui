@@ -92,6 +92,15 @@ export const useProcessorSlice = (set, get) => ({
             console.error('Failed to fetch projects:', error);
         }
     },
+    resetProcessorStateTable: async (processorId) => {
+        try {
+            const response = await get().authPost(`/processor/${processorId}/state-table/reset`, {});
+            return response;
+        } catch (error) {
+            console.error('Failed to reset processor state table:', error);
+            throw error;
+        }
+    },
     deleteProcessor: async (processorId) => {
         const response = await get().authDelete(`/processor/${processorId}`);
 

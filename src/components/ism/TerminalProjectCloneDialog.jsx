@@ -85,7 +85,7 @@ function TerminalProjectCloneDialog({ isOpen, setIsOpen, projectId }) {
                         key={`${projectId}-copy-columns`}
                         name={`${projectId}-copy-columns`}
                         checked={copyColumns}
-                        // onChange={(e) => setCopyColumns(e.target.checked)}
+                        onChange={(e) => setCopyColumns(e.target.checked)}
                         label="Copy columns"
                     />
                     <TerminalCheckbox

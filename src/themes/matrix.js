@@ -110,6 +110,13 @@ export const matrix= {
     },
     datatable: {
         header: "bg-green-950 hover:bg-green-800 border-b border-r px-2 py-2 text-left text-green-200",
+    },
+    checkbox: {
+        base: 'border-green-700 bg-black',
+        checked: 'bg-green-600 border-green-500',
+        disabled: 'border-green-900 bg-green-950 opacity-50',
+        checkColor: '#ffffff',
+        checkedBg: 'rgb(34, 197, 94)'
     }
 }
 
