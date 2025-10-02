@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {TerminalInput, TerminalLabel, TerminalTabViewSection, TerminalAutocomplete} from "../../components/common";
 import ProcessorJoinConfig from "./processor/ProcessorJoinConfig";
 import ProcessorStateTablesConfig from "./processor/ProcessorStateTablesConfig";
+ import ProcessorLLMConfig from "./processor/ProcessorLLMConfig";
 
 const ProcessorPropertyTab = () => {
     const theme = useStore(state => state.getCurrentTheme());
@@ -161,6 +162,19 @@ const ProcessorPropertyTab = () => {
                     stateTablesConfig: {
                         title: "",
                         content: <ProcessorStateTablesConfig nodeId={selectedNodeId} />
+                    }
+                }
+            };
+        }
+
+        // Show LLM configuration if provider_id contains 'language/models'
+        if (nodeData?.provider_id?.includes('language/models')) {
+            sections.llmConfig = {
+                title: "LLM Configuration",
+                items: {
+                    llmConfig: {
+                        title: "",
+                        content: <ProcessorLLMConfig nodeId={selectedNodeId} />
                     }
                 }
             };
