@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import {TerminalInput, TerminalLabel, TerminalTabViewSection, TerminalAutocomplete} from "../../components/common";
 import ProcessorJoinConfig from "./processor/ProcessorJoinConfig";
 import ProcessorStateTablesConfig from "./processor/ProcessorStateTablesConfig";
- import ProcessorLLMConfig from "./processor/ProcessorLLMConfig";
+import ProcessorLLMConfig from "./processor/ProcessorLLMConfig";
+import ProcessorBaseConfig from "./processor/ProcessorBaseConfig";
 
 const ProcessorPropertyTab = () => {
     const theme = useStore(state => state.getCurrentTheme());
@@ -140,9 +141,20 @@ const ProcessorPropertyTab = () => {
             },
         };
 
+        // Add base configuration for ALL processors
+        sections.baseConfig = {
+            title: "Base Configuration",
+            items: {
+                baseConfig: {
+                    title: "",
+                    content: <ProcessorBaseConfig nodeId={selectedNodeId} />
+                }
+            }
+        };
+
         // Add processor-specific configuration
         // Show join configuration if provider_id contains 'join'
-        if (nodeData?.provider_id?.includes('join')) {
+        if (nodeData?.provider_id?.includes('online-I testjoin')) {
             sections.configuration = {
                 title: "Join Configuration",
                 items: {
