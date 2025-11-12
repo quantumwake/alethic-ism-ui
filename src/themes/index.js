@@ -4,3 +4,4 @@ export { default as pro } from './pro';
 export { default as hybrid } from './hybrid';
 export { default as light } from './light';
 export { default as crimson } from './crimson';
+export { default as cyber } from './cyber';

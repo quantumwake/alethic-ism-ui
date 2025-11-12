@@ -38,9 +38,10 @@ const TerminalUserMenu = ({
                 { id: 'matrix', label: 'Matrix' },
                 { id: 'amber', label: 'Amber' },
                 { id: 'pro', label: 'Pro' },
-                { id: 'pro', label: 'Hybrid' },
-                { id: 'pro', label: 'Light' },
+                { id: 'hybrid', label: 'Hybrid' },
+                { id: 'light', label: 'Light' },
                 { id: 'crimson', label: 'Crimson' },
+                { id: 'cyber', label: 'Cyber' },
             ]
         },
         {

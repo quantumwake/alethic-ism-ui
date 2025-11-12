@@ -117,6 +117,22 @@ export const matrix= {
         disabled: 'border-green-900 bg-green-950 opacity-50',
         checkColor: '#ffffff',
         checkedBg: 'rgb(34, 197, 94)'
+    },
+    usageReport: {
+        tooltip: {
+            bg: 'bg-black',
+            border: 'border-green-500/30',
+            headerText: 'from-green-400 to-amber-500',
+            badge: 'bg-green-500/20 text-green-300 border-green-500/40',
+        },
+        card: {
+            bg: 'bg-green-950/50',
+            border: 'border-green-700/50',
+            hoverBorder: 'hover:border-green-500/30',
+            titleText: 'text-green-400',
+            labelText: 'text-green-600',
+            dotColor: 'bg-green-400',
+        }
     }
 }
 

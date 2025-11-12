@@ -117,6 +117,22 @@ export const crimson = {
         disabled: 'border-rose-950 bg-gray-900 opacity-50',
         checkColor: '#ffffff',
         checkedBg: 'rgb(225, 29, 72)'
+    },
+    usageReport: {
+        tooltip: {
+            bg: 'bg-gray-950',
+            border: 'border-rose-500/30',
+            headerText: 'from-rose-400 to-rose-300',
+            badge: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
+        },
+        card: {
+            bg: 'bg-gray-900/50',
+            border: 'border-rose-700/50',
+            hoverBorder: 'hover:border-rose-500/30',
+            titleText: 'text-rose-400',
+            labelText: 'text-rose-600',
+            dotColor: 'bg-rose-400',
+        }
     }
 }
 

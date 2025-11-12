@@ -12,8 +12,8 @@ export const useUsageSlice = (set, get) => ({
     setProjectUsageReport: (projectUsageReport) => set({ projectUsageReport: projectUsageReport }),
 
     fetchUsageReportGroupByUser: async() => {
-        const response = await get().authGet(`/usage/user`);
-        let usage = []
+        const response = await get().authGet(`/usage/user/percentages`);
+        let usage = null
 
         // TODO check to make sure it is a not found error
         if (!response.ok) {
@@ -22,8 +22,8 @@ export const useUsageSlice = (set, get) => ({
             usage = await response.json()
         }
 
-        get().setUserUsageReport(usage[0])
-        return usage[0]
+        get().setUserUsageReport(usage)
+        return usage
     },
 
     fetchUsageReportGroupForCharts: async() => {
