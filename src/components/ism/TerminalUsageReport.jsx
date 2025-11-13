@@ -179,6 +179,7 @@ function TerminalUsageReport() {
                                                  pct_cost_used={userUsageReport?.pct_minute_cost_used}
                                                  cost_used={userUsageReport?.cur_minute_total_cost} />
 
+                        <!-- TODO need to change this endpoint to use the total project usage endpoint -->
                         <TerminalUsageReportCard period="project" pct_tokens_used={userUsageReport?.pct_year_tokens_used}
                                                  pct_cost_used={projectUsageReport?.pct_year_cost_used}
                                                  cost_used={projectUsageReport?.cur_year_total_cost}
