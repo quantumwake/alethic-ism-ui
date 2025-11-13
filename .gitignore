@@ -16,6 +16,7 @@ runtime-env.js
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
@@ -25,3 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 
 k8s/deployment-output.yaml
+
+# Vite
+dist-ssr
+*.local

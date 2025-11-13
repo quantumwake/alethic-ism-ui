@@ -1,4 +1,4 @@
-import themes from "../../themes"
+import * as themes from "../../themes"
 import React, { useState, useRef, useEffect, memo } from 'react';
 import {
     GripHorizontal,

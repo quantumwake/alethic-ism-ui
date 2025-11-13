@@ -22,7 +22,7 @@ const RouteLogger = () => {
 
 const SignupGoogle = lazy(() => import('./SignupGoogle'));
 
-const BASE_PATH = process.env.REACT_APP_BASE_PATH || "/";
+const BASE_PATH = import.meta.env.VITE_BASE_PATH || "/ui";
 
 const router = createBrowserRouter(
     [{

@@ -18,4 +18,8 @@ set -a
 . "$ENV_FILE"
 set +a
 
+# Also export VITE_ prefixed versions for build-time variables
+# Note: Runtime variables still use window.env from runtime-env.js
+export VITE_BASE_PATH="${REACT_APP_BASE_PATH}"
+
 echo "Environment variables loaded from $ENV_FILE"

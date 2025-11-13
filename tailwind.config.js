@@ -1,10 +1,5 @@
-module.exports = {
-    mode: 'jit',
-    content: ["./src/**/*.{html,js,jsx,ts,tsx}"],
-    purge: {
-        enabled: process.env.NODE_ENV === 'production',
-        content: ["./src/**/*.{html,js,jsx,ts,tsx}"]
-    },
+export default {
+    content: ["./index.html", "./src/**/*.{html,js,jsx,ts,tsx}"],
     theme: {
         extend: {
             fontFamily: {
