@@ -60,7 +60,7 @@ const Studio = () => {
     // const theme = useStore((state: any) => state.getCurrentTheme().getCurrentTheme());
     const {selectedProjectId, setSelectedNodeId, getNode} = useStore()
     const {workflowEdges, createStateWithWorkflowNode, createTrainerWithWorkflowNode, createProcessorWithWorkflowNode, createProcessorStateWithWorkflowEdge} = useStore()
-    const {userUsageReport, fetchProjectProcessorStates, fetchUsageReportGroupByUser} = useStore()
+    const {fetchProjectProcessorStates} = useStore()
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
     const [nodes, setNodes, onNodesChange] = useNodesStateSynced();
     const [edges, setEdges, onEdgesChange] = useEdgesStateSynced();

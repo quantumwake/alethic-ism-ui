@@ -11,7 +11,7 @@ export const useUsageSlice = (set, get) => ({
     projectUsageReport: {},
     setProjectUsageReport: (projectUsageReport) => set({ projectUsageReport: projectUsageReport }),
 
-    fetchUsageReportGroupByUser: async() => {
+    fetchUsageReportByUser: async() => {
         const response = await get().authGet(`/usage/user/percentages`);
         let usage = null
 
@@ -26,10 +26,14 @@ export const useUsageSlice = (set, get) => ({
         return usage
     },
 
-    fetchUsageReportGroupForCharts: async() => {
-        const user_id = get().userId
-        const response = await get().authGet(`/usage/user/${user_id}/charts`);
-        let usage = []
+    fetchUsageReportByProject: async() => {
+        const project_id = get().selectedProjectId
+        if (!project_id) {
+            return null
+        }
+        const response = await get().authGet(`/usage/project/${project_id}/percentages`);
+        let usage = null
+
         // TODO check to make sure it is a not found error
         if (!response.ok) {
             console.error('Network response error when trying to fetch usage report')
@@ -37,9 +41,24 @@ export const useUsageSlice = (set, get) => ({
             usage = await response.json()
         }
 
-        get().setChartsUsageReport(usage)
+        get().setProjectUsageReport(usage)
         return usage
     },
+    //
+    // fetchUsageReportGroupForCharts: async() => {
+    //     const user_id = get().userId
+    //     const response = await get().authGet(`/usage/user/${user_id}/charts`);
+    //     let usage = []
+    //     // TODO check to make sure it is a not found error
+    //     if (!response.ok) {
+    //         console.error('Network response error when trying to fetch usage report')
+    //     } else {
+    //         usage = await response.json()
+    //     }
+    //
+    //     get().setChartsUsageReport(usage)
+    //     return usage
+    // },
 });
 
 export default useUsageSlice

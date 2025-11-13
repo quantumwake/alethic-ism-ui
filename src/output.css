@@ -1793,6 +1793,11 @@ video {
   border-color: rgb(190 18 60 / 0.5);
 }
 
+.\!border-blue-500{
+  --tw-border-opacity: 1 !important;
+  border-color: rgb(59 130 246 / var(--tw-border-opacity)) !important;
+}
+
 .border-opacity-30{
   --tw-border-opacity: 0.3;
 }

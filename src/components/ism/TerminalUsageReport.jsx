@@ -13,10 +13,9 @@ const formatCost = (value) => {
     return `$${value.toFixed(2)}`
 }
 
-function TerminalUsageReportCard({period, pct_tokens_used, pct_cost_used, cost_used}) {
+function TerminalUsageReportCard({period, pct_tokens_used, pct_cost_used, cost_used, className}) {
     const {getCurrentTheme} = useStore()
     const theme = getCurrentTheme()
-
 
     const getUsageClass = (value) => {
         if (value === null || value === undefined) return 'text-gray-400'
@@ -28,7 +27,7 @@ function TerminalUsageReportCard({period, pct_tokens_used, pct_cost_used, cost_u
     }
 
     return (
-        <div className={`${theme?.usageReport?.card?.bg} p-1.5 border ${theme?.usageReport?.card?.border} ${theme?.usageReport?.card?.hoverBorder} transition-all flex flex-col min-h-[55px]`}>
+        <div className={`${theme?.usageReport?.card?.bg} p-1.5 border ${theme?.usageReport?.card?.border} ${theme?.usageReport?.card?.hoverBorder} transition-all flex flex-col min-h-[55px] ${className || ''}`}>
             <div className={`font-bold ${theme?.usageReport?.card?.titleText} mb-1 flex items-center whitespace-nowrap`}>
                 {/*<span className={`w-1 h-1 ${theme?.usageReport?.card?.dotColor} mr-1 flex-shrink-0`}></span>*/}
                 <span className="truncate uppercase">{period}</span>
@@ -54,7 +53,8 @@ function TerminalUsageReportCard({period, pct_tokens_used, pct_cost_used, cost_u
 function TerminalUsageReport() {
     const {jwtToken} = useStore()
     const {userProfile} = useStore()
-    const {userUsageReport, fetchUsageReportGroupByUser} = useStore()
+    const {userUsageReport, fetchUsageReportByUser} = useStore()
+    const {projectUsageReport, fetchUsageReportByProject} = useStore()
     const {getCurrentTheme} = useStore()
     const theme = getCurrentTheme()
     const [isUsageRefreshing, setIsUsageRefreshing] = useState(true)
@@ -67,8 +67,12 @@ function TerminalUsageReport() {
         }
 
         if (isUsageRefreshing) {
-            console.info('updating agent usage units')
-            await fetchUsageReportGroupByUser()
+            console.info('updating user usage units')
+            await fetchUsageReportByUser()
+
+            console.info('updating project usage units')
+            await fetchUsageReportByProject()
+
             const timeoutId = setTimeout(refreshUsage, 10000)
             setUsageTimeoutId(timeoutId)
         }
@@ -174,6 +178,11 @@ function TerminalUsageReport() {
                         <TerminalUsageReportCard period="minute" pct_tokens_used={userUsageReport?.pct_minute_tokens_used}
                                                  pct_cost_used={userUsageReport?.pct_minute_cost_used}
                                                  cost_used={userUsageReport?.cur_minute_total_cost} />
+
+                        <TerminalUsageReportCard period="project" pct_tokens_used={userUsageReport?.pct_year_tokens_used}
+                                                 pct_cost_used={projectUsageReport?.pct_year_cost_used}
+                                                 cost_used={projectUsageReport?.cur_year_total_cost}
+                                                 className="!border-blue-500" />
 
                     </div>
                 </div>
