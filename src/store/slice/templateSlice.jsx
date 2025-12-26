@@ -82,6 +82,100 @@ export const useTemplateSlice = (set, get) => ({
             console.error('Failed to fetch projects:', error);
         }
     },
+
+    // Fetch autocompletion data for Monaco editor
+    fetchEditorCompletions: async (templateType, projectId) => {
+        try {
+            const response = await get().authGet(
+                `/template/editor/completions/${templateType}/${projectId}`
+            );
+            if (response.ok) {
+                return await response.json();
+            }
+            console.warn('Failed to fetch editor completions:', response.status);
+            return null;
+        } catch (error) {
+            console.error('Failed to fetch editor completions:', error);
+            return null;
+        }
+    },
+
+    // AI chat completion for template generation
+    chatCompletion: async (templateType, userMessage, currentTemplate, stateSamples, model = 'gpt-4o-mini', conversationContext = null) => {
+        try {
+            // Build the full user message with conversation context
+            let fullMessage = userMessage;
+            if (conversationContext) {
+                fullMessage = `Previous conversation:\n${conversationContext}\n\nCurrent request: ${userMessage}`;
+            }
+
+            const response = await get().authPost('/template/chat/completion', {
+                template_type: templateType,
+                user_message: fullMessage,
+                model: model,
+                current_template: currentTemplate,
+                state_samples: stateSamples
+            });
+            if (response.ok) {
+                return await response.json();
+            }
+            console.error('Chat completion failed:', response.status);
+            return null;
+        } catch (error) {
+            console.error('Chat completion error:', error);
+            return null;
+        }
+    },
+
+    // Fetch available AI models
+    fetchAvailableModels: async () => {
+        try {
+            const response = await get().authGet('/template/models');
+            if (response.ok) {
+                return await response.json();
+            }
+            return ['gpt-4o-mini', 'gpt-4o'];
+        } catch (error) {
+            console.error('Failed to fetch models:', error);
+            return ['gpt-4o-mini', 'gpt-4o'];
+        }
+    },
+
+    // Fetch sample data from states in a project
+    fetchStateSamples: async (projectId, limit = 10) => {
+        try {
+            const response = await get().authGet(`/template/state/samples/${projectId}?limit=${limit}`);
+            if (response.ok) {
+                return await response.json();
+            }
+            console.warn('Failed to fetch state samples:', response.status);
+            return null;
+        } catch (error) {
+            console.error('Failed to fetch state samples:', error);
+            return null;
+        }
+    },
+
+    // Generate template from state data
+    generateTemplateFromState: async (stateId, templateType, userInstructions = null, model = 'gpt-4o-mini') => {
+        try {
+            const response = await get().authPost('/template/generate/from-state', {
+                template_type: templateType,
+                state_id: stateId,
+                user_instructions: userInstructions,
+                model: model,
+                sample_limit: 10
+            });
+            if (response.ok) {
+                return await response.json();
+            }
+            console.error('Generate template failed:', response.status);
+            return null;
+        } catch (error) {
+            console.error('Generate template error:', error);
+            return null;
+        }
+    },
 });
 
 export default useTemplateSlice

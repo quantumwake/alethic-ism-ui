@@ -1,9 +1,128 @@
 // DataTable.jsx
 import React, {memo, useEffect, useState} from 'react';
 import { Dialog as HeadlessDialog } from '@headlessui/react';
-import {Search as SearchIcon, ChevronLeft, ChevronRight, PlayIcon} from 'lucide-react';
+import {Search as SearchIcon, ChevronLeft, ChevronRight, ChevronDown, PlayIcon} from 'lucide-react';
 import TerminalInput from './TerminalInput';
 import {useStore} from "../../store";
+
+const JsonTreeEntry = ({ keyName, value, isArrayIndex, theme }) => {
+    const [expanded, setExpanded] = useState(false);
+    const isComplex = value !== null && typeof value === 'object';
+
+    const keyLabel = isArrayIndex ? `${keyName}` : `"${keyName}"`;
+    const keyClass = isArrayIndex ? theme.textMuted : theme.textAccent;
+    const valueClass = value === null ? theme.textMuted : theme.textAccent;
+
+    // Collapsed
+    if (!expanded) {
+        return (
+            <button
+                onClick={() => setExpanded(true)}
+                className={`flex items-center hover:${theme.textAccent}`}
+            >
+                <ChevronRight className="w-3 h-3" />
+                <span className={keyClass}>{keyLabel}</span>
+            </button>
+        );
+    }
+
+    // Expanded - primitive
+    if (!isComplex) {
+        return (
+            <div>
+                <button
+                    onClick={() => setExpanded(false)}
+                    className={`flex items-center hover:${theme.textAccent}`}
+                >
+                    <ChevronDown className="w-3 h-3" />
+                    <span className={keyClass}>{keyLabel}</span>
+                </button>
+                <div className={`ml-4 border-l border-dashed ${theme.border} pl-2`}>
+                    <span className={valueClass}>{JSON.stringify(value)}</span>
+                </div>
+            </div>
+        );
+    }
+
+    // Expanded - complex
+    const isArray = Array.isArray(value);
+    const entries = isArray ? value.map((v, i) => [i, v]) : Object.entries(value);
+
+    return (
+        <div>
+            <button
+                onClick={() => setExpanded(false)}
+                className={`flex items-center hover:${theme.textAccent}`}
+            >
+                <ChevronDown className="w-3 h-3" />
+                <span className={keyClass}>{keyLabel}</span>
+            </button>
+            <div className={`ml-4 border-l border-dashed ${theme.border} pl-2`}>
+                {entries.map(([key, val]) => (
+                    <JsonTreeEntry
+                        key={key}
+                        keyName={key}
+                        value={val}
+                        isArrayIndex={isArray}
+                        theme={theme}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const JsonTreeView = ({ data }) => {
+    const theme = useStore(state => state.getCurrentTheme());
+    const [expanded, setExpanded] = useState(false);
+
+    // Primitive at root level
+    if (data === null || typeof data !== 'object') {
+        const valueClass = data === null ? theme.textMuted : theme.textAccent;
+        return <span className={valueClass}>{JSON.stringify(data)}</span>;
+    }
+
+    // Complex value at root
+    const isArray = Array.isArray(data);
+    const entries = isArray ? data.map((v, i) => [i, v]) : Object.entries(data);
+    const brackets = isArray ? ['[', ']'] : ['{', '}'];
+    const summary = isArray ? `Array(${data.length})` : `Object(${Object.keys(data).length})`;
+
+    if (entries.length === 0) {
+        return <span className={theme.textMuted}>{brackets[0]}{brackets[1]}</span>;
+    }
+
+    return (
+        <span>
+            <button
+                onClick={() => setExpanded(!expanded)}
+                className={`inline-flex items-center hover:${theme.textAccent}`}
+            >
+                {expanded
+                    ? <ChevronDown className="w-3 h-3" />
+                    : <ChevronRight className="w-3 h-3" />
+                }
+                <span className={theme.textMuted}>{brackets[0]}</span>
+                {!expanded && <span className={`${theme.textMuted} text-xs ml-1`}>{summary}</span>}
+                {!expanded && <span className={theme.textMuted}>{brackets[1]}</span>}
+            </button>
+            {expanded && (
+                <div className={`ml-4 border-l border-dashed ${theme.border} pl-2`}>
+                    {entries.map(([key, value]) => (
+                        <JsonTreeEntry
+                            key={key}
+                            keyName={key}
+                            value={value}
+                            isArrayIndex={isArray}
+                            theme={theme}
+                        />
+                    ))}
+                </div>
+            )}
+            {expanded && <span className={theme.textMuted}>{brackets[1]}</span>}
+        </span>
+    );
+};
 
 const SearchField = ({ columnKey, onSearch, placeholder }) => {
     return (
@@ -70,23 +189,36 @@ const TableHeader = ({ table, onSearch, isStateFormat }) => {
 const TableCell = ({value, rowIndex, columnKey, isExpanded, onExpand}) => {
     const theme = useStore(state => state.getCurrentTheme());
 
-    const displayValue = (value) => {
-        const type = typeof(value)
-        switch (type) {
-            case "number":
-                return value
-            case "string":
-                return value?.slice(0, 80)
-            default:
-                return value
+    const isComplexType = value !== null && typeof value === 'object';
+    const expanded = isExpanded[`${rowIndex}-${columnKey}`];
+
+    // For complex types (objects/arrays), use JsonTreeView
+    if (isComplexType) {
+        return (
+            <td className={`border-r border-dashed ${theme.border} px-2 py-2 ${theme.text}`}>
+                <JsonTreeView data={value} defaultExpanded={false} />
+            </td>
+        );
+    }
+
+    // For primitive types, keep truncation logic for long strings
+    const displayLength = typeof value === 'string' ? value.length : 0;
+    const needsTruncation = displayLength > 80;
+
+    const displayValue = () => {
+        if (value === null || value === undefined) return String(value);
+        if (typeof value === 'number') return value;
+        if (typeof value === 'string') {
+            return expanded ? value : value.slice(0, 80);
         }
+        return value;
     }
 
     return (
         <td className={`border-r border-dashed ${theme.border} px-2 py-2 ${theme.text}`}>
-            {(isExpanded[`${rowIndex}-${columnKey}`] || value?.length <= 80)
-                ? value
-                : (<>{displayValue(value)}{' '}
+            {(!needsTruncation || expanded)
+                ? displayValue()
+                : (<>{displayValue()}{' '}
                     <button onClick={() => onExpand(rowIndex, columnKey, true)}
                             className={`${theme.button.secondary} px-1 py-0.5 text-xs`}>...
                     </button>
@@ -277,7 +409,7 @@ const TerminalDataTable2 = ({
                         </div>
                     )}
                     <div className="flex-1 overflow-auto relative">
-                        <table className="w-full">
+                        <table className={`w-full ${theme.font}`}>
                             <TableHeader table={table}
                                          onSearch={handleSearch}
                                          isStateFormat={isStateFormat}/>

@@ -16,7 +16,8 @@ function ProcessorLLMConfig({ nodeId }) {
         topP: 1.0,
         topK: 0,
         frequencyPenalty: 0.0,
-        presencePenalty: 0.0
+        presencePenalty: 0.0,
+        overrideBaseUrl: null,
     };
 
     // Initialize properties with defaults if they're empty or missing fields
@@ -41,7 +42,8 @@ function ProcessorLLMConfig({ nodeId }) {
                         topP: currentProps.topP !== undefined ? currentProps.topP : defaultConfig.topP,
                         topK: currentProps.topK !== undefined ? currentProps.topK : defaultConfig.topK,
                         frequencyPenalty: currentProps.frequencyPenalty !== undefined ? currentProps.frequencyPenalty : defaultConfig.frequencyPenalty,
-                        presencePenalty: currentProps.presencePenalty !== undefined ? currentProps.presencePenalty : defaultConfig.presencePenalty
+                        presencePenalty: currentProps.presencePenalty !== undefined ? currentProps.presencePenalty : defaultConfig.presencePenalty,
+                        overrideBaseUrl: currentProps.overrideBaseUrl !== undefined ? currentProps.overrideBaseUrl : defaultConfig.overrideBaseUrl
                     }
                 });
             }
@@ -57,7 +59,8 @@ function ProcessorLLMConfig({ nodeId }) {
         topP: properties.topP !== undefined ? properties.topP : defaultConfig.topP,
         topK: properties.topK !== undefined ? properties.topK : defaultConfig.topK,
         frequencyPenalty: properties.frequencyPenalty !== undefined ? properties.frequencyPenalty : defaultConfig.frequencyPenalty,
-        presencePenalty: properties.presencePenalty !== undefined ? properties.presencePenalty : defaultConfig.presencePenalty
+        presencePenalty: properties.presencePenalty !== undefined ? properties.presencePenalty : defaultConfig.presencePenalty,
+        overrideBaseUrl: properties.overrideBaseUrl !== undefined ? properties.overrideBaseUrl : defaultConfig.overrideBaseUrl,
     };
 
     const handleUpdateProperty = (field, value) => {
@@ -240,6 +243,31 @@ function ProcessorLLMConfig({ nodeId }) {
                         type="number"
                         value={config.requestDelay}
                         onChange={(e) => handleIntInput("requestDelay", e.target.value, 0)}
+                        placeholder="0"
+                        min="0"
+                    />
+                    <div className={`${theme.text} ${theme.font} text-xs opacity-50`}>
+                        {config.requestDelay === 0
+                            ? "No throttling"
+                            : `${(config.requestDelay / 1000).toFixed(2)}s delay between requests`}
+                    </div>
+                </div>
+            </div>
+
+            {/* Base URL override */}
+            <div className="space-y-4 p-3 border border-opacity-50">
+                <div className={`${theme.text} ${theme.font} font-semibold`}>
+                    Override Base URL
+                </div>
+
+                <div className="space-y-2">
+                    <TerminalLabel description="leave blank for default provider base url">
+                        Base url used for generating content (e.g. OpenAI chat completion)
+                    </TerminalLabel>
+                    <TerminalInput
+                        type="number"
+                        value={config.overrideBaseUrl}
+                        onChange={(e) => handleIntInput("overrideBaseUrlgit stat", e.target.value, 0)}
                         placeholder="0"
                         min="0"
                     />
