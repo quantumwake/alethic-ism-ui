@@ -6,6 +6,7 @@ import {
     TerminalDropdown,
     TerminalToggle,
     TerminalTabViewSection,
+    TemplateFieldWithEditor,
 } from '../../components/common'
 
 import StateColumns from "./state/StateColumns";
@@ -26,17 +27,9 @@ const StatePropertyTab = () => {
 
     const theme = useStore(state => state.getCurrentTheme());
     const {templates} = useStore();
-    const [internalTemplates, setInternalTemplates] = useState([])
-
-    useEffect(() => {
-        const internal = templates.map(t => (
-            { id: t.template_id, label: t.template_path }
-        ))
-        setInternalTemplates(internal)
-    }, [templates]);
 
 
-    const {selectedNodeId, setNodeData, fetchState, getNode, getNodeData} = useStore()
+    const {selectedNodeId, setNodeData, fetchState, getNode, getNodeData, selectedProjectId} = useStore()
     const node = useStore(state => state.getNode(selectedNodeId))
     const nodeData = useStore(state => state.getNodeData(selectedNodeId))
     const [isAdvancedCollapsed, setIsAdvancedCollapsed] = useState(false);
@@ -246,12 +239,13 @@ const StatePropertyTab = () => {
             title: "Instruction",
             content: (
                 <div className={theme.spacing.base}>
-                    <TerminalDropdown
+                    <TemplateFieldWithEditor
                         key={`template-${selectedNodeId}-${nodeData?.config?.template_id}`}
-                        values={internalTemplates}
-                        onSelect={(value) => onChangeDropDownSelection("template", value)}
-                        defaultValue={nodeData?.config?.template_id}
+                        templates={templates}
+                        selectedTemplateId={nodeData?.config?.template_id}
+                        onSelect={(templateId) => onChangeDropDownSelection("template", { id: templateId })}
                         placeholder="Select function instruction"
+                        projectId={selectedProjectId || ''}
                     />
                     {nodeData?.state_type === "StateConfigVisual" && (
                         <div className={theme.spacing.sm}>
@@ -284,13 +278,14 @@ const StatePropertyTab = () => {
                         <TerminalLabel description="Select a template for user interactions">
                             User Template
                         </TerminalLabel>
-                        <TerminalDropdown
+                        <TemplateFieldWithEditor
                             key={`user-template-${selectedNodeId}-${nodeData?.config?.user_template_id}`}
-                            allowEmpty={true}
-                            values={templates.map(t => ({id: t.template_id, label: t.template_path}))}
-                            onSelect={(value) => onChangeDropDownSelection("user_template", value)}
-                            defaultValue={nodeData?.config?.user_template_id}
+                            templates={templates}
+                            selectedTemplateId={nodeData?.config?.user_template_id}
+                            onSelect={(templateId) => onChangeDropDownSelection("user_template", { id: templateId })}
                             placeholder="Select user template"
+                            allowEmpty={true}
+                            projectId={selectedProjectId || ''}
                         />
                     </div>
 
@@ -298,13 +293,14 @@ const StatePropertyTab = () => {
                         <TerminalLabel description="Select a template for system responses">
                             System Template
                         </TerminalLabel>
-                        <TerminalDropdown
+                        <TemplateFieldWithEditor
                             key={`system-template-${selectedNodeId}-${nodeData?.config?.system_template_id}`}
-                            allowEmpty={true}
-                            values={templates.map(t => ({id: t.template_id, label: t.template_path}))}
-                            onSelect={(value) => onChangeDropDownSelection("system_template", value)}
-                            defaultValue={nodeData?.config?.system_template_id}
+                            templates={templates}
+                            selectedTemplateId={nodeData?.config?.system_template_id}
+                            onSelect={(templateId) => onChangeDropDownSelection("system_template", { id: templateId })}
                             placeholder="Select system template"
+                            allowEmpty={true}
+                            projectId={selectedProjectId || ''}
                         />
                     </div>
                 </div>

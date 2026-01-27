@@ -36,15 +36,16 @@ export const useTemplateSlice = (set, get) => ({
             // ensure the response is ok 20x
             if (!response.ok) {
                 // TODO proper error handling -- throw new Error('Network response was not ok');
+                return null;
             }
 
             // update the project state
             const json = await response.json()
             await get().updateTemplate(json)
-            return true;
+            return json; // Return the created template with server-assigned ID
         } catch (error) {
             console.error('Failed to add project:', error);
-            return false;
+            return null;
         }
     },
     renameTemplate: async (template, new_name) => {

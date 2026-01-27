@@ -1,18 +1,12 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Editor } from "@monaco-editor/react";
-import {BugIcon, SaveIcon, Trash2Icon} from 'lucide-react';
-import {useStore} from '../../store';
-import {TerminalButton} from "../../components/common";
-
-const templateTypes = [
-    { id: 'mako', label: 'Mako' },
-    { id: 'simple', label: 'Simple' },
-    { id: 'python', label: 'Python' },
-    { id: 'filter', label: 'Filter' }
-];
+import { BugIcon, SaveIcon, Trash2Icon } from 'lucide-react';
+import { useStore } from '../../store';
+import { TerminalButton } from "../common";
+import { ITerminalTemplateEditorProps, TemplateFormat } from '@/types';
 
 // Map completion kinds to Monaco completion item kinds
-const kindMap = {
+const kindMap: Record<string, number> = {
     'variable': 5,      // monaco.languages.CompletionItemKind.Variable
     'function': 1,      // monaco.languages.CompletionItemKind.Function
     'method': 0,        // monaco.languages.CompletionItemKind.Method
@@ -22,41 +16,38 @@ const kindMap = {
 };
 
 // Map template format to Monaco language
-const formatToLanguage = {
+const formatToLanguage: Record<TemplateFormat, string> = {
     'mako': 'html',
     'python': 'python',
     'simple': 'html',
     'filter': 'json',
 };
 
-const TerminalTemplateEditor = () => {
+const TerminalTemplateEditor: React.FC<ITerminalTemplateEditorProps> = ({
+    template,
+    projectId,
+    onContentChange,
+    onSave,
+    onDelete,
+    onTest,
+    showToolbar = true,
+    readOnly = false,
+}) => {
     const theme = useStore(state => state.getCurrentTheme());
-    const {
-        selectedFile,
-        setSelectedFileContent,
-        saveSelectedFile,
-        fetchEditorCompletions,
-        selectedProjectId
-    } = useStore();
+    const { fetchEditorCompletions } = useStore();
 
-    const editorRef = useRef(null);
-    const monacoRef = useRef(null);
-    const completionProviderRef = useRef(null);
+    const editorRef = useRef<any>(null);
+    const monacoRef = useRef<any>(null);
+    const completionProviderRef = useRef<any>(null);
     const [editorMounted, setEditorMounted] = useState(false);
 
-    useEffect(() => {
-        if (!selectedFile) {
-            console.warn("selected file changed but no file selected");
-        }
-    }, [selectedFile]);
-
     // Get language based on template format
-    const language = formatToLanguage[selectedFile?.format] || 'html';
+    const language = formatToLanguage[template?.template_type as TemplateFormat] || 'html';
 
     // Setup completion provider after editor is mounted
     useEffect(() => {
         const setupCompletionProvider = async () => {
-            if (!monacoRef.current || !selectedFile || !selectedProjectId || !editorMounted) {
+            if (!monacoRef.current || !template || !projectId || !editorMounted) {
                 return;
             }
 
@@ -65,10 +56,10 @@ const TerminalTemplateEditor = () => {
                 completionProviderRef.current.dispose();
             }
 
-            const templateType = selectedFile?.format || 'mako';
+            const templateType = template?.template_type || 'mako';
 
             // Fetch completions from API
-            const completionData = await fetchEditorCompletions(templateType, selectedProjectId);
+            const completionData = await fetchEditorCompletions(templateType, projectId);
 
             if (!completionData) {
                 return;
@@ -79,7 +70,7 @@ const TerminalTemplateEditor = () => {
             // Register completion provider for the current language
             completionProviderRef.current = monaco.languages.registerCompletionItemProvider(language, {
                 triggerCharacters: ['.', '$', '{', "'", '"'],
-                provideCompletionItems: (model, position) => {
+                provideCompletionItems: (model: any, position: any) => {
                     const word = model.getWordUntilPosition(position);
                     const range = {
                         startLineNumber: position.lineNumber,
@@ -88,7 +79,7 @@ const TerminalTemplateEditor = () => {
                         endColumn: word.endColumn,
                     };
 
-                    const suggestions = (completionData.completions || []).map((item, index) => {
+                    const suggestions = (completionData.completions || []).map((item: any, index: number) => {
                         const isSnippet = item.kind === 'snippet';
                         return {
                             label: item.label,
@@ -104,7 +95,7 @@ const TerminalTemplateEditor = () => {
                         };
                     });
 
-                    const keywordSuggestions = (completionData.keywords || []).map((kw, index) => ({
+                    const keywordSuggestions = (completionData.keywords || []).map((kw: string, index: number) => ({
                         label: kw,
                         kind: kindMap['keyword'],
                         insertText: kw,
@@ -118,7 +109,7 @@ const TerminalTemplateEditor = () => {
         };
 
         setupCompletionProvider();
-    }, [selectedFile, selectedProjectId, fetchEditorCompletions, editorMounted, language]);
+    }, [template, projectId, fetchEditorCompletions, editorMounted, language]);
 
     // Cleanup on unmount
     useEffect(() => {
@@ -129,40 +120,55 @@ const TerminalTemplateEditor = () => {
         };
     }, []);
 
-    const saveFileClicked = async() => {
-        await saveSelectedFile();
+    const handleSaveClick = async () => {
+        if (onSave) {
+            await onSave();
+        }
     };
 
-    const testFileClicked = async() => {};
-    const deleteFileClicked = async() => {};
+    const handleTestClick = async () => {
+        if (onTest) {
+            await onTest();
+        }
+    };
 
-    if (!selectedFile) return <></>;
+    const handleDeleteClick = async () => {
+        if (onDelete) {
+            await onDelete();
+        }
+    };
+
+    if (!template) return null;
 
     return (
         <div className={`relative flex h-full w-full p-1 ${theme.bg}`}>
-            <div className="z-50 absolute top-2 right-6 flex gap-4">
-                {/* Floating Save Button */}
-                <TerminalButton onClick={saveFileClicked} variant="primary">
-                    <SaveIcon className="w-4 h-4"/>
-                </TerminalButton>
+            {showToolbar && (
+                <div className="z-50 absolute top-2 right-6 flex gap-4">
+                    {onSave && (
+                        <TerminalButton onClick={handleSaveClick} variant="primary">
+                            <SaveIcon className="w-4 h-4" />
+                        </TerminalButton>
+                    )}
 
-                {/* Floating Test Validation Button */}
-                <TerminalButton onClick={testFileClicked} variant="primary">
-                    <BugIcon className="w-4 h-4"/>
-                </TerminalButton>
+                    {onTest && (
+                        <TerminalButton onClick={handleTestClick} variant="primary">
+                            <BugIcon className="w-4 h-4" />
+                        </TerminalButton>
+                    )}
 
-                {/* Floating Delete Button */}
-                <TerminalButton onClick={deleteFileClicked} variant="primary">
-                    <Trash2Icon className="w-4 h-4"/>
-                </TerminalButton>
-            </div>
+                    {onDelete && (
+                        <TerminalButton onClick={handleDeleteClick} variant="primary">
+                            <Trash2Icon className="w-4 h-4" />
+                        </TerminalButton>
+                    )}
+                </div>
+            )}
 
-            {/* Monaco Editor */}
             <Editor
                 theme="vs-dark"
                 language={language}
-                value={selectedFile.content}
-                onChange={setSelectedFileContent}
+                value={template.template_content}
+                onChange={(value) => onContentChange(value || '')}
                 onMount={(editor, monaco) => {
                     editorRef.current = editor;
                     monacoRef.current = monaco;
@@ -179,6 +185,7 @@ const TerminalTemplateEditor = () => {
                     cursorStyle: 'line',
                     automaticLayout: true,
                     padding: { top: 10, bottom: 10 },
+                    readOnly: readOnly,
                     scrollbar: {
                         vertical: 'visible',
                         horizontal: 'visible',
