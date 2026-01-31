@@ -107,6 +107,33 @@ export const useProcessorStateSlice = (set, get) => ({
         }
     },
 
+    fetchEdgeFunctionConfig: async (routeId) => {
+        try {
+            const response = await get().authGet(`/processor/state/route/${routeId}/edge-function`);
+            if (response.ok) {
+                return await response.json();
+            }
+            // 404 means not configured yet - return null (not an error)
+            return null;
+        } catch (error) {
+            console.error('Failed to fetch edge function config:', error);
+            return null;
+        }
+    },
+
+    updateEdgeFunctionConfig: async (routeId, config) => {
+        try {
+            const response = await get().authPut(`/processor/state/route/${routeId}/edge-function`, JSON.stringify(config));
+            if (response.ok) {
+                return await response.json();
+            }
+            return null;
+        } catch (error) {
+            console.error('Failed to update edge function config:', error);
+            return null;
+        }
+    },
+
 });
 
 export default useProcessorStateSlice

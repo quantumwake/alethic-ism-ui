@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {useStore} from "../store";
-import {faFilter, faPlay, faRemove} from "@fortawesome/free-solid-svg-icons";
+import {faFilter, faPlay, faRemove, faBolt} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {EdgeLabelRenderer, EdgeProps, getBezierPath} from "@xyflow/react";
 import TerminalSyslog from "../components/ism/TerminalSyslog";
 import TerminalStateFilterDialog from "../components/ism/TerminalStateFilterDialog";
+import TerminalEdgeFunctionDialog from "../components/ism/TerminalEdgeFunctionDialog";
 
 function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                                                         sourcePosition, targetPosition,
@@ -20,7 +21,8 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
     const isSelected = selectedEdgeId === id;
     const {isStudioRefreshEnabled} = useStore()
     const [isOpenStateDataFilterDialog, setIsOpenStateDataFilterDialog] = useState(false);
-    const [isOpenSyslogDialog, setIsOpenSyslogDialog] = useState(false)
+    const [isOpenSyslogDialog, setIsOpenSyslogDialog] = useState(false);
+    const [isOpenEdgeFunctionDialog, setIsOpenEdgeFunctionDialog] = useState(false)
 
     useEffect(() => {
         console.debug(`*************is animated: ${isStudioRefreshEnabled}`)
@@ -219,6 +221,15 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                             />
                         </button>
 
+                        <button
+                            onClick={() => setIsOpenEdgeFunctionDialog(true)}
+                            className="p-1.5 rounded-md bg-opacity-20 bg-purple-900 text-white text-opacity-40 hover:bg-purple-600 hover:text-opacity-100">
+                            <FontAwesomeIcon
+                                icon={faBolt}
+                                className="w-4 h-4"
+                            />
+                        </button>
+
                         {/* incorporates the button already */}
                         <TerminalSyslog buttonClass="p-1.5 rounded-md bg-opacity-20 bg-amber-900 text-white text-opacity-40 hover:bg-amber-600 hover:text-opacity-100" routeId={id} />
 
@@ -241,6 +252,12 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
             onClose={() => setIsOpenStateDataFilterDialog(false)}
             filterId={id}
             direction="input"
+        />
+
+        <TerminalEdgeFunctionDialog
+            isOpen={isOpenEdgeFunctionDialog}
+            onClose={() => setIsOpenEdgeFunctionDialog(false)}
+            routeId={id}
         />
     </>);
 }

@@ -18,6 +18,7 @@ const templateTypes = [
     { id: 'simple', label: 'Simple' },
     { id: 'python', label: 'Python' },
     { id: 'filter', label: 'Filter' },
+    { id: 'lua', label: 'Lua' },
 ];
 
 const TemplateFieldWithEditor: React.FC<ITemplateFieldWithEditorProps> = ({
@@ -181,7 +182,7 @@ const TemplateFieldWithEditor: React.FC<ITemplateFieldWithEditorProps> = ({
                     size="small"
                     title="Create new template"
                 >
-                    <Plus className="w-3 h-3" />
+                    <Plus className={`w-3 h-3 ${theme.icon}`} />
                 </TerminalButton>
 
                 {/* Show template ID / Copy to clipboard */}
@@ -193,7 +194,7 @@ const TemplateFieldWithEditor: React.FC<ITemplateFieldWithEditorProps> = ({
                         disabled={!selectedTemplateId}
                         title={selectedTemplateId ? `Copy ID: ${selectedTemplateId}` : 'No template selected'}
                     >
-                        <Info className="w-3 h-3" />
+                        <Info className={`w-3 h-3 ${theme.icon}`} />
                     </TerminalButton>
                     {isInfoVisible && (
                         <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-xs ${theme.bg} ${theme.border} border whitespace-nowrap z-50`}>
@@ -210,7 +211,7 @@ const TemplateFieldWithEditor: React.FC<ITemplateFieldWithEditorProps> = ({
                     disabled={!selectedTemplateId}
                     title="Edit template"
                 >
-                    <Pencil className="w-3 h-3" />
+                    <Pencil className={`w-3 h-3 ${theme.icon}`} />
                 </TerminalButton>
             </div>
 

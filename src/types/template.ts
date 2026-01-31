@@ -1,5 +1,5 @@
 /** Template types supported by the editor */
-export type TemplateFormat = 'mako' | 'simple' | 'python' | 'filter';
+export type TemplateFormat = 'mako' | 'simple' | 'python' | 'filter' | 'lua';
 
 /** Core template data - aligns with InstructionTemplate from store */
 export interface ITemplate {

@@ -80,7 +80,8 @@ export const useFileSystemSlice = (set, get) => ({
                 bfs("mako", "Mako", templates),
                 bfs("python", "Python", templates),
                 bfs("golang", "Go", templates),
-                bfs("sql", "SQL", templates)
+                bfs("sql", "SQL", templates),
+                bfs("lua", "Lua", templates)
             ]
         }
         return children

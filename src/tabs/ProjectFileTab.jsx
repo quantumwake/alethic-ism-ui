@@ -51,6 +51,7 @@ export const ProjectFileTab = ({}) => {
             if (format === "mako") return Coffee
             else if (format === "python") return FileCode
             else if (format === "basic") return FileText
+            else if (format === "lua") return FileCode
         }
 
         const filename = file.filename

@@ -52,7 +52,7 @@ export const TerminalToggle = ({
 
     const currentSize = sizes[size];
     const currentVariant = variants[variant];
-    const variantStyle = disabled ? theme.disabled : currentVariant;
+    const variantStyle = disabled ? theme.toggle.disabled : currentVariant;
 
 
     const handleKeyDown = (e) => {

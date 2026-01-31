@@ -15,6 +15,7 @@ function TerminalNewFileDialog({ isOpen, setIsOpen }) {
         { id: "python", label: "Python" },
         { id: "sql", label: "SQL" },
         { id: "ismql", label: "ISM-QL" },
+        { id: "lua", label: "Lua" },
     ]);
 
 

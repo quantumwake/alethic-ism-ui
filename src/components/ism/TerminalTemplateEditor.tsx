@@ -21,6 +21,7 @@ const formatToLanguage: Record<TemplateFormat, string> = {
     'python': 'python',
     'simple': 'html',
     'filter': 'json',
+    'lua': 'lua',
 };
 
 const TerminalTemplateEditor: React.FC<ITerminalTemplateEditorProps> = ({
