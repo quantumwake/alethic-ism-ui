@@ -10,6 +10,7 @@ interface TerminalButtonProps {
     children?: ReactNode;
     style?: React.CSSProperties | string;
     className?: string;
+    title?: string;
 }
 
 export const TerminalButton: React.FC<TerminalButtonProps> = ({
@@ -21,6 +22,7 @@ export const TerminalButton: React.FC<TerminalButtonProps> = ({
                                                                   children,
                                                                   style = '',
                                                                   className = '',
+                                                                  title,
                                                               }) => {
     const theme = useStore(state => state.getCurrentTheme());
 
@@ -50,6 +52,7 @@ export const TerminalButton: React.FC<TerminalButtonProps> = ({
             onClick={!disabled ? onClick : undefined}
             disabled={disabled}
             className={`${baseStyle} ${variantStyle} ${sizeStyle} ${className}`}
+            title={title}
         >
             {icon && <span className="mr-2">{icon}</span>}
             {children}

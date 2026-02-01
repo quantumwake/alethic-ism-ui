@@ -6,7 +6,7 @@ import TerminalButton from './TerminalButton';
 import TerminalDialog from './TerminalDialog';
 import TerminalInput from './TerminalInput';
 import TerminalLabel from './TerminalLabel';
-import TerminalTemplateEditor from '../ism/TerminalTemplateEditor.tsx';
+import TerminalTemplateEditor from '../ism/TerminalTemplateEditor';
 import {
     ITemplate,
     ITemplateFieldWithEditorProps,
@@ -50,14 +50,14 @@ const TemplateFieldWithEditor: React.FC<ITemplateFieldWithEditorProps> = ({
     const activeTemplates = storeTemplates.length > 0 ? storeTemplates : templates;
 
     // Convert templates to dropdown format
-    const dropdownValues = activeTemplates.map(t => ({
+    const dropdownValues = activeTemplates.map((t: ITemplate) => ({
         id: t.template_id,
         label: t.template_path,
     }));
 
     // Get the currently selected template
     const selectedTemplate = selectedTemplateId
-        ? activeTemplates.find(t => t.template_id === selectedTemplateId)
+        ? activeTemplates.find((t: ITemplate) => t.template_id === selectedTemplateId)
         : null;
 
     // Handle dropdown selection - only call onSelect if value actually changed
@@ -261,7 +261,7 @@ const TemplateFieldWithEditor: React.FC<ITemplateFieldWithEditorProps> = ({
                         <TerminalInput
                             name="templateName"
                             value={newTemplateName}
-                            onChange={(e) => setNewTemplateName(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTemplateName(e.target.value)}
                             placeholder="Enter template name..."
                         />
                     </div>

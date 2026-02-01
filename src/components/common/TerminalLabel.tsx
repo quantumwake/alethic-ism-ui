@@ -1,14 +1,23 @@
-import React from 'react';
-import {useStore} from '../../store';
+import React, { ReactNode } from 'react';
+import { useStore } from '../../store';
 
-export const TerminalLabel = ({
-                                  children,
-                                  htmlFor,
-                                  size = 'default',
-                                  required = false,
-                                  className = '',
-                                  description,
-                              }) => {
+interface TerminalLabelProps {
+    children?: ReactNode;
+    htmlFor?: string;
+    size?: 'small' | 'default' | 'large';
+    required?: boolean;
+    className?: string;
+    description?: string;
+}
+
+export const TerminalLabel: React.FC<TerminalLabelProps> = ({
+    children,
+    htmlFor,
+    size = 'default',
+    required = false,
+    className = '',
+    description,
+}) => {
     const theme = useStore(state => state.getCurrentTheme());
 
     const sizes = {

@@ -106,7 +106,7 @@ const TerminalEdgeFunctionDialog = memo<TerminalEdgeFunctionDialogProps>(({ isOp
                 <TerminalToggle
                     label="Enable Edge Function"
                     checked={config.enabled}
-                    onChange={(enabled) => setConfig({ ...config, enabled })}
+                    onChange={(enabled: boolean) => setConfig({ ...config, enabled })}
                     disabled={isLoading}
                 />
 
@@ -128,7 +128,7 @@ const TerminalEdgeFunctionDialog = memo<TerminalEdgeFunctionDialogProps>(({ isOp
                     </TerminalLabel>
                     <TemplateFieldWithEditor
                         templates={templates || []}
-                        selectedTemplateId={config.template_id}
+                        selectedTemplateId={config.template_id ?? undefined}
                         onSelect={handleTemplateSelect}
                         placeholder="Select template"
                         allowEmpty={true}

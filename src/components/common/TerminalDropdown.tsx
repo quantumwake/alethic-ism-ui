@@ -1,23 +1,40 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Listbox } from '@headlessui/react';
 import { ChevronUpDownIcon } from '@heroicons/react/24/solid';
-import {useStore} from '../../store';
+import { useStore } from '../../store';
 
-const TerminalDropdown = ({
-                              values = [],
-                              onSelect,
-                              defaultValue = null,
-                              size = 'default',
-                              disabled = false,
-                              placeholder = 'Select an option',
-                              className = '',
-                              allowEmpty = false,
-                              setExternalValue = null
-                          }) => {
+interface DropdownValue {
+    id: string | null;
+    label: string;
+}
+
+interface TerminalDropdownProps {
+    values?: DropdownValue[];
+    onSelect?: (value: DropdownValue) => void;
+    defaultValue?: string | null;
+    size?: 'small' | 'default' | 'large';
+    disabled?: boolean;
+    placeholder?: string;
+    className?: string;
+    allowEmpty?: boolean;
+    setExternalValue?: ((setValue: (valueId: string | null) => void) => void) | null;
+}
+
+const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
+    values = [],
+    onSelect,
+    defaultValue = null,
+    size = 'default',
+    disabled = false,
+    placeholder = 'Select an option',
+    className = '',
+    allowEmpty = false,
+    setExternalValue = null
+}) => {
     const theme = useStore(state => state.getCurrentTheme());
-    const [selected, setSelected] = useState(null);
+    const [selected, setSelected] = useState<DropdownValue | null>(null);
 
-    const buttonRef = useRef(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
 
     // Memoize the position calculation to prevent unnecessary recalculations
     const calculatePosition = useCallback(() => {
@@ -33,7 +50,7 @@ const TerminalDropdown = ({
 
     // Initialize selected value only once when component mounts or values/defaultValue change significantly
     useEffect(() => {
-        let newSelected = null;
+        let newSelected: DropdownValue | null = null;
 
         if (defaultValue === null && allowEmpty) {
             newSelected = { id: null, label: placeholder };
@@ -58,7 +75,7 @@ const TerminalDropdown = ({
     }, [defaultValue, values, allowEmpty, placeholder]);
 
     // External function to set value
-    const setValue = useCallback((valueId) => {
+    const setValue = useCallback((valueId: string | null) => {
         if (valueId === null && allowEmpty) {
             const emptyOption = { id: null, label: placeholder };
             setSelected(emptyOption);
@@ -79,13 +96,13 @@ const TerminalDropdown = ({
         }
     }, [setExternalValue, setValue]);
 
-    const sizes = {
+    const sizes: Record<string, string> = {
         small: 'px-2 py-0.5 text-xs',
         default: 'px-3 py-1 text-sm',
         large: 'px-4 py-2 text-base'
     };
 
-    const handleSelect = (value) => {
+    const handleSelect = (value: DropdownValue) => {
         setSelected(value);
         onSelect?.(value);
     };
@@ -109,7 +126,7 @@ const TerminalDropdown = ({
                             <span className="block truncate">
                                 {selected?.label || placeholder}
                             </span>
-                            <ChevronUpDownIcon className="w-4 h-4 ml-2" aria-hidden="true"/>
+                            <ChevronUpDownIcon className="w-4 h-4 ml-2" aria-hidden="true" />
                         </Listbox.Button>
 
                         {open && (
@@ -144,14 +161,14 @@ const TerminalDropdown = ({
                                     <Listbox.Option
                                         key={item.id}
                                         value={item}
-                                        className={({active, selected}) => `
+                                        className={({ active, selected }) => `
                                             ${baseOptionStyle}
                                             ${active ? theme.button.primary : theme.bg}
                                             ${selected ? theme.button.primary : ''}
                                             ${sizes[size]}
                                         `}
                                     >
-                                        {({selected}) => (
+                                        {({ selected }) => (
                                             <span className={`block truncate ${selected ? 'font-extrabold' : ''}`}>
                                                 {item.label}
                                             </span>

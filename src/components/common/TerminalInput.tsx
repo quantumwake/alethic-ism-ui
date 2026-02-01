@@ -1,21 +1,37 @@
-import React from 'react';
-import {useStore} from '../../store';
+import React, { ChangeEvent, KeyboardEvent, FocusEvent, ReactNode } from 'react';
+import { useStore } from '../../store';
 
-export const TerminalInput = ({
-                                  variant = 'primary',
-                                  size = 'default',
-                                  disabled = false,
-                                  type = 'text',
-                                  name,
-                                  value,
-                                  onChange,
-                                  onKeyDown,
-                                  onFocus,
-                                  onBlur,
-                                  placeholder = '',
-                                  icon,
-                                  className = '',
-                              }) => {
+interface TerminalInputProps {
+    variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'warning' | 'info' | 'ghost';
+    size?: 'small' | 'default' | 'large';
+    disabled?: boolean;
+    type?: string;
+    name?: string;
+    value?: string;
+    onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+    onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
+    onFocus?: (e: FocusEvent<HTMLInputElement>) => void;
+    onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
+    placeholder?: string;
+    icon?: ReactNode;
+    className?: string;
+}
+
+export const TerminalInput: React.FC<TerminalInputProps> = ({
+    variant = 'primary',
+    size = 'default',
+    disabled = false,
+    type = 'text',
+    name,
+    value,
+    onChange,
+    onKeyDown,
+    onFocus,
+    onBlur,
+    placeholder = '',
+    icon,
+    className = '',
+}) => {
     const theme = useStore(state => state.getCurrentTheme());
 
     const variants = {
@@ -47,7 +63,7 @@ export const TerminalInput = ({
             )}
             <input
                 type={type}
-                autoComplete={type === 'password' ? "on" : "off" }
+                autoComplete={type === 'password' ? "on" : "off"}
                 name={name}
                 value={value}
                 onChange={onChange}
