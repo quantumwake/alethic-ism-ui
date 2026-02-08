@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog as HeadlessDialog } from '@headlessui/react';
+import { Dialog as HeadlessDialog, DialogPanel as HeadlessDialogPanel, DialogTitle as HeadlessDialogTitle } from '@headlessui/react';
 import { X } from 'lucide-react';
 import {useStore} from '../../store';
 
@@ -16,12 +16,12 @@ export const TerminalDialog = ({
         <HeadlessDialog open={isOpen} onClose={onClose} className="relative z-50">
             <div className="fixed inset-0 bg-black/30" />
             <div className="fixed inset-0 flex items-center justify-center p-4">
-                <HeadlessDialog.Panel className={`${width} ${theme.bg} ${theme.border} border shadow-lg`}>
+                <HeadlessDialogPanel className={`${width} ${theme.bg} ${theme.border} border shadow-lg`}>
                     {/* dialog header, title and corner X button */}
                     <div className={`flex justify-between items-center p-2 border-b ${theme.border}`}>
-                        <HeadlessDialog.Title className={`text-sm font-medium ${theme.text}`}>
+                        <HeadlessDialogTitle className={`text-sm font-medium ${theme.text}`}>
                             {title}
-                        </HeadlessDialog.Title>
+                        </HeadlessDialogTitle>
                         <button onClick={onClose} className={`p-1 rounded ${theme.hover}`}>
                             <X className={`w-4 h-4 ${theme.icon}`} />
                         </button>
@@ -29,7 +29,7 @@ export const TerminalDialog = ({
 
                     {/* output body */}
                     <div className="p-4">{children}</div>
-                </HeadlessDialog.Panel>
+                </HeadlessDialogPanel>
             </div>
         </HeadlessDialog>
     );

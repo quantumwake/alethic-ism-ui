@@ -4,9 +4,11 @@ import {RefreshCcwIcon, SaveIcon} from "lucide-react";
 import {TerminalButton, TerminalLabel} from "../components/common";
 import StatePropertyTab from "./property/StatePropertyTab";
 import ProcessorPropertyTab from "./property/ProcessorPropertyTab";
+import EdgePropertyTab from "./property/EdgePropertyTab";
 
 const PropertyTab = () => {
     const {selectedNodeId, getNode} = useStore()
+    const {selectedEdgeId} = useStore()
     const {updateNode, createState, createProcessor} = useStore()
     const theme = useStore(state => state.getCurrentTheme());
     const selectedNode = useStore(state => state.getNode(selectedNodeId));
@@ -48,6 +50,12 @@ const PropertyTab = () => {
                         {selectedNode.type.startsWith("processor") && (
                             <ProcessorPropertyTab/>
                         )}
+                    </>)}
+                    {!selectedNodeId && selectedEdgeId && (<>
+                        <div className={`${theme.text} ${theme.spacing.base} mb-0`}>
+                            <TerminalLabel>{selectedEdgeId}</TerminalLabel>
+                        </div>
+                        <EdgePropertyTab/>
                     </>)}
                 </div>
             </div>)

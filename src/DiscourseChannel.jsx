@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef, useCallback, memo} from 'react';
-import { Dialog, Transition } from "@headlessui/react";
 import {useStore} from "./store";
 import {useParams} from "react-router-dom";
 // import sanitizeHtml from 'sanitize-html';

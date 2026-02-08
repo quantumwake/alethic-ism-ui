@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import {useStore} from "./store";
 // import CustomList from "./archive/CustomList";
 // import CustomListbox from "./archive/CustomListbox";
@@ -285,17 +285,17 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
     </>
 
     return (
-        <Transition appear show={isOpen} as={React.Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={() => setIsOpen(false)}>
+        <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-10">
+            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 
-                <div className="fixed inset-0 overflow-y-auto">
-                    <div className="flex items-center justify-center p-4 text-center">
+            <div className="fixed inset-0 overflow-y-auto">
+                <div className="flex items-center justify-center p-4 text-center">
 
-                            <Dialog.Panel className="w-2/3 rounded-lg bg-stone-100 p-3 text-left align-middle shadow-xl transition-all">
-                                <Dialog.Title as="h3"
-                                              className="-m-3 mb-4 p-4 flex text-2xl font-medium leading-6 bg-stone-300 text-stone-800 shadow-stone-950">
-                                    Project Templates&nbsp;<ProjectTemplateInfo details=""></ProjectTemplateInfo>
-                                </Dialog.Title>
+                        <DialogPanel className="w-2/3 rounded-lg bg-stone-100 p-3 text-left align-middle shadow-xl transition-all">
+                            <DialogTitle as="h3"
+                                          className="-m-3 mb-4 p-4 flex text-2xl font-medium leading-6 bg-stone-300 text-stone-800 shadow-stone-950">
+                                Project Templates&nbsp;<ProjectTemplateInfo details=""></ProjectTemplateInfo>
+                            </DialogTitle>
 
                                 <div className="flex flex-col sm:flex-row gap-4">
                                     <div className="w-full sm:w-1/4">
@@ -389,11 +389,10 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
                                         </button>
                                     </div>
                                 </div>
-                            </Dialog.Panel>
-                    </div>
+                        </DialogPanel>
                 </div>
-            </Dialog>
-        </Transition>
+            </div>
+        </Dialog>
     );
 }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Listbox } from '@headlessui/react';
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
 import { ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import { useStore } from '../../store';
 
@@ -119,7 +119,7 @@ const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
             >
                 {({ open }) => (
                     <>
-                        <Listbox.Button
+                        <ListboxButton
                             ref={buttonRef}
                             className={`${baseButtonStyle} ${disabled ? theme.button.disabled : theme.button.primary}`}
                         >
@@ -127,10 +127,10 @@ const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
                                 {selected?.label || placeholder}
                             </span>
                             <ChevronUpDownIcon className="w-4 h-4 ml-2" aria-hidden="true" />
-                        </Listbox.Button>
+                        </ListboxButton>
 
                         {open && (
-                            <Listbox.Options
+                            <ListboxOptions
                                 static
                                 style={calculatePosition()}
                                 className={`
@@ -139,7 +139,7 @@ const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
                                 `}
                             >
                                 {allowEmpty && (
-                                    <Listbox.Option
+                                    <ListboxOption
                                         key="empty"
                                         value={{ id: null, label: placeholder }}
                                         className={({ active, selected }) => `
@@ -154,11 +154,11 @@ const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
                                                 {placeholder}
                                             </span>
                                         )}
-                                    </Listbox.Option>
+                                    </ListboxOption>
                                 )}
 
                                 {values.map((item) => (
-                                    <Listbox.Option
+                                    <ListboxOption
                                         key={item.id}
                                         value={item}
                                         className={({ active, selected }) => `
@@ -173,9 +173,9 @@ const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
                                                 {item.label}
                                             </span>
                                         )}
-                                    </Listbox.Option>
+                                    </ListboxOption>
                                 ))}
-                            </Listbox.Options>
+                            </ListboxOptions>
                         )}
                     </>
                 )}

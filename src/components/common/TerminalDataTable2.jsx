@@ -1,6 +1,6 @@
 // DataTable.jsx
 import React, {memo, useEffect, useState} from 'react';
-import { Dialog as HeadlessDialog } from '@headlessui/react';
+import { Dialog as HeadlessDialog, DialogPanel as HeadlessDialogPanel } from '@headlessui/react';
 import {Search as SearchIcon, ChevronLeft, ChevronRight, ChevronDown, PlayIcon} from 'lucide-react';
 import TerminalInput from './TerminalInput';
 import {useStore} from "../../store";
@@ -386,7 +386,7 @@ const TerminalDataTable2 = ({
         <HeadlessDialog open={isOpen} onClose={onClose} className="relative z-50" {...modalProps}>
             <div className="fixed inset-0 bg-black/30" />
             <div className="fixed inset-0 flex items-center justify-center">
-                <HeadlessDialog.Panel className={`w-full max-h-[80vh] flex flex-col ${theme.bg} ${theme.border} border shadow-lg`}>
+                <HeadlessDialogPanel className={`w-full max-h-[80vh] flex flex-col ${theme.bg} ${theme.border} border shadow-lg`}>
                     {(onPreviousOffset || onForwardOffset) && (
                         <div className={`flex min-h-10 h-10 max-h-10 justify-between items-center p-0 border-b border-dashed ${theme.border}`}>
                             <button
@@ -425,7 +425,7 @@ const TerminalDataTable2 = ({
                             />
                         </table>
                     </div>
-                </HeadlessDialog.Panel>
+                </HeadlessDialogPanel>
             </div>
         </HeadlessDialog>
     );

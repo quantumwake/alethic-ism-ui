@@ -5,7 +5,6 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {EdgeLabelRenderer, EdgeProps, getBezierPath} from "@xyflow/react";
 import TerminalSyslog from "../components/ism/TerminalSyslog";
 import TerminalStateFilterDialog from "../components/ism/TerminalStateFilterDialog";
-import TerminalEdgeFunctionDialog from "../components/ism/TerminalEdgeFunctionDialog";
 
 function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                                                         sourcePosition, targetPosition,
@@ -17,12 +16,11 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
     const [edge, setEdge] = useState()
     const [status, setStatus] = useState('')
     const {workflowEdges, findWorkflowEdgeById, deleteProcessorStateWithWorkflowEdge, executeProcessorStateRoute} = useStore()
-    const {selectedEdgeId, setSelectedEdgeId, processorStates} = useStore()
+    const {selectedEdgeId, setSelectedEdgeId, setSelectedNodeId, processorStates} = useStore()
     const isSelected = selectedEdgeId === id;
     const {isStudioRefreshEnabled} = useStore()
     const [isOpenStateDataFilterDialog, setIsOpenStateDataFilterDialog] = useState(false);
     const [isOpenSyslogDialog, setIsOpenSyslogDialog] = useState(false);
-    const [isOpenEdgeFunctionDialog, setIsOpenEdgeFunctionDialog] = useState(false)
 
     useEffect(() => {
         console.debug(`*************is animated: ${isStudioRefreshEnabled}`)
@@ -222,7 +220,7 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
                         </button>
 
                         <button
-                            onClick={() => setIsOpenEdgeFunctionDialog(true)}
+                            onClick={() => { setSelectedNodeId(null); setSelectedEdgeId(id); }}
                             className="p-1.5 rounded-md bg-opacity-20 bg-purple-900 text-white text-opacity-40 hover:bg-purple-600 hover:text-opacity-100">
                             <FontAwesomeIcon
                                 icon={faBolt}
@@ -252,12 +250,6 @@ function CustomEdge({   id, sourceX, sourceY, targetX, targetY,
             onClose={() => setIsOpenStateDataFilterDialog(false)}
             filterId={id}
             direction="input"
-        />
-
-        <TerminalEdgeFunctionDialog
-            isOpen={isOpenEdgeFunctionDialog}
-            onClose={() => setIsOpenEdgeFunctionDialog(false)}
-            routeId={id}
         />
     </>);
 }

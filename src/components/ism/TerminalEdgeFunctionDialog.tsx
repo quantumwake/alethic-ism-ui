@@ -1,16 +1,7 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
 import { TerminalDialog, TerminalButton, TerminalToggle, TerminalLabel, TemplateFieldWithEditor, TerminalDropdown } from "../common";
 import { useStore } from '../../store';
-
-type EdgeFunctionType = 'CALIBRATOR' | 'VALIDATOR' | 'TRANSFORMER' | 'FILTER';
-
-interface EdgeFunctionConfig {
-    enabled: boolean;
-    function_type: EdgeFunctionType;
-    template_id?: string | null;
-    max_attempts?: number;
-    config?: Record<string, any>;
-}
+import { EdgeFunctionConfig, EdgeFunctionType } from './edge-function/types';
 
 const FUNCTION_TYPES = [
     { id: 'CALIBRATOR', label: 'Calibrator - Retry with modifications' },

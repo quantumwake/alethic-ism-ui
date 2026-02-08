@@ -1,6 +1,13 @@
 import React, { useEffect } from "react";
 import { useStore } from "../../../store";
-import { TerminalInput, TerminalLabel } from "../../../components/common";
+import { TerminalInput, TerminalLabel, TerminalDropdown } from "../../../components/common";
+
+const CONCURRENCY_MODES = [
+    { id: 'project-id', label: 'Project ID' },
+    { id: 'user-id', label: 'User ID' },
+    { id: 'route-id', label: 'Route ID' },
+    { id: 'expression', label: 'Expression' }
+];
 
 function ProcessorBaseConfig({ nodeId }) {
     const theme = useStore(state => state.getCurrentTheme());
@@ -10,7 +17,9 @@ function ProcessorBaseConfig({ nodeId }) {
     // Default values for base processor configuration
     const defaultConfig = {
         maxBatchSize: 100,
-        maxBatchLimit: 1
+        maxBatchLimit: 1,
+        concurrencyMode: 'project-id',
+        concurrencyExpression: ''
     };
 
     // Initialize properties with defaults if they're empty or missing fields
@@ -39,7 +48,9 @@ function ProcessorBaseConfig({ nodeId }) {
     const properties = nodeData?.properties || {};
     const config = {
         maxBatchSize: properties.maxBatchSize !== undefined ? properties.maxBatchSize : defaultConfig.maxBatchSize,
-        maxBatchLimit: properties.maxBatchLimit !== undefined ? properties.maxBatchLimit : defaultConfig.maxBatchLimit
+        maxBatchLimit: properties.maxBatchLimit !== undefined ? properties.maxBatchLimit : defaultConfig.maxBatchLimit,
+        concurrencyMode: properties.concurrencyMode || defaultConfig.concurrencyMode,
+        concurrencyExpression: properties.concurrencyExpression || defaultConfig.concurrencyExpression
     };
 
     const handleUpdateProperty = (field, value) => {
@@ -105,6 +116,39 @@ function ProcessorBaseConfig({ nodeId }) {
                         Hard limit - processor receives up to this many records per event.
                     </div>
                 </div>
+            </div>
+
+            {/* Concurrency Configuration */}
+            <div className="space-y-4 p-3 border border-opacity-50">
+                <div className={`${theme.text} ${theme.font} font-semibold`}>
+                    Concurrency Mode
+                </div>
+
+                <div className="space-y-2">
+                    <TerminalLabel description="Determines the partition key for routing requests">
+                        Mode
+                    </TerminalLabel>
+                    <TerminalDropdown
+                        values={CONCURRENCY_MODES}
+                        onSelect={(value) => handleUpdateProperty("concurrencyMode", value.id)}
+                        defaultValue={config.concurrencyMode}
+                        placeholder="Select concurrency mode"
+                    />
+                </div>
+
+                {config.concurrencyMode === 'expression' && (
+                    <div className="space-y-2">
+                        <TerminalLabel description="Python expression to derive partition key from input data">
+                            Expression
+                        </TerminalLabel>
+                        <TerminalInput
+                            type="text"
+                            value={config.concurrencyExpression}
+                            onChange={(e) => handleUpdateProperty("concurrencyExpression", e.target.value)}
+                            placeholder="data.get('user_id') or context.get('session_id')"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Help Text */}

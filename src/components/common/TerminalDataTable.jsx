@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
-import { Dialog as HeadlessDialog } from '@headlessui/react';
+import { Dialog as HeadlessDialog, DialogPanel as HeadlessDialogPanel } from '@headlessui/react';
 import { Search as SearchIcon } from 'lucide-react';
 import TerminalInput from './TerminalInput';
 import {useStore} from '../../store';
@@ -100,7 +100,7 @@ const TerminalDataTable = ({ isOpen, onClose, nodeId, className = '' }) => {
         <HeadlessDialog open={isOpen} onClose={onClose} className="relative z-50">
             <div className="fixed inset-0 bg-black/30" />
             <div className="fixed inset-0 flex items-center justify-center">
-                <HeadlessDialog.Panel className={`w-full max-w-[90vw] min-w-[700px] ${theme.bg} ${theme.border} border shadow-lg`}>
+                <HeadlessDialogPanel className={`w-full max-w-[90vw] min-w-[700px] ${theme.bg} ${theme.border} border shadow-lg`}>
                     <div className="p-2 overflow-x-auto">
                         <table className="w-full">
                             <TableHeader columns={data?.columns} theme={theme} onSearch={handleSearch} />
@@ -113,7 +113,7 @@ const TerminalDataTable = ({ isOpen, onClose, nodeId, className = '' }) => {
                             />
                         </table>
                     </div>
-                </HeadlessDialog.Panel>
+                </HeadlessDialogPanel>
             </div>
         </HeadlessDialog>
     );

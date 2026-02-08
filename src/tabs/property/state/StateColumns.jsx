@@ -1,12 +1,14 @@
 import {useStore} from "../../../store";
 import React, { useEffect, useState } from "react";
-import { PlusIcon, MinusIcon, ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import { TerminalInput, TerminalToggle, TerminalButton} from "../../../components/common";
-import {ChevronDownSquare, ChevronUpCircleIcon, ChevronUpSquare, MinusSquareIcon, SaveIcon} from "lucide-react";
+import { MinusSquareIcon, ListOrdered } from "lucide-react";
+import StateColumnOrderDialog from "./StateColumnOrderDialog";
 
 function StateColumns({ nodeId }) {
     const theme = useStore(state => state.getCurrentTheme());
     const [columns, setColumns] = useState([]);
+    const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
     const getNodeDataColumns = useStore(state => state.getNodeDataColumns);
     const setNodeDataColumns = useStore(state => state.setNodeDataColumns);
 
@@ -50,45 +52,43 @@ function StateColumns({ nodeId }) {
         setNodeDataColumns(nodeId, newColumns);
     };
 
-    const handleMoveColumn = (index, direction) => {
-        const newColumns = [...columns];
-        const targetIndex = direction === 'up' ? index - 1 : index + 1;
-        
-        if (targetIndex < 0 || targetIndex >= newColumns.length) return;
-        
-        // Swap display_order values
-        const tempOrder = newColumns[index].display_order || index;
-        newColumns[index].display_order = newColumns[targetIndex].display_order || targetIndex;
-        newColumns[targetIndex].display_order = tempOrder;
-        
-        // Swap array positions
-        [newColumns[index], newColumns[targetIndex]] = [newColumns[targetIndex], newColumns[index]];
-        
+    const handleOrderSave = (orderedColumns) => {
+        // Merge with deleted columns (keep them at the end)
+        const deletedColumns = columns.filter(c => c.deleted);
+        const newColumns = [...orderedColumns, ...deletedColumns];
         setColumns(newColumns);
         setNodeDataColumns(nodeId, newColumns);
     };
 
     return (
         <div className={`${theme.spacing.base} flex flex-col space-y-4`}>
+            <div className="flex gap-2">
+                <TerminalButton
+                    variant="ghost"
+                    onClick={handleAddColumn}
+                    icon={<PlusIcon className="w-4 h-4" />}
+                >
+                    Add Column
+                </TerminalButton>
+                <TerminalButton
+                    variant="ghost"
+                    onClick={() => setIsOrderDialogOpen(true)}
+                    icon={<ListOrdered className="w-4 h-4" />}
+                    disabled={columns.filter(c => !c.deleted).length < 2}
+                >
+                    Organize
+                </TerminalButton>
+            </div>
+
             {columns.map((item, index) => !item.deleted && (
                 <div key={index} className={`flex flex-col space-y-2 p-2 border ${theme.border} border-opacity-50`}>
                     <div className="flex justify-between items-center">
-                        <span className={`${theme.text} ${theme.font}`}>Column {index + 1}</span>
-                        <div className="flex items-center space-x-1">
-                            <TerminalButton className="border-0" variant="primary"
-                                onClick={() => handleMoveColumn(index, 'up')}
-                                disabled={index === 0}
-                            ><ChevronUpSquare className="w-4 h-h"/></TerminalButton>
-                            <TerminalButton className="border-0"
-                                onClick={() => handleMoveColumn(index, 'down')}
-                                disabled={index === columns.filter(c => !c.deleted).length - 1}
-                            ><ChevronDownSquare className="w-4 h-h"/></TerminalButton>
-                            <TerminalButton className="border-0"
-                                // variant="danger"
-                                // size="small"
-                                onClick={() => handleRemoveField(index)}
-                            ><MinusSquareIcon className="w-4 h-h"/></TerminalButton>
-                        </div>
+                        <span className={`${theme.text} ${theme.font} text-sm opacity-70`}>
+                            #{item.display_order || index + 1} - {item.name || '(unnamed)'}
+                        </span>
+                        <TerminalButton className="border-0"
+                            onClick={() => handleRemoveField(index)}
+                        ><MinusSquareIcon className="w-4 h-4"/></TerminalButton>
                     </div>
 
                     <div className="space-y-2">
@@ -117,25 +117,16 @@ function StateColumns({ nodeId }) {
                                 onChange={(checked) => handleUpdateField(index, "callable", checked)}
                             />
                         </div>
-
-                        <TerminalInput
-                            type="number"
-                            value={item.display_order || ''}
-                            onChange={(e) => handleUpdateField(index, "display_order", parseInt(e.target.value) || 0)}
-                            placeholder="Display order"
-                            label="Display Order"
-                        />
                     </div>
                 </div>
             ))}
 
-            <TerminalButton
-                variant="ghost"
-                onClick={handleAddColumn}
-                icon={<PlusIcon className="w-4 h-4" />}
-            >
-                Add Column
-            </TerminalButton>
+            <StateColumnOrderDialog
+                isOpen={isOrderDialogOpen}
+                onClose={() => setIsOrderDialogOpen(false)}
+                columns={columns}
+                onSave={handleOrderSave}
+            />
         </div>
     );
 }
