@@ -121,7 +121,7 @@ function BaseProcessorNode({ providerName, className, nodeId, renderAdditionalCo
         {hasChildren ? (
             <button
                 onClick={() => toggleNodeCollapse(nodeId)}
-                className={`p-1 min-w-[3rem] h-5 flex items-center justify-center rounded-sm ${isCollapsed ? 'bg-purple-600 bg-opacity-60 text-white' : 'bg-purple-900 bg-opacity-20 text-white text-opacity-40'} hover:bg-purple-600 hover:bg-opacity-100 hover:text-white`}
+                className={`p-1 min-w-[3rem] h-5 flex items-center justify-center rounded-md transition-colors ${isCollapsed ? 'bg-midnight-accent/60 text-white' : 'bg-midnight-accent/20 text-midnight-text-muted'} hover:bg-midnight-accent hover:text-white`}
                 title={isCollapsed ? `Expand (${descendantCount} hidden)` : 'Collapse'}>
                 {isCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                 {isCollapsed && descendantCount > 0 && (
@@ -138,17 +138,19 @@ function BaseProcessorNode({ providerName, className, nodeId, renderAdditionalCo
                     <button
                         key={index}
                         onClick={button.onClick}
-                        className={`p-1 flex items-center justify-center rounded-sm ${button.className}`}
+                        className={`p-1 flex items-center justify-center rounded-md bg-midnight-danger/30 text-midnight-danger-bright hover:bg-midnight-danger hover:text-white transition-colors`}
                         title={button.title}>
-                        <Icon className={`w-3 h-3 ${theme.icon}`} />
+                        <Icon className="w-3 h-3" />
                     </button>
                 );
             })}
-            <button onClick={startOrStopProcessor} className={`p-1 flex items-center justify-center rounded-sm ${isStopped ? theme.buttonAccent : theme.buttonDanger}`}>
+            <button
+                onClick={startOrStopProcessor}
+                className={`p-1 flex items-center justify-center rounded-md transition-colors ${isStopped ? 'bg-midnight-success/30 text-midnight-success-bright hover:bg-midnight-success hover:text-white' : 'bg-midnight-danger/30 text-midnight-danger-bright hover:bg-midnight-danger hover:text-white'}`}>
                 {isStopped ? (
-                    <Play className={`w-3 h-3 ${theme.nodes?.processor?.icon}`} />
+                    <Play className="w-3 h-3" />
                 ) : (
-                    <Pause className={`w-3 h-3 ${theme.nodes?.processor?.icon}`} />
+                    <Pause className="w-3 h-3" />
                 )}
             </button>
         </div>

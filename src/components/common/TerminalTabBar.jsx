@@ -15,9 +15,10 @@ export const TerminalTabBar = ({
 
     return (
         <div className={`
-            flex flex-col py-2 gap-1 ${className} 
+            flex flex-col py-3 gap-1 ${className}
+            bg-midnight-elevated/50
             ${position === 'left' ? 'border-r' : 'border-l'}
-            ${theme.border}
+            border-midnight-border
         `}>
             {tabs.map(tab => (
                 <TerminalTabButton

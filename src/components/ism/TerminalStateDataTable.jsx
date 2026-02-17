@@ -11,6 +11,11 @@ const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => 
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(100);
 
+    const handleLimitChange = (newLimit) => {
+        setLimit(newLimit);
+        setOffset(0); // Reset to first page when changing page size
+    };
+
     useEffect(() => {
         if (!isOpen) {
             return;
@@ -33,7 +38,7 @@ const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => 
     }
 
     if (error) {
-        return <div className={`${theme.text} text-red-500`}>Error: {error}</div>;
+        return <div className={`${theme.text} text-midnight-danger`}>Error: {error}</div>;
     }
 
     const handlePreviousOffset = (currentLimit) => {
@@ -62,6 +67,7 @@ const TerminalStateDataTable = ({ isOpen, onClose, nodeId, className = '' }) => 
             onPreviousOffset={offset > 0 ? handlePreviousOffset : null}
             onForwardOffset={table && offset + limit < table.count ? handleForwardOffset : null}
             onCellTrigger={onCellTrigger}
+            onLimitChange={handleLimitChange}
         />
     );
 };

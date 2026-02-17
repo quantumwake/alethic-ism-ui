@@ -264,20 +264,20 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
                    <span
                        className={`inline-block h-14 w-1 rounded-md ${
                            value?.template_type === "mako"
-                               ? "bg-red-500"
+                               ? "bg-midnight-danger"
                                : value?.template_type === "simple"
-                                   ? "bg-green-500"
+                                   ? "bg-midnight-success"
                                    : value?.template_type === "python"
-                                       ? "bg-yellow-500"
-                                       : "bg-blue-500" // default color for other types
+                                       ? "bg-midnight-warning"
+                                       : "bg-midnight-info" // default color for other types
                        }`}
                    ></span>
             </div>
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                <p className="text-sm font-medium text-midnight-text-body truncate">
                     Name: {value && value?.template_path}
                 </p>
-                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                <p className="text-sm font-medium text-midnight-text-secondary truncate">
                     Type: {value && value?.template_type}
                 </p>
             </div>
@@ -285,15 +285,15 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
     </>
 
     return (
-        <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-10">
-            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-30">
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" aria-hidden="true" />
 
             <div className="fixed inset-0 overflow-y-auto">
                 <div className="flex items-center justify-center p-4 text-center">
 
-                        <DialogPanel className="w-2/3 rounded-lg bg-stone-100 p-3 text-left align-middle shadow-xl transition-all">
+                        <DialogPanel className="w-2/3 rounded-lg bg-midnight-surface border border-midnight-border p-3 text-left align-middle shadow-midnight-glow transition-all">
                             <DialogTitle as="h3"
-                                          className="-m-3 mb-4 p-4 flex text-2xl font-medium leading-6 bg-stone-300 text-stone-800 shadow-stone-950">
+                                          className="-m-3 mb-4 p-4 flex text-2xl font-medium leading-6 bg-midnight-elevated text-midnight-text-primary border-b border-midnight-border">
                                 Project Templates&nbsp;<ProjectTemplateInfo details=""></ProjectTemplateInfo>
                             </DialogTitle>
 
@@ -324,7 +324,7 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
                                                 <Tippy content="Get next sample">
                                                     <button
                                                         type="button"
-                                                        className="rounded-none h-10 p-1 border border-transparent bg-blue-300 text-sm font-medium text-white hover:bg-blue-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                                                        className="rounded-none h-10 p-1 border border-midnight-border bg-midnight-info text-sm font-medium text-white hover:bg-midnight-info-bright focus:outline-none focus:ring-2 focus:ring-midnight-info/50 transition-colors"
                                                         onClick={chooseNextSample}><FontAwesomeIcon
                                                         icon={faAngleDoubleRight}/>
                                                     </button>
@@ -341,7 +341,7 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
                                         </div>
 
                                         {/* Second Row */}
-                                        <div className="mt-2 flex h-[500pt] bg-white w-full border-2 border-blue-600">
+                                        <div className="mt-2 flex h-[500pt] bg-midnight-base w-full border-2 border-midnight-accent">
                                             <Editor
                                                 onChange={(newValue) => setTemplateContent(newValue)}
                                                 defaultLanguage="python"
@@ -370,10 +370,10 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
                                         {/*    Next Sample*/}
                                         {/*</button>*/}
                                     </div>
-                                    <div className="flex w-1/2 justify-end">
+                                    <div className="flex w-1/2 justify-end gap-2 mt-4">
                                         <button
                                             type="button"
-                                            className={`ml-2 inline-flex rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                                            className={`inline-flex rounded-md border border-midnight-border bg-midnight-info px-4 py-2 text-sm font-medium text-white hover:bg-midnight-info-bright focus:outline-none focus:ring-2 focus:ring-midnight-info/50 transition-colors ${
                                                 (!templatePath || !templateType || !templateContent) && "opacity-50 cursor-not-allowed"
                                             }`}
                                             onClick={(e) => onAddTemplate(e)}
@@ -383,7 +383,7 @@ function ProjectTemplateDialog({ isOpen, setIsOpen }) {
 
                                         <button
                                             type="button"
-                                            className="ml-2 inline-flex rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                                            className="inline-flex rounded-md border border-midnight-border bg-midnight-surface px-4 py-2 text-sm font-medium text-midnight-text-body hover:bg-midnight-elevated focus:outline-none focus:ring-2 focus:ring-midnight-danger/50 transition-colors"
                                             onClick={onClose}>
                                             Discard
                                         </button>

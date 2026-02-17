@@ -7,7 +7,8 @@ import {
     LayoutIcon,
     FolderOpenIcon,
     BoxesIcon, ChevronDown, AlarmSmokeIcon,
-    SparklesIcon
+    SparklesIcon,
+    Layers
 } from 'lucide-react'
 
 import {
@@ -20,7 +21,7 @@ import {
 
 import {useStore} from "./store"
 
-import {MenuTab, ProjectTab, ProjectFileTab, ComponentTab, PropertyTab, AIAssistantTab}  from "./tabs"
+import {MenuTab, ProjectTab, ProjectFileTab, ComponentTab, ComponentTab2, PropertyTab, AIAssistantTab}  from "./tabs"
 import {
     TerminalTemplateEditor,
     TerminalUsageReport,
@@ -33,6 +34,7 @@ import CustomStudio from "./CustomStudio"
 
 const TAB_COMPONENTS = {
     component: ComponentTab,
+    component2: ComponentTab2,
     files: ProjectFileTab,
     project: ProjectTab,
     property: PropertyTab,
@@ -74,6 +76,7 @@ const Layout = () => {
         { id: 'menu', icon: <Menu className="w-4 h-4" /> },
         { id: 'project', icon: <LayoutIcon className="w-4 h-4" /> },
         { id: 'component', icon: <BoxesIcon className="w-4 h-4" /> },
+        { id: 'component2', icon: <Layers className="w-4 h-4" /> },
         { id: 'files', icon: <FolderOpenIcon className="w-4 h-4" /> }
     ];
 
@@ -208,7 +211,7 @@ const Layout = () => {
 
                         <span><TerminalUsageReport /></span>
                         <span className="ml-4">v2.0 ALPHA</span>
-                        <AlarmSmokeIcon className={`ml-4 w-5 h-5 ${errors?.length > 0 ? "bg-yellow-200 text-red-600": ""} ${theme.icon}`} onClick={() => setIsErrorsDialogOpen(true)} />
+                        <AlarmSmokeIcon className={`ml-4 w-5 h-5 ${errors?.length > 0 ? "bg-midnight-warning/30 text-midnight-danger-bright": ""} ${theme.icon}`} onClick={() => setIsErrorsDialogOpen(true)} />
                         <span className="ml-2">{errors?.length}</span>
                     </div>
                 }

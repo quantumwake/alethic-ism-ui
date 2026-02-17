@@ -74,12 +74,11 @@ function BaseNode({ nodeId, data, type, renderHeader, renderContent, renderContr
 
     return (
         <div className={`
-            ${theme.bg} 
-            ${theme.border}
-            ${theme?.nodes?.[type]?.size || 'w-60 h-24'}
-            border shadow-md whitespace-pre-wrap rounded-none
-            text-xs
-            ${isSelected ? 'ring-2 ring-offset-2 ring-blue-500' : ''}
+            ${theme.bg}
+            ${theme?.nodes?.[type]?.size || 'w-52 min-h-[100px]'}
+            ${isSelected ? (theme?.nodes?.[type]?.borderSelected || 'border-2 border-midnight-accent-bright shadow-midnight-glow') : (theme?.nodes?.[type]?.border || theme.border + ' border')}
+            shadow-md whitespace-pre-wrap rounded-lg
+            text-xs transition-all duration-200
         `}>
             <div className={`
                 flex items-center justify-between p-1 

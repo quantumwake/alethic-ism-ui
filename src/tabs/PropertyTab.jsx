@@ -33,7 +33,7 @@ const PropertyTab = () => {
 
     return (<div className={`relative flex-grow h-screen flex w-full ${theme.bg}`}>
                 <div className="z-50 absolute top-2 right-6 flex gap-4">
-                    <TerminalButton className="bg-yellow-200" onClick={handleSave} variant="primary">
+                    <TerminalButton onClick={handleSave} variant="primary">
                         <SaveIcon className="w-4 h-h"/>
                     </TerminalButton>
                 </div>

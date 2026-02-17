@@ -256,7 +256,7 @@ const TerminalStateFilterDialog = memo<TerminalStateFilterDialogProps>(({ isOpen
                     <TerminalLabel htmlFor="filter-type" description="">Filter Type</TerminalLabel>
                     <select
                         id="filter-type"
-                        className={`w-full px-3 py-2 border ${theme.border} ${theme.bg} ${theme.text} font-mono text-sm focus:outline-none focus:border-amber-500`}
+                        className={`w-full px-3 py-2 border ${theme.border} ${theme.bg} ${theme.text} font-mono text-sm focus:outline-none focus:border-midnight-accent focus:ring-1 focus:ring-midnight-accent/50`}
                         value={filterType}
                         onChange={handleTypeChange}
                         disabled={isLoading}
@@ -268,7 +268,7 @@ const TerminalStateFilterDialog = memo<TerminalStateFilterDialogProps>(({ isOpen
 
                 <div>
                     <TerminalLabel htmlFor="filter-config" description="">Filter Configuration (JSON)</TerminalLabel>
-                    <div className="relative flex h-[300px] w-full p-1 bg-emerald-950">
+                    <div className="relative flex h-[300px] w-full p-1 bg-midnight-surface">
                         <Editor
                             theme="vs-dark"
                             defaultLanguage="json"
@@ -310,7 +310,7 @@ const TerminalStateFilterDialog = memo<TerminalStateFilterDialogProps>(({ isOpen
                         />
                     </div>
                     {error && (
-                        <div className="mt-2 text-red-500 text-sm font-mono">{error}</div>
+                        <div className="mt-2 text-midnight-danger text-sm font-mono">{error}</div>
                     )}
                 </div>
 
@@ -338,7 +338,7 @@ const TerminalStateFilterDialog = memo<TerminalStateFilterDialogProps>(({ isOpen
                         <div>• BETWEEN - Between values*</div>
                         <div>• NOT_BETWEEN - Not between*</div>
                     </div>
-                    <div className="mt-1 text-amber-500">* Requires secondary_value field</div>
+                    <div className="mt-1 text-midnight-warning">* Requires secondary_value field</div>
                 </div>
 
                 <div className="flex justify-end gap-2">

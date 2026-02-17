@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useStore } from "../../store";
-import { TerminalLabel, TerminalToggle, TerminalDropdown, TerminalTabViewSection, TemplateFieldWithEditor } from "../../components/common";
+import { TerminalLabel, TerminalToggle, TerminalDropdown, TerminalTabViewSection, TemplateFieldWithEditor, TerminalButton } from "../../components/common";
 
 const FUNCTION_TYPES = [
     { id: 'CALIBRATOR', label: 'Calibrator - Retry with modifications' },
@@ -24,10 +24,13 @@ const EdgePropertyTab = () => {
 
     const [config, setConfig] = useState(DEFAULT_CONFIG);
     const [isLoading, setIsLoading] = useState(false);
+    const [hasChanges, setHasChanges] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const loadConfig = useCallback(async () => {
         if (!selectedEdgeId) return;
         setIsLoading(true);
+        setHasChanges(false);
         try {
             const existingConfig = await fetchEdgeFunctionConfig(selectedEdgeId);
             setConfig(existingConfig || DEFAULT_CONFIG);
@@ -47,15 +50,21 @@ const EdgePropertyTab = () => {
         }
     }, [selectedEdgeId, loadConfig, selectedProjectId, fetchTemplates]);
 
-    const handleConfigChange = async (updates) => {
+    const handleConfigChange = (updates) => {
         const newConfig = { ...config, ...updates };
         setConfig(newConfig);
+        setHasChanges(true);
+    };
 
-        // Auto-save on change
+    const handleSave = async () => {
+        setIsSaving(true);
         try {
-            await updateEdgeFunctionConfig(selectedEdgeId, newConfig);
+            await updateEdgeFunctionConfig(selectedEdgeId, config);
+            setHasChanges(false);
         } catch (e) {
             console.error('Failed to save edge config:', e);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -110,7 +119,7 @@ const EdgePropertyTab = () => {
                                     max={10}
                                     value={config.max_attempts || 3}
                                     onChange={(e) => handleConfigChange({ max_attempts: parseInt(e.target.value) || 3 })}
-                                    className={`w-full px-3 py-2 border ${theme.border} ${theme.bg} ${theme.text} font-mono text-sm focus:outline-none focus:border-amber-500`}
+                                    className={`w-full px-3 py-2 border ${theme.border} ${theme.bg} ${theme.text} font-mono text-sm focus:outline-none focus:border-midnight-accent focus:ring-1 focus:ring-midnight-accent/50`}
                                     disabled={isLoading}
                                 />
                             </div>
@@ -129,10 +138,20 @@ end
 return "PASS", data`}
                                 </pre>
                                 <div className="mt-2">
-                                    <span className="text-green-400">PASS</span> - continue to state |
-                                    <span className="text-yellow-400 ml-1">RETRY</span> - send back to processor |
-                                    <span className="text-red-400 ml-1">DROP</span> - discard
+                                    <span className="text-midnight-success-bright">PASS</span> - continue to state |
+                                    <span className="text-midnight-warning-bright ml-1">RETRY</span> - send back to processor |
+                                    <span className="text-midnight-danger-bright ml-1">DROP</span> - discard
                                 </div>
+                            </div>
+
+                            <div className="flex justify-end pt-2">
+                                <TerminalButton
+                                    variant="primary"
+                                    onClick={handleSave}
+                                    disabled={isSaving || !hasChanges}
+                                >
+                                    {isSaving ? 'Saving...' : hasChanges ? 'Save Changes' : 'Saved'}
+                                </TerminalButton>
                             </div>
                         </div>
                     )

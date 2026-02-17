@@ -51,32 +51,32 @@ const TerminalFlowNode = ({ data, position, id, onPositionChange, selected, onSe
     return (
         <div
             ref={nodeRef}
-            className={`absolute bg-gray-800 rounded-md border ${selected ? 'border-blue-500' : 'border-gray-700'} min-w-[200px]`}
+            className={`absolute bg-midnight-surface rounded-lg border-2 ${selected ? 'border-midnight-info shadow-midnight-info' : 'border-midnight-border'} min-w-[200px] transition-all duration-200`}
             style={{
                 transform: `translate(${position.x}px, ${position.y}px)`,
                 cursor: isDragging ? 'grabbing' : 'grab'
             }}
             onMouseDown={handleMouseDown}
         >
-            <div className="flex items-center justify-between p-2 border-b border-gray-700">
+            <div className="flex items-center justify-between p-2 border-b border-midnight-border/50">
                 <div className="flex items-center gap-2">
-          <span className="py-0.5 px-2 text-xs bg-gray-700 rounded">
-            {data.type}
-          </span>
+                    <span className="py-0.5 px-2 text-xs bg-midnight-elevated text-midnight-text-label rounded">
+                        {data.type}
+                    </span>
                 </div>
             </div>
 
-            <div className={`flex flex-col text-gray-200 p-4`}>
+            <div className="flex flex-col text-midnight-text-body p-4">
                 <div className="text-sm">{data.name}</div>
 
                 <div className="mt-4 flex justify-between">
                     <div
-                        className="w-3 h-3 rounded-full bg-gray-600 cursor-pointer hover:bg-blue-500"
+                        className="w-3 h-3 rounded-full bg-midnight-raised border border-white/30 cursor-pointer hover:bg-midnight-info transition-colors"
                         data-handle="input"
                         data-node-id={id}
                     />
                     <div
-                        className="w-3 h-3 rounded-full bg-gray-600 cursor-pointer hover:bg-blue-500"
+                        className="w-3 h-3 rounded-full bg-midnight-raised border border-white/30 cursor-pointer hover:bg-midnight-info transition-colors"
                         data-handle="output"
                         data-node-id={id}
                     />

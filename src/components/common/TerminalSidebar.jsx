@@ -55,14 +55,19 @@ export const TerminalSidebar = ({
     const resizeHandle = (
         <div
             onMouseDown={startResizing}
-            className={`w-1 cursor-col-resize hover:bg-blue-500/50 active:bg-blue-500 ${isResizing ? 'bg-blue-500' : ''}`}
+            className={`w-1 cursor-col-resize hover:bg-midnight-accent/50 active:bg-midnight-accent transition-colors ${isResizing ? 'bg-midnight-accent' : ''}`}
             style={{ flexShrink: 0 }}
         />
     );
 
     return (
         <aside
-            className={`flex ${position === 'left' ? 'border-r' : 'border-l'} ${theme.border} ${className}`}
+            className={`
+                flex bg-midnight-surface/60
+                ${position === 'left' ? 'border-r' : 'border-l'}
+                border-midnight-border
+                ${className}
+            `}
             style={{
                 width: isOpen ? width : collapsedWidth,
                 transition: isResizing ? 'none' : 'width 0.2s',

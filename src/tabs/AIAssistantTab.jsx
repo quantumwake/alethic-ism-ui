@@ -139,7 +139,7 @@ const AIAssistantTab = () => {
                     <div className={`${theme.textMuted} text-xs`}>
                         Ask the AI to help with your template.
                         {selectedFile && <p className={`mt-1 ${theme.textAccent}`}>{selectedFile.name}</p>}
-                        {!selectedFile && <p className={`mt-1 text-red-500`}>No file selected.</p>}
+                        {!selectedFile && <p className="mt-1 text-midnight-danger-bright">No file selected.</p>}
                     </div>
                 )}
 
@@ -148,7 +148,7 @@ const AIAssistantTab = () => {
                         <div className={`text-xs ${theme.textMuted} mb-1`}>
                             {msg.role === 'user' ? 'You' : 'AI'}
                         </div>
-                        <div className={`border ${theme.border} p-2 text-xs ${msg.role === 'user' ? 'text-amber-300' : theme.text}`}>
+                        <div className={`border ${theme.border} p-2 text-xs ${msg.role === 'user' ? 'text-midnight-warning-bright' : theme.text}`}>
                             <pre className="whitespace-pre-wrap overflow-auto">{msg.content}</pre>
                             {msg.role === 'assistant' && (
                                 <div className={`flex gap-2 mt-2 pt-2 border-t ${theme.border}`}>

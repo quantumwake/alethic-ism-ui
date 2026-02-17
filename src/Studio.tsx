@@ -160,7 +160,7 @@ const Studio = () => {
     }, [isStudioRefreshEnabled, setStudioIsRefreshEnabled])
 
   return (
-      <div className="relative flex-grow h-screen bg-[#1e1e1e] flex w-full">
+      <div className="relative flex-grow h-screen flex w-full" style={{ backgroundColor: '#0e0e10' }}>
 
           <div className="z-50 absolute top-2 right-6 flex gap-4">
               <TerminalButton onClick={toggleRefreshClicked} variant="primary">
@@ -190,7 +190,7 @@ const Studio = () => {
                   color="white"
                   edgeTypes={edgeTypes}
                   nodeTypes={nodeTypes}>
-                  <Background color="#ffffff" gap={32}/>
+                  <Background color="rgba(255, 255, 255, 0.15)" gap={32} size={1.5}/>
               </ReactFlow>
           )}
 

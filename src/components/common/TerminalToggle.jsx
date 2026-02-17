@@ -65,10 +65,12 @@ export const TerminalToggle = ({
     };
 
     return (
-        <div className={`flex w-full items-center ${className}`}>
-            <div className={`grow ${theme.font} ${theme.text} ${currentSize.text}`}>
-                {label}
-            </div>
+        <div className={`flex w-full items-center gap-3 ${!label ? 'justify-end' : ''} ${className}`}>
+            {label && (
+                <span className="flex-1 text-sm text-midnight-text-body">
+                    {label}
+                </span>
+            )}
             <button
                 role="switch"
                 aria-checked={checked}
@@ -77,24 +79,26 @@ export const TerminalToggle = ({
                 onClick={() => !disabled && onChange(!checked)}
                 onKeyDown={handleKeyDown}
                 className={`
-                relative inline-flex border-2
-                cursor-pointer rounded-none transition-colors ease-in-out
-                duration-200 focus:outline-none
-                ${currentSize.switch}
-                ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
-                ${checked ? variantStyle.active : variantStyle.inactive}
-                ${theme.font}
-            `}
-            >
-            <span
-                className={` 
-                    pointer-events-none inline-block transform
-                    transition ease-in-out duration-200
-                    ${currentSize.toggle}
-                    ${checked ? currentSize.translate : 'translate-x-0'}
-                    ${theme.toggle}
+                    relative inline-flex items-center flex-shrink-0
+                    rounded-full transition-all duration-200
+                    border
+                    focus:outline-none focus:ring-2 focus:ring-midnight-accent/50 focus:ring-offset-2 focus:ring-offset-midnight-base
+                    ${currentSize.switch}
+                    ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                    ${checked
+                        ? 'bg-midnight-accent border-midnight-accent shadow-[0_0_8px_rgba(139,92,246,0.4)]'
+                        : 'bg-midnight-raised border-midnight-border hover:border-midnight-accent/50'
+                    }
                 `}
-            />
+            >
+                <span
+                    className={`
+                        inline-block rounded-full bg-white shadow-sm
+                        transform transition-transform duration-200 ease-out
+                        ${currentSize.toggle}
+                        ${checked ? currentSize.translate : 'translate-x-0.5'}
+                    `}
+                />
             </button>
         </div>
     );
