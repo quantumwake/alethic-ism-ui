@@ -7,7 +7,8 @@ import {
     LayoutIcon,
     FolderOpenIcon,
     BoxesIcon, ChevronDown, AlarmSmokeIcon,
-    SparklesIcon
+    SparklesIcon,
+    Layers
 } from 'lucide-react'
 
 import {
@@ -20,7 +21,7 @@ import {
 
 import {useStore} from "./store"
 
-import {MenuTab, ProjectTab, ProjectFileTab, ComponentTab, PropertyTab, AIAssistantTab}  from "./tabs"
+import {MenuTab, ProjectTab, ProjectFileTab, ComponentTab, ComponentTab2, PropertyTab, AIAssistantTab}  from "./tabs"
 import {
     TerminalTemplateEditor,
     TerminalUsageReport,
@@ -33,6 +34,7 @@ import CustomStudio from "./CustomStudio"
 
 const TAB_COMPONENTS = {
     component: ComponentTab,
+    component2: ComponentTab2,
     files: ProjectFileTab,
     project: ProjectTab,
     property: PropertyTab,
@@ -74,6 +76,7 @@ const Layout = () => {
         { id: 'menu', icon: <Menu className="w-4 h-4" /> },
         { id: 'project', icon: <LayoutIcon className="w-4 h-4" /> },
         { id: 'component', icon: <BoxesIcon className="w-4 h-4" /> },
+        { id: 'component2', icon: <Layers className="w-4 h-4" /> },
         { id: 'files', icon: <FolderOpenIcon className="w-4 h-4" /> }
     ];
 

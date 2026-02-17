@@ -1,4 +1,4 @@
-import {amber, pro, matrix, hybrid, light, crimson, cyber} from "../themes/index";
+import {amber, pro, matrix, hybrid, light, crimson, cyber, midnightlab} from "../themes/index";
 
 const themes = {
     matrix: matrix,
@@ -8,6 +8,7 @@ const themes = {
     hybrid: hybrid,
     crimson: crimson,
     cyber: cyber,
+    midnightlab: midnightlab,
 };
 
 export default themes;

@@ -5,3 +5,4 @@ export { default as hybrid } from './hybrid';
 export { default as light } from './light';
 export { default as crimson } from './crimson';
 export { default as cyber } from './cyber';
+export { default as midnightlab } from './midnightlab';

@@ -1,5 +1,5 @@
 import {useCallback, useMemo} from 'react';
-import {applyNodeChanges} from "@xyflow/react"; // Adjust the path as necessary
+import {applyEdgeChanges} from "@xyflow/react";
 import {useStore} from "./store";
 
 const useEdgesStateSynced = () => {
@@ -14,21 +14,12 @@ const useEdgesStateSynced = () => {
     const onEdgesChange = useCallback((changes: any) => {
         console.log('Edge changes:', changes);
 
-        // Apply changes directly
-        const updatedEdges = applyNodeChanges(changes, workflowEdges);
+        // Apply edge changes (fixed: was using applyNodeChanges)
+        const updatedEdges = applyEdgeChanges(changes, workflowEdges);
         console.log('Updated edges:', updatedEdges);
-        //
-        // // check for any deletions
-        // changes.forEach((change: any) => {
-        //     if (change.type === 'remove') {
-        //         console.log(`removing edge ${change})`)
-        //         deleteWorkflowEdge(change.id)
-        //     }
-        // })
 
         // Update Zustand store directly with the new edges array
         setWorkflowEdges(updatedEdges);
-
 
     }, [workflowEdges, setWorkflowEdges]);
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useStore } from "../../store";
-import { TerminalLabel, TerminalToggle, TerminalDropdown, TerminalTabViewSection, TemplateFieldWithEditor } from "../../components/common";
+import { TerminalLabel, TerminalToggle, TerminalDropdown, TerminalTabViewSection, TemplateFieldWithEditor, TerminalButton } from "../../components/common";
 
 const FUNCTION_TYPES = [
     { id: 'CALIBRATOR', label: 'Calibrator - Retry with modifications' },
@@ -24,10 +24,13 @@ const EdgePropertyTab = () => {
 
     const [config, setConfig] = useState(DEFAULT_CONFIG);
     const [isLoading, setIsLoading] = useState(false);
+    const [hasChanges, setHasChanges] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const loadConfig = useCallback(async () => {
         if (!selectedEdgeId) return;
         setIsLoading(true);
+        setHasChanges(false);
         try {
             const existingConfig = await fetchEdgeFunctionConfig(selectedEdgeId);
             setConfig(existingConfig || DEFAULT_CONFIG);
@@ -47,15 +50,21 @@ const EdgePropertyTab = () => {
         }
     }, [selectedEdgeId, loadConfig, selectedProjectId, fetchTemplates]);
 
-    const handleConfigChange = async (updates) => {
+    const handleConfigChange = (updates) => {
         const newConfig = { ...config, ...updates };
         setConfig(newConfig);
+        setHasChanges(true);
+    };
 
-        // Auto-save on change
+    const handleSave = async () => {
+        setIsSaving(true);
         try {
-            await updateEdgeFunctionConfig(selectedEdgeId, newConfig);
+            await updateEdgeFunctionConfig(selectedEdgeId, config);
+            setHasChanges(false);
         } catch (e) {
             console.error('Failed to save edge config:', e);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -133,6 +142,16 @@ return "PASS", data`}
                                     <span className="text-yellow-400 ml-1">RETRY</span> - send back to processor |
                                     <span className="text-red-400 ml-1">DROP</span> - discard
                                 </div>
+                            </div>
+
+                            <div className="flex justify-end pt-2">
+                                <TerminalButton
+                                    variant="primary"
+                                    onClick={handleSave}
+                                    disabled={isSaving || !hasChanges}
+                                >
+                                    {isSaving ? 'Saving...' : hasChanges ? 'Save Changes' : 'Saved'}
+                                </TerminalButton>
                             </div>
                         </div>
                     )

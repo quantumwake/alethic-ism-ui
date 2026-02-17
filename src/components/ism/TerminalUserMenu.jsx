@@ -42,6 +42,7 @@ const TerminalUserMenu = ({
                 { id: 'light', label: 'Light' },
                 { id: 'crimson', label: 'Crimson' },
                 { id: 'cyber', label: 'Cyber' },
+                { id: 'midnightlab', label: 'Midnight Lab' },
             ]
         },
         {
