@@ -62,7 +62,7 @@ function UsageReport({ }) {
     return (
         <div
             title="Agent Units (usage)"
-            className={`${theme.font} text-xs ${usage > 1.0 ? 'text-red-500' : theme.textAccent}`}
+            className={`${theme.font} text-xs ${usage > 1.0 ? 'text-midnight-danger' : theme.textAccent}`}
         >
             AUN: {usage}
         </div>

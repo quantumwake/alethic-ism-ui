@@ -59,10 +59,13 @@ export const midnightlab = {
         },
     },
     button: {
-        primary: 'bg-midnight-info hover:bg-midnight-info-bright hover:shadow-midnight-info text-white border border-midnight-info-bright/50 transition-all duration-200',
-        secondary: 'bg-midnight-surface hover:bg-midnight-elevated hover:border-midnight-border-glow text-midnight-text-secondary border border-midnight-border transition-all duration-200',
-        ghost: 'bg-transparent hover:bg-midnight-elevated hover:text-midnight-accent-bright text-midnight-text-body border border-midnight-border transition-all duration-200',
-        danger: 'bg-midnight-danger hover:bg-midnight-danger-bright hover:shadow-midnight-danger text-white border border-midnight-danger-bright/50 transition-all duration-200',
+        primary: 'bg-midnight-info hover:bg-midnight-info-bright hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] text-white border border-midnight-info-bright/50 hover:border-midnight-info-bright active:bg-midnight-info transition-all duration-150',
+        secondary: 'bg-midnight-surface hover:bg-midnight-raised hover:border-midnight-accent/60 hover:text-midnight-accent-bright text-midnight-text-secondary border border-midnight-border active:bg-midnight-elevated transition-all duration-150',
+        ghost: 'bg-transparent hover:bg-midnight-elevated hover:text-midnight-accent-bright hover:border-midnight-accent text-midnight-text-body border border-midnight-border active:bg-midnight-raised transition-all duration-150',
+        danger: 'bg-midnight-danger hover:bg-midnight-danger-bright hover:shadow-[0_0_12px_rgba(239,68,68,0.5)] text-white border border-midnight-danger-bright/50 hover:border-midnight-danger-bright active:bg-midnight-danger transition-all duration-150',
+        success: 'bg-midnight-success hover:bg-midnight-success-bright hover:shadow-[0_0_12px_rgba(34,197,94,0.5)] text-white border border-midnight-success-bright/50 hover:border-midnight-success-bright active:bg-midnight-success transition-all duration-150',
+        warning: 'bg-midnight-warning hover:bg-midnight-warning-bright hover:shadow-[0_0_12px_rgba(234,179,8,0.4)] text-midnight-base border border-midnight-warning-bright/50 hover:border-midnight-warning-bright active:bg-midnight-warning transition-all duration-150',
+        info: 'bg-midnight-info hover:bg-midnight-info-bright hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] text-white border border-midnight-info-bright/50 hover:border-midnight-info-bright active:bg-midnight-info transition-all duration-150',
         disabled: 'bg-midnight-surface text-midnight-text-disabled cursor-not-allowed border border-midnight-border',
     },
     dropdown: {
@@ -80,19 +83,84 @@ export const midnightlab = {
         content: 'bg-midnight-surface',
         footer: 'border-t border-midnight-border bg-midnight-elevated',
     },
+    // Node styling for flow editor
     nodes: {
+        // Standard size for all nodes
+        size: 'w-52 min-h-[100px]',
+        // State nodes (green)
         state: {
-            size: 'w-60 h-28',
+            size: 'w-52 min-h-[100px]',
+            container: 'bg-gradient-to-br from-midnight-success/30 via-midnight-elevated to-midnight-surface',
+            border: 'border-2 border-midnight-border',
+            borderSelected: 'border-2 border-midnight-success-bright shadow-midnight-success',
             icon: 'text-midnight-success-bright',
-            header: 'bg-gradient-to-r from-midnight-success/50 via-midnight-success/25 to-midnight-raised',
-            headerText: 'text-midnight-success-bright font-medium'
+            header: 'border-b border-midnight-border/50',
+            headerText: 'text-midnight-success-bright font-semibold text-xs uppercase tracking-wide'
         },
+        // Processor nodes (blue)
         processor: {
-            size: 'w-60 h-28',
+            size: 'w-52 min-h-[100px]',
+            container: 'bg-gradient-to-br from-midnight-info/30 via-midnight-elevated to-midnight-surface',
+            border: 'border-2 border-midnight-border',
+            borderSelected: 'border-2 border-midnight-info-bright shadow-midnight-info',
             icon: 'text-midnight-info-bright',
-            header: 'bg-gradient-to-r from-midnight-info/50 via-midnight-info/25 to-midnight-raised',
-            headerText: 'text-midnight-info-bright font-medium'
+            header: 'border-b border-midnight-border/50',
+            headerText: 'text-midnight-info-bright font-semibold text-xs uppercase tracking-wide'
+        },
+        // Transform nodes (purple/accent)
+        transform: {
+            size: 'w-52 min-h-[100px]',
+            container: 'bg-gradient-to-br from-midnight-accent/30 via-midnight-elevated to-midnight-surface',
+            border: 'border-2 border-midnight-border',
+            borderSelected: 'border-2 border-midnight-accent-bright shadow-midnight-glow',
+            icon: 'text-midnight-accent-bright',
+            header: 'border-b border-midnight-border/50',
+            headerText: 'text-midnight-accent-bright font-semibold text-xs uppercase tracking-wide'
+        },
+        // Function nodes (amber/warning)
+        function: {
+            size: 'w-52 min-h-[100px]',
+            container: 'bg-gradient-to-br from-midnight-warning/30 via-midnight-elevated to-midnight-surface',
+            border: 'border-2 border-midnight-border',
+            borderSelected: 'border-2 border-midnight-warning-bright shadow-midnight-glow',
+            icon: 'text-midnight-warning-bright',
+            header: 'border-b border-midnight-border/50',
+            headerText: 'text-midnight-warning-bright font-semibold text-xs uppercase tracking-wide'
+        },
+    },
+    // Selection ring for focused elements
+    selection: {
+        ring: 'ring-2 ring-midnight-accent ring-offset-2 ring-offset-midnight-base',
+        border: 'border-2 border-midnight-accent-bright',
+    },
+    // Resize handles
+    resize: {
+        handle: 'bg-midnight-accent hover:bg-midnight-accent-bright',
+        border: 'border-midnight-accent',
+    },
+    // Toolbar buttons (matching CustomStudio pattern)
+    toolbar: {
+        container: 'bg-midnight-surface/95 backdrop-blur-sm border border-midnight-border rounded-md shadow-lg',
+        button: {
+            base: 'p-1.5 rounded-md transition-colors',
+            success: 'bg-green-900/30 text-green-400 hover:bg-green-600 hover:text-white',
+            info: 'bg-blue-900/30 text-blue-400 hover:bg-blue-600 hover:text-white',
+            accent: 'bg-purple-900/30 text-purple-400 hover:bg-purple-600 hover:text-white',
+            warning: 'bg-amber-900/30 text-amber-400 hover:bg-amber-600 hover:text-white',
+            danger: 'bg-red-900/30 text-red-400 hover:bg-red-600 hover:text-white',
+            cyan: 'bg-cyan-900/30 text-cyan-400 hover:bg-cyan-600 hover:text-white',
         }
+    },
+    // Edge status colors (hex values for SVG)
+    edgeStatus: {
+        created: '#9ca3af',
+        queued: '#4b5563',
+        route: '#eab308',
+        routed: '#f59e0b',
+        running: '#3b82f6',
+        completed: '#22c55e',
+        failed: '#ef4444',
+        default: '#8b5cf6',
     },
     edge: edge,
     toggle: toggle,

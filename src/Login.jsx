@@ -36,55 +36,59 @@ const Login = () => {
     }
 
     return (
-        <div className="container mx-auto">
-            <div className="flex justify-center">
-                <form className="w-full max-w-md mt-6 p-6 bg-white shadow-md rounded">
-                    {notice && (
-                        <div className="alert alert-warning mb-4 p-4 bg-yellow-100 text-yellow-700 rounded"
-                             role="alert">
-                            {notice}
-                        </div>
-                    )}
+        <div className="min-h-screen bg-midnight-base flex items-center justify-center">
+            <div className="w-full max-w-md p-8 bg-midnight-surface border border-midnight-border rounded-lg shadow-midnight-glow">
+                <h1 className="text-2xl font-bold text-midnight-text-primary mb-6 text-center">Sign In</h1>
+
+                {notice && (
+                    <div className="mb-4 p-4 bg-midnight-warning/20 border border-midnight-warning/40 text-midnight-warning-bright rounded-md text-sm">
+                        {notice}
+                    </div>
+                )}
+
+                <form onSubmit={loginWithUsernameAndPassword}>
                     <div className="mb-4">
-                        <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">Email
-                            address</label>
+                        <label htmlFor="email" className="block text-midnight-text-label text-sm font-medium mb-2">
+                            Email address
+                        </label>
                         <input
                             type="email"
                             id="email"
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            className="w-full px-3 py-2 bg-midnight-base border border-midnight-border rounded-md text-midnight-text-body placeholder-midnight-text-disabled focus:outline-none focus:border-midnight-accent focus:ring-1 focus:ring-midnight-accent/50 transition-colors"
                             placeholder="name@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
+
                     <div className="mb-6">
-                        <label htmlFor="password"
-                               className="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                        <label htmlFor="password" className="block text-midnight-text-label text-sm font-medium mb-2">
+                            Password
+                        </label>
                         <input
                             type="password"
                             id="password"
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            className="w-full px-3 py-2 bg-midnight-base border border-midnight-border rounded-md text-midnight-text-body placeholder-midnight-text-disabled focus:outline-none focus:border-midnight-accent focus:ring-1 focus:ring-midnight-accent/50 transition-colors"
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
-                    <div className="flex items-center justify-between">
-                        <button
-                            type="submit"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                            onClick={loginWithUsernameAndPassword}
-                        >
-                            Submit
-                        </button>
-                    </div>
-                    <div className="mt-4 text-center">
-                        <span>
-                            Need to sign up for an account? <Link to="/signup"
-                                                                  className="text-blue-500 hover:text-blue-700">Click here.</Link>
-                        </span>
-                    </div>
+
+                    <button
+                        type="submit"
+                        className="w-full py-2 px-4 bg-midnight-info hover:bg-midnight-info-bright text-white font-medium rounded-md shadow-midnight-info transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-midnight-info/50"
+                    >
+                        Sign In
+                    </button>
                 </form>
+
+                <div className="mt-6 text-center text-sm text-midnight-text-muted">
+                    Need to sign up for an account?{' '}
+                    <Link to="/signup" className="text-midnight-accent-bright hover:text-midnight-accent transition-colors">
+                        Click here.
+                    </Link>
+                </div>
             </div>
         </div>
     )

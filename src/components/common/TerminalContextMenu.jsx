@@ -93,7 +93,7 @@ export const TerminalContextMenu = ({
     if (!isOpen) return null;
 
     return (
-        <div ref={menuRef} className={`fixed ${theme.border} ${theme.bg} rounded shadow-lg overflow-hidden z-50 ${className}`}
+        <div ref={menuRef} className={`fixed border border-midnight-border bg-midnight-surface shadow-lg overflow-hidden z-[9999] ${className}`}
             style={{
                 width: '12rem',
                 left: `${menuPosition.x}px`,

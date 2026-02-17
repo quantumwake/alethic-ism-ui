@@ -122,7 +122,7 @@ const TerminalUserMenu = ({
     return (
         <div>
             <button onClick={handleClick}
-                className={`p-1 rounded ${theme.hover} flex items-center gap-2`}>
+                className={`p-1.5 border border-midnight-border bg-midnight-surface hover:bg-midnight-elevated hover:border-midnight-border-glow flex items-center gap-2 transition-all`}>
                 <User className={`w-4 h-4 ${theme.icon}`}/>
             </button>
 

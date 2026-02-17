@@ -8,16 +8,75 @@ export const useWorkflowSlice = (set, get) => ({
     // workflow -> edges
     workflowEdges: [],
     
-    // collapsed nodes state - stores which nodes are collapsed
+    // collapsed nodes state - stores which nodes are collapsed (for hiding descendants)
     collapsedNodes: {},
+
+    // visual collapsed state - stores which nodes are visually minimized
+    nodeVisualState: {},
+
+    // Set visual collapsed state for a node and persist to backend
+    setNodeVisualCollapsed: async (nodeId, isCollapsed) => {
+        if (!nodeId) return;
+
+        // Update local state immediately
+        set((state) => ({
+            nodeVisualState: {
+                ...state.nodeVisualState,
+                [nodeId]: { ...state.nodeVisualState[nodeId], collapsed: isCollapsed }
+            }
+        }));
+
+        // Persist to backend
+        try {
+            const node = get().getNode(nodeId);
+            if (node) {
+                const currentMetadata = node.data?.metadata || {};
+                const updatedMetadata = { ...currentMetadata, collapsed: isCollapsed };
+
+                const updatedNode = {
+                    node_id: nodeId,
+                    node_type: node.type,
+                    node_label: node.data?.label,
+                    project_id: get().selectedProjectId,
+                    object_id: node.data?.objectId,
+                    position_x: node.position.x,
+                    position_y: node.position.y,
+                    width: node.data?.width,
+                    height: node.data?.height,
+                    metadata: updatedMetadata
+                };
+
+                await get().authPost('/workflow/node/create', updatedNode);
+
+                // Update local node data with new metadata
+                get().setNodeData(nodeId, { metadata: updatedMetadata });
+            }
+        } catch (error) {
+            console.error('Failed to persist collapsed state:', error);
+        }
+    },
+
+    // Get visual collapsed state for a node
+    isNodeVisuallyCollapsed: (nodeId) => {
+        if (!nodeId) return false;
+        return get().nodeVisualState[nodeId]?.collapsed || false;
+    },
 
     workflowNodes: [],
     fetchWorkflowNodes: async (projectId) => {
         try {
-            set({ workflowNodes: []});
+            set({ workflowNodes: [], nodeVisualState: {} });
 
             const response = await get().authGet(`/project/${projectId}/workflow/nodes`);
             const nodes = await response.json();
+
+            // Build visual state from node metadata
+            const visualState = {};
+            nodes.forEach(node => {
+                if (node.metadata?.collapsed !== undefined) {
+                    visualState[node.node_id] = { collapsed: node.metadata.collapsed };
+                }
+            });
 
             // remap the api data structure to the internal reactflow data structure
             const updatedNodes = nodes.map(node => ({
@@ -28,13 +87,14 @@ export const useWorkflowSlice = (set, get) => ({
                     y: node.position_y
                 },
                 data: {
-                    id: node.node_id
+                    id: node.node_id,
+                    metadata: node.metadata || {}
                     // width: node.width,
                     // height: node.height,
                 }
             }));
 
-            set({ workflowNodes: updatedNodes });
+            set({ workflowNodes: updatedNodes, nodeVisualState: visualState });
         } catch (error) {
             console.error('Failed to fetch  nodes:', error);
         }
@@ -119,18 +179,26 @@ export const useWorkflowSlice = (set, get) => ({
 
     updateNode: async (nodeId) => {
         try {
-            const node = get().getNode(nodeId)
+            const node = get().getNode(nodeId);
+            const visualState = get().nodeVisualState[nodeId];
+
+            // Merge visual state into metadata
+            const metadata = {
+                ...(node.data?.metadata || {}),
+                ...(visualState?.collapsed !== undefined ? { collapsed: visualState.collapsed } : {})
+            };
 
             const updatedNode = {
                 node_id: nodeId,
                 node_type: node.type,
-                node_label: node.data.label,
+                node_label: node.data?.label,
                 project_id: get().selectedProjectId,
-                object_id: node.data.objectId,
+                object_id: node.data?.objectId,
                 position_x: node.position.x,
                 position_y: node.position.y,
-                width: node.data.width,
-                height: node.data.height,
+                width: node.data?.width,
+                height: node.data?.height,
+                metadata: Object.keys(metadata).length > 0 ? metadata : null
             };
 
             const response = await get().authPost('/workflow/node/create', updatedNode);

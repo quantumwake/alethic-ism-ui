@@ -119,7 +119,7 @@ const EdgePropertyTab = () => {
                                     max={10}
                                     value={config.max_attempts || 3}
                                     onChange={(e) => handleConfigChange({ max_attempts: parseInt(e.target.value) || 3 })}
-                                    className={`w-full px-3 py-2 border ${theme.border} ${theme.bg} ${theme.text} font-mono text-sm focus:outline-none focus:border-amber-500`}
+                                    className={`w-full px-3 py-2 border ${theme.border} ${theme.bg} ${theme.text} font-mono text-sm focus:outline-none focus:border-midnight-accent focus:ring-1 focus:ring-midnight-accent/50`}
                                     disabled={isLoading}
                                 />
                             </div>
@@ -138,9 +138,9 @@ end
 return "PASS", data`}
                                 </pre>
                                 <div className="mt-2">
-                                    <span className="text-green-400">PASS</span> - continue to state |
-                                    <span className="text-yellow-400 ml-1">RETRY</span> - send back to processor |
-                                    <span className="text-red-400 ml-1">DROP</span> - discard
+                                    <span className="text-midnight-success-bright">PASS</span> - continue to state |
+                                    <span className="text-midnight-warning-bright ml-1">RETRY</span> - send back to processor |
+                                    <span className="text-midnight-danger-bright ml-1">DROP</span> - discard
                                 </div>
                             </div>
 

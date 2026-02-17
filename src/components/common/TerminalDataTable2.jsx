@@ -1,8 +1,9 @@
 // DataTable.jsx
-import React, {memo, useEffect, useState} from 'react';
+import React, {memo, useEffect, useState, useMemo} from 'react';
 import { Dialog as HeadlessDialog, DialogPanel as HeadlessDialogPanel } from '@headlessui/react';
-import {Search as SearchIcon, ChevronLeft, ChevronRight, ChevronDown, PlayIcon} from 'lucide-react';
+import {Search as SearchIcon, ChevronLeft, ChevronRight, ChevronDown, PlayIcon, Columns3} from 'lucide-react';
 import TerminalInput from './TerminalInput';
+import TerminalTagField from './TerminalTagField';
 import {useStore} from "../../store";
 
 const JsonTreeEntry = ({ keyName, value, isArrayIndex, theme }) => {
@@ -137,6 +138,26 @@ const SearchField = ({ columnKey, onSearch, placeholder }) => {
     )
 }
 
+// Page Size Selector
+const PageSizeSelector = ({ value, onChange }) => {
+    const options = [25, 50, 100, 250, 500];
+
+    return (
+        <div className="flex items-center gap-2">
+            <span className="text-xs text-midnight-text-muted">Page size:</span>
+            <select
+                value={value}
+                onChange={(e) => onChange(Number(e.target.value))}
+                className="bg-midnight-surface border border-midnight-border text-midnight-text-body text-sm px-2 py-1 outline-none focus:border-midnight-accent"
+            >
+                {options.map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                ))}
+            </select>
+        </div>
+    );
+};
+
 // Helper function to get sorted columns
 const getSortedColumns = (table, isStateFormat) => {
     if (isStateFormat && table?.columns) {
@@ -161,24 +182,19 @@ const getSortedColumns = (table, isStateFormat) => {
     return [];
 }
 
-const TableHeader = ({ table, onSearch, isStateFormat }) => {
+const TableHeader = ({ table, onSearch, isStateFormat, selectedColumns = [], getVisibleColumns }) => {
     const theme = useStore(state => state.getCurrentTheme());
-    const sortedColumns = getSortedColumns(table, isStateFormat);
+    const allColumns = getSortedColumns(table, isStateFormat);
+    const visibleColumns = getVisibleColumns ? getVisibleColumns(allColumns) : allColumns;
 
-    return (<thead className={`sticky top-0 ${theme.bg} z-10`}>
+    return (<thead className={`sticky top-0 bg-midnight-elevated z-10`}>
         <tr>
-            <th className={`${theme.datatable.header} ${theme.border}`}>
-                <div className="flex flex-col">
-
-                </div>
+            <th className={`${theme.datatable.header} ${theme.border} w-10`}>
             </th>
-            {sortedColumns.map(([key, column]) => (
+            {visibleColumns.map(([key, column]) => (
                 <th key={key} className={`${theme.datatable.header} ${theme.border}`}>
-                    <div className="flex flex-col">
-                        <div className="flex min-w-[50px]">
-                            <div className="text-sm pr-4 uppercase">{column.name}</div>
-                            <SearchField placeholder={column.name} columnKey={key} onSearch={onSearch}/>
-                        </div>
+                    <div className="min-w-[100px]">
+                        <SearchField placeholder={column.name} columnKey={key} onSearch={onSearch}/>
                     </div>
                 </th>
             ))}
@@ -267,13 +283,14 @@ const TableCellTrigger = ({ key, columnKey, rowIndex, table, isStateFormat, onCe
     )
 }
 
-const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isStateFormat, onCellTrigger = null}) => {
+const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isStateFormat, onCellTrigger = null, selectedColumns = [], getVisibleColumns}) => {
     const theme = useStore(state => state.getCurrentTheme());
 
     // handle original state column data row value format
     if (isStateFormat && table?.data) {
-        const sortedColumns = getSortedColumns(table, isStateFormat);
-        const sortedColumnKeys = sortedColumns.map(([key]) => key);
+        const allColumns = getSortedColumns(table, isStateFormat);
+        const visibleColumns = getVisibleColumns ? getVisibleColumns(allColumns) : allColumns;
+        const sortedColumnKeys = visibleColumns.map(([key]) => key);
 
         return (
             <tbody className="">
@@ -309,8 +326,9 @@ const TableBody = ({ table, offset, limit, filterData, isExpanded, onExpand, isS
     // as opposed to a set of dictionary rows composed of [{column=value, ...}].
     if (!isStateFormat && table?.length) {
         // Handle array of objects format
-        const sortedColumns = getSortedColumns(table, isStateFormat);
-        const sortedColumnKeys = sortedColumns.map(([key]) => key);
+        const allColumns = getSortedColumns(table, isStateFormat);
+        const visibleColumns = getVisibleColumns ? getVisibleColumns(allColumns) : allColumns;
+        const sortedColumnKeys = visibleColumns.map(([key]) => key);
         return (
             <tbody>
             {table?.map((row, rowIndex) => filterData(rowIndex) && (
@@ -342,16 +360,19 @@ const TerminalDataTable2 = ({
     onPreviousOffset = null,
     onForwardOffset = null,
     offset = null,
-    limit = null,
+    limit: initialLimit = 100,
     className = '',
     modalProps = {},
     onCellTrigger = null,
+    onLimitChange = null,
 }) => {
 
     const theme = useStore(state => state.getCurrentTheme());
     const [isExpanded, setExpanded] = useState({});
     const [filters, setFilters] = useState({});
-    const [isStateFormat, setIsStateFormat] = useState(false)
+    const [isStateFormat, setIsStateFormat] = useState(false);
+    const [selectedColumns, setSelectedColumns] = useState([]);
+    const [pageSize, setPageSize] = useState(initialLimit);
 
     useEffect(() => {
         if (table?.data && table?.columns && table?.count) {
@@ -359,7 +380,38 @@ const TerminalDataTable2 = ({
         } else {
             setIsStateFormat(false)
         }
-    }, [table, limit]);
+    }, [table]);
+
+    // Get all available column names
+    const availableColumns = useMemo(() => {
+        if (isStateFormat && table?.columns) {
+            return Object.entries(table.columns).map(([key, col]) => col.name || key);
+        } else if (!isStateFormat && table?.length > 0) {
+            return Object.keys(table[0]);
+        }
+        return [];
+    }, [table, isStateFormat]);
+
+    // Handle page size change
+    const handlePageSizeChange = (newSize) => {
+        setPageSize(newSize);
+        if (onLimitChange) {
+            onLimitChange(newSize);
+        }
+    };
+
+    // Filter columns based on selection
+    const getVisibleColumns = (allColumns) => {
+        if (selectedColumns.length === 0) {
+            return allColumns; // Show all when none selected
+        }
+        return allColumns.filter(([key, col]) => {
+            const colName = col.name || key;
+            return selectedColumns.includes(colName);
+        });
+    };
+
+    const limit = pageSize;
 
 
     const handleExpansion = (row, col, expanded) => setExpanded(prev => ({ ...prev, [`${row}-${col}`]: expanded }));
@@ -384,25 +436,53 @@ const TerminalDataTable2 = ({
 
     return (
         <HeadlessDialog open={isOpen} onClose={onClose} className="relative z-50" {...modalProps}>
-            <div className="fixed inset-0 bg-black/30" />
-            <div className="fixed inset-0 flex items-center justify-center">
-                <HeadlessDialogPanel className={`w-full max-h-[80vh] flex flex-col ${theme.bg} ${theme.border} border shadow-lg`}>
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
+            <div className="fixed inset-0 flex items-center justify-center p-4">
+                <HeadlessDialogPanel className={`
+                    w-full max-w-6xl max-h-[85vh] flex flex-col
+                    bg-midnight-surface border border-midnight-border
+                    shadow-[0_8px_32px_rgba(0,0,0,0.4)]
+                    overflow-hidden
+                `}>
+                    {/* Column selector and page size controls */}
+                    <div className="flex items-center gap-4 px-4 py-2 bg-midnight-elevated border-b border-midnight-border">
+                        <TerminalTagField
+                            availableOptions={availableColumns}
+                            selectedTags={selectedColumns}
+                            onTagsChange={setSelectedColumns}
+                            placeholder="Type to filter columns..."
+                            icon={<Columns3 className="w-4 h-4 text-midnight-text-muted ml-1" />}
+                            className="flex-1"
+                        />
+                        <PageSizeSelector value={pageSize} onChange={handlePageSizeChange} />
+                    </div>
+
+                    {/* Pagination controls */}
                     {(onPreviousOffset || onForwardOffset) && (
-                        <div className={`flex min-h-10 h-10 max-h-10 justify-between items-center p-0 border-b border-dashed ${theme.border}`}>
+                        <div className="flex h-10 justify-between items-center px-4 bg-midnight-surface border-b border-midnight-border">
                             <button
                                 onClick={() => onPreviousOffset && onPreviousOffset(limit)}
                                 disabled={!onPreviousOffset}
-                                className={`flex items-center gap-2 px-4 py-2 ${theme.button.secondary}`}
+                                className="flex items-center gap-2 px-3 py-1 text-sm
+                                    bg-midnight-surface hover:bg-midnight-raised
+                                    border border-midnight-border
+                                    text-midnight-text-body disabled:opacity-40 disabled:cursor-not-allowed
+                                    transition-all duration-200"
                             >
                                 <ChevronLeft className="w-4 h-4" />Previous
                             </button>
-                            <span className={`text-sm ${theme.text}`}>
+                            <span className="text-sm text-midnight-text-muted">
                                 Showing {Math.min(limit ?? table.count, table.count)} of {table.count} rows
+                                {selectedColumns.length > 0 && ` | ${selectedColumns.length} columns selected`}
                             </span>
                             <button
                                 onClick={() => onForwardOffset && onForwardOffset(limit)}
                                 disabled={!onForwardOffset}
-                                className={`flex items-center gap-2 px-4 py-2 ${theme.button.secondary}`}
+                                className="flex items-center gap-2 px-3 py-1 text-sm
+                                    bg-midnight-surface hover:bg-midnight-raised
+                                    border border-midnight-border
+                                    text-midnight-text-body disabled:opacity-40 disabled:cursor-not-allowed
+                                    transition-all duration-200"
                             >
                                 Next<ChevronRight className="w-4 h-4" />
                             </button>
@@ -412,7 +492,9 @@ const TerminalDataTable2 = ({
                         <table className={`w-full ${theme.font}`}>
                             <TableHeader table={table}
                                          onSearch={handleSearch}
-                                         isStateFormat={isStateFormat}/>
+                                         isStateFormat={isStateFormat}
+                                         selectedColumns={selectedColumns}
+                                         getVisibleColumns={getVisibleColumns}/>
                             <TableBody
                                 table={table}
                                 offset={offset}
@@ -422,6 +504,8 @@ const TerminalDataTable2 = ({
                                 onExpand={handleExpansion}
                                 isStateFormat={isStateFormat}
                                 onCellTrigger={onCellTrigger}
+                                selectedColumns={selectedColumns}
+                                getVisibleColumns={getVisibleColumns}
                             />
                         </table>
                     </div>

@@ -41,7 +41,7 @@ export const processorStyles = {
         'state',
         'Data Object',
         'Input or output data object that can be connected to processors',
-        'text-blue-500',
+        'text-midnight-success-bright',
         Store
     ),
 
@@ -50,7 +50,7 @@ export const processorStyles = {
         'function_datasource_sql',
         'SQL',
         'Connect and interact with SQL or NoSQL databases',
-        'text-green-500',
+        'text-midnight-success',
         Database
     ),
 
@@ -58,7 +58,7 @@ export const processorStyles = {
         'processor_json',
         'JSON',
         'Read or write JSON data',
-        'text-yellow-500',
+        'text-midnight-warning',
         FileJson,
         false
     ),
@@ -67,7 +67,7 @@ export const processorStyles = {
         'processor_csv',
         'CSV',
         'Process CSV files and tabular data',
-        'text-green-400',
+        'text-midnight-success-bright',
         Table,
         false
     ),
@@ -76,7 +76,7 @@ export const processorStyles = {
         'processor_text',
         'Text',
         'Handle plain text files and content',
-        'text-gray-500',
+        'text-midnight-text-muted',
         FileText,
         false
     ),
@@ -85,7 +85,7 @@ export const processorStyles = {
         'processor_stream',
         'Stream',
         'Process streaming data in real-time',
-        'text-purple-500',
+        'text-midnight-accent',
         Binary,
         false,
     ),
@@ -95,7 +95,7 @@ export const processorStyles = {
         'processor_python',
         'Python',
         'Custom Python function for data processing',
-        'text-indigo-500',
+        'text-midnight-accent-bright',
         Code
     ),
 
@@ -103,7 +103,7 @@ export const processorStyles = {
         'processor_transform',
         'Transform',
         'Transform data between different formats and structures',
-        'text-orange-500',
+        'text-midnight-warning-bright',
         Workflow,
         false
     ),
@@ -112,7 +112,7 @@ export const processorStyles = {
         'processor_filter',
         'Filter',
         'Filter and validate data based on conditions',
-        'text-red-500',
+        'text-midnight-danger',
         Filter,
         false,
     ),
@@ -121,7 +121,7 @@ export const processorStyles = {
         'processor_split',
         'Split',
         'Split data into multiple streams',
-        'text-yellow-600',
+        'text-midnight-warning',
         SplitSquareVertical
     ),
 
@@ -129,7 +129,7 @@ export const processorStyles = {
     //     'processor_merge',
     //     'Merge',
     //     'Combine multiple data streams into one',
-    //     'text-blue-600',
+    //     'text-midnight-info',
     //     Combine
     // ),
 
@@ -138,7 +138,7 @@ export const processorStyles = {
         'processor_openai',
         'OpenAI',
         'Process text using OpenAI models',
-        'text-green-600',
+        'text-midnight-success',
         Brain
     ),
 
@@ -146,7 +146,7 @@ export const processorStyles = {
         'processor_openai_vision',
         'OpenAI Vision',
         'Process images using OpenAI models',
-        'text-green-600',
+        'text-midnight-success',
         Image
     ),
 
@@ -154,7 +154,7 @@ export const processorStyles = {
         'processor_openai_audio',
         'OpenAI Audio',
         'Process audio using OpenAI models',
-        'text-green-600',
+        'text-midnight-success',
         Volume2,
         false
     ),
@@ -163,7 +163,7 @@ export const processorStyles = {
         'processor_anthropic',
         'Anthropic',
         'Process text using Anthropic Claude',
-        'text-indigo-600',
+        'text-midnight-accent-bright',
         BrainCircuit
     ),
 
@@ -171,7 +171,7 @@ export const processorStyles = {
         'processor_googleai',
         'Google AI',
         'Process text and images using Google AI',
-        'text-blue-500',
+        'text-midnight-info',
         CloudLightning
     ),
 
@@ -179,7 +179,7 @@ export const processorStyles = {
         'processor_mistral',
         'Mistral AI',
         'Process text using Mistral models',
-        'text-cyan-500',
+        'text-midnight-info-bright',
         Wind,
         false
     ),
@@ -189,7 +189,7 @@ export const processorStyles = {
         'processor_api',
         'API Call',
         'Make external API requests',
-        'text-purple-600',
+        'text-midnight-accent',
         Webhook,
         false
     ),
@@ -198,7 +198,7 @@ export const processorStyles = {
         'processor_notification',
         'Notification',
         'Send notifications through various channels',
-        'text-blue-400',
+        'text-midnight-info-bright',
         MessagesSquare,
         false
     ),
@@ -207,7 +207,7 @@ export const processorStyles = {
         'processor_email',
         'Email',
         'Send and process emails',
-        'text-gray-600',
+        'text-midnight-text-secondary',
         Mail,
         false
 
@@ -217,7 +217,7 @@ export const processorStyles = {
         'processor_schedule',
         'Schedule',
         'Schedule and automate tasks',
-        'text-orange-400',
+        'text-midnight-warning-bright',
         Timer,
         false
 
@@ -227,7 +227,7 @@ export const processorStyles = {
         'processor_state_coalescer',
         'Merge',
         'Create a dot product of two different states, by project mapping them onto each other.',
-        'text-orange-400',
+        'text-midnight-warning-bright',
         Timer,
     ),
 
@@ -235,7 +235,7 @@ export const processorStyles = {
         'processor_state_composite',
         'Combine',
         'Merge two or more state events, given a composite key',
-        'text-orange-400',
+        'text-midnight-warning-bright',
         Combine
     ),
 
@@ -243,7 +243,7 @@ export const processorStyles = {
         'processor_queue',
         'Queue',
         'Manage message queues and async processing',
-        'text-purple-400',
+        'text-midnight-accent',
         Truck,
         false
 
@@ -253,7 +253,7 @@ export const processorStyles = {
         'processor_provider',
         'Provider',
         'Standard interface to any provider within a provider class',
-        'text-purple-400',
+        'text-midnight-accent',
         Filter,
         true
     ),
@@ -262,7 +262,7 @@ export const processorStyles = {
         'processor_trigger',
         'Trigger',
         'Event-based process trigger',
-        'text-yellow-400',
+        'text-midnight-warning',
         Zap,
         false
 
@@ -272,7 +272,7 @@ export const processorStyles = {
         'processor_network',
         'Network',
         'Network-related operations and protocols',
-        'text-blue-300',
+        'text-midnight-info-bright',
         Network,
         false
 

@@ -148,55 +148,52 @@ function DiscourseChannel( ) {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-black text-green-500 font-mono">
+        <div className="flex flex-col h-screen bg-midnight-base text-midnight-success-bright font-mono">
             {/* Header */}
-            <header className="bg-black text-green-500 p-4 border-b border-green-500">
+            <header className="bg-midnight-surface text-midnight-success-bright p-4 border-b border-midnight-success">
                 <div>
                     <h1 className="text-xl">DISCOURSE CHANNEL</h1>
-                    <p>{isid}:{osid}:{sid}:{uid}</p>
+                    <p className="text-midnight-text-muted">{isid}:{osid}:{sid}:{uid}</p>
                 </div>
             </header>
 
             {/* Chat Content */}
             <div
-                className="flex flex-col flex-grow p-4 overflow-auto bg-black border border-green-500"
+                className="flex flex-col flex-grow p-4 overflow-auto bg-midnight-base border border-midnight-success/50"
             >
-                <div className="mb-4">***** MESSAGES *****</div>
+                <div className="mb-4 text-midnight-success">***** MESSAGES *****</div>
                 <div ref={chatContentRef}>
                     {messages.map((message, index) => (
                         <div key={index} className="mb-4">
-                            <div>MESSAGE {index}</div>
+                            <div className="text-midnight-text-muted">MESSAGE {index}</div>
                             <div
-                                className="whitespace-pre-wrap break-words bg-blend-darken text-green-300 p-2 border border-green-500">
-                                <div className="font-bold">{message['user']}: </div>
-                                {/*{message['user']}: {message['content']}*/}
+                                className="whitespace-pre-wrap break-words text-midnight-success-bright p-2 border border-midnight-success/50 bg-midnight-elevated/50">
+                                <div className="font-bold text-midnight-accent-bright">{message['user']}: </div>
                                 <div dangerouslySetInnerHTML={{__html: message['content']}}/>
                             </div>
                         </div>
                     ))}
 
-                    <div className="mt-4 mb-2">***** CURRENT *****</div>
-                    <div
-                        // className="whitespace-pre-wrap break-words bg-blend-darken text-green-100 p-2 border border-green-500 min-h-[100px] max-h-[300px] overflow-y-auto"
-                    >
+                    <div className="mt-4 mb-2 text-midnight-success">***** CURRENT *****</div>
+                    <div>
                         <div ref={messageRef2}><div dangerouslySetInnerHTML={{ __html: message }} /></div>
                     </div>
                 </div>
             </div>
 
             {/* Footer */}
-            <footer className="bg-black p-4 border-t border-green-500">
+            <footer className="bg-midnight-surface p-4 border-t border-midnight-success">
                 <form onSubmit={sendMessage} className="flex">
                     <input
                         type="text"
                         value={messageText}
                         onChange={(e) => setMessageText(e.target.value)}
-                        className="flex-grow p-2 bg-green-950 text-green-100 border border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                        className="flex-grow p-2 bg-midnight-elevated text-midnight-text-body border border-midnight-success/50 focus:outline-none focus:ring-1 focus:ring-midnight-success focus:border-midnight-success"
                         placeholder="Type a message..."
                     />
                     <button
                         type="submit"
-                        className="px-4 py-2 bg-green-500 text-black border border-green-500 hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500"
+                        className="px-4 py-2 bg-midnight-success text-midnight-base border border-midnight-success hover:bg-midnight-success-bright focus:outline-none focus:ring-1 focus:ring-midnight-success transition-colors"
                     >
                         SEND
                     </button>

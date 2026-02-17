@@ -19,10 +19,10 @@ const options = [
 
 function ProcessorNodeMistral({ id, data }) {
     return (
-        <div className="text-xs w-48 bg-gray-100 text-white shadow-lg rounded-sm border-2">
+        <div className="text-xs w-48 bg-midnight-surface text-midnight-text-body shadow-midnight-glow-sm rounded-sm border-2 border-midnight-border">
             <div className="flex-auto">
-                <div className="p-1.5 bg-sky-500 text-white font-bold">Processor (Mistral)</div>
-                <div className="p-1.5 text-black font-light">{data.label}</div>
+                <div className="p-1.5 bg-midnight-info text-white font-bold">Processor (Mistral)</div>
+                <div className="p-1.5 text-midnight-text-secondary font-light">{data.label}</div>
             </div>
 
             <Handle id="target-1" type="target" position={Position.Top} className="w-2 rounded-none"/>

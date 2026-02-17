@@ -9,9 +9,15 @@ export const TerminalFooter = ({
     const theme = useStore(state => state.getCurrentTheme());
 
     return (
-        <footer className={`h-8 px-4 flex items-center justify-between border-t ${theme.border} ${className}`}>
-            <span className={theme.textMuted}>{leftContent}</span>
-            <span className={theme.textMuted}>{rightContent}</span>
+        <footer className={`
+            h-9 px-6 flex items-center justify-between
+            bg-midnight-surface/90 backdrop-blur-sm
+            border-t border-midnight-border
+            text-xs font-mono
+            ${className}
+        `}>
+            <span className="text-midnight-text-subdued">{leftContent}</span>
+            <span className="text-midnight-text-subdued">{rightContent}</span>
         </footer>
     );
 };

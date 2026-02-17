@@ -211,7 +211,7 @@ const Layout = () => {
 
                         <span><TerminalUsageReport /></span>
                         <span className="ml-4">v2.0 ALPHA</span>
-                        <AlarmSmokeIcon className={`ml-4 w-5 h-5 ${errors?.length > 0 ? "bg-yellow-200 text-red-600": ""} ${theme.icon}`} onClick={() => setIsErrorsDialogOpen(true)} />
+                        <AlarmSmokeIcon className={`ml-4 w-5 h-5 ${errors?.length > 0 ? "bg-midnight-warning/30 text-midnight-danger-bright": ""} ${theme.icon}`} onClick={() => setIsErrorsDialogOpen(true)} />
                         <span className="ml-2">{errors?.length}</span>
                     </div>
                 }

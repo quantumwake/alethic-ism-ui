@@ -72,7 +72,7 @@ const TerminalTabView = ({
                         <span>{tab.label}</span>
                         {tab.closeable && (
                             <X
-                                className="w-4 h-4 opacity-0 group-hover:opacity-100 hover:text-red-500 transition-opacity"
+                                className="w-4 h-4 opacity-0 group-hover:opacity-100 hover:text-midnight-danger transition-opacity"
                                 onClick={(e) => handleTabClose(e, index)}
                             />
                         )}

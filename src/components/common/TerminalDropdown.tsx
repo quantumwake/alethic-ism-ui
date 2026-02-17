@@ -97,18 +97,15 @@ const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
     }, [setExternalValue, setValue]);
 
     const sizes: Record<string, string> = {
-        small: 'px-2 py-0.5 text-xs',
-        default: 'px-3 py-1 text-sm',
-        large: 'px-4 py-2 text-base'
+        small: 'px-3 py-1.5 text-xs',
+        default: 'px-4 py-2.5 text-sm',
+        large: 'px-5 py-3 text-base'
     };
 
     const handleSelect = (value: DropdownValue) => {
         setSelected(value);
         onSelect?.(value);
     };
-
-    const baseButtonStyle = `inline-flex items-center justify-between w-full font-mono rounded-none border ${theme.border} transition-colors duration-150 ${sizes[size]}`;
-    const baseOptionStyle = 'cursor-pointer transition-colors duration-150 w-full';
 
     return (
         <div className={`relative ${className}`}>
@@ -121,36 +118,47 @@ const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
                     <>
                         <ListboxButton
                             ref={buttonRef}
-                            className={`${baseButtonStyle} ${disabled ? theme.button.disabled : theme.button.primary}`}
+                            className={`
+                                inline-flex items-center justify-between w-full
+                                border border-midnight-border
+                                bg-midnight-surface hover:bg-midnight-elevated hover:border-midnight-border-glow
+                                text-midnight-text-body
+                                transition-all duration-200
+                                focus:outline-none focus:ring-2 focus:ring-midnight-accent/50 focus:border-midnight-accent
+                                disabled:opacity-50 disabled:cursor-not-allowed
+                                ${sizes[size]}
+                            `}
                         >
                             <span className="block truncate">
                                 {selected?.label || placeholder}
                             </span>
-                            <ChevronUpDownIcon className="w-4 h-4 ml-2" aria-hidden="true" />
+                            <ChevronUpDownIcon className="w-4 h-4 ml-2 text-midnight-text-muted" aria-hidden="true" />
                         </ListboxButton>
 
                         {open && (
                             <ListboxOptions
                                 static
                                 style={calculatePosition()}
-                                className={`
-                                    z-50 fixed mt-1 overflow-auto border
-                                    max-h-60 ${theme.bg} ${theme.border} ${theme.font} ${theme.text}
-                                `}
+                                className="
+                                    z-50 fixed mt-1 overflow-auto
+                                    max-h-60
+                                    bg-midnight-surface border border-midnight-border
+                                    shadow-[0_8px_24px_rgba(0,0,0,0.4)]
+                                "
                             >
                                 {allowEmpty && (
                                     <ListboxOption
                                         key="empty"
                                         value={{ id: null, label: placeholder }}
                                         className={({ active, selected }) => `
-                                            ${baseOptionStyle}
-                                            ${active ? theme.button.primary : theme.bg}
-                                            ${selected ? theme.button.primary : ''}
+                                            cursor-pointer transition-colors duration-150
+                                            ${active ? 'bg-midnight-elevated text-midnight-accent-bright' : 'text-midnight-text-muted'}
+                                            ${selected ? 'bg-midnight-accent/20' : ''}
                                             ${sizes[size]}
                                         `}
                                     >
                                         {({ selected }) => (
-                                            <span className={`block truncate ${selected ? 'font-extrabold' : ''}`}>
+                                            <span className={`block truncate ${selected ? 'font-semibold' : ''}`}>
                                                 {placeholder}
                                             </span>
                                         )}
@@ -162,14 +170,14 @@ const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
                                         key={item.id}
                                         value={item}
                                         className={({ active, selected }) => `
-                                            ${baseOptionStyle}
-                                            ${active ? theme.button.primary : theme.bg}
-                                            ${selected ? theme.button.primary : ''}
+                                            cursor-pointer transition-colors duration-150
+                                            ${active ? 'bg-midnight-elevated text-midnight-accent-bright' : 'text-midnight-text-body'}
+                                            ${selected ? 'bg-midnight-accent/20 text-midnight-accent-bright' : ''}
                                             ${sizes[size]}
                                         `}
                                     >
                                         {({ selected }) => (
-                                            <span className={`block truncate ${selected ? 'font-extrabold' : ''}`}>
+                                            <span className={`block truncate ${selected ? 'font-semibold' : ''}`}>
                                                 {item.label}
                                             </span>
                                         )}

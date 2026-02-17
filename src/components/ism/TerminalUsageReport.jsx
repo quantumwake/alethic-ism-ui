@@ -18,12 +18,12 @@ function TerminalUsageReportCard({period, pct_tokens_used, pct_cost_used, cost_u
     const theme = getCurrentTheme()
 
     const getUsageClass = (value) => {
-        if (value === null || value === undefined) return 'text-gray-400'
-        if (value >= 95) return 'text-red-600 font-bold'
-        if (value >= 90) return 'text-red-500'
-        if (value >= 75) return 'text-yellow-500'
-        if (value >= 50) return 'text-green-500'
-        return 'text-green-400'
+        if (value === null || value === undefined) return 'text-midnight-text-muted'
+        if (value >= 95) return 'text-midnight-danger-bright font-bold'
+        if (value >= 90) return 'text-midnight-danger'
+        if (value >= 75) return 'text-midnight-warning'
+        if (value >= 50) return 'text-midnight-success'
+        return 'text-midnight-success-bright'
     }
 
     return (
@@ -118,21 +118,21 @@ function TerminalUsageReport() {
         )
 
         if (maxPct > 95) {
-            return 'text-red-600 font-bold animate-pulse-fast'
+            return 'text-midnight-danger-bright font-bold animate-pulse-fast'
         } else if (maxPct >= 90) {
-            return 'text-red-500 font-bold'
+            return 'text-midnight-danger font-bold'
         } else if (maxPct >= 75) {
-            return 'text-yellow-500'
+            return 'text-midnight-warning'
         } else if (maxPct >= 50) {
-            return 'text-green-500'
+            return 'text-midnight-success'
         } else if (maxPct >= 40) {
-            return 'text-green-400'
+            return 'text-midnight-success-bright'
         } else if (maxPct >= 20) {
-            return 'text-green-300'
+            return 'text-midnight-success-bright/80'
         } else if (maxPct >= 10) {
-            return 'text-green-200'
+            return 'text-midnight-success-bright/60'
         } else {
-            return 'text-white'
+            return 'text-midnight-text-primary'
         }
     }
 
@@ -182,13 +182,13 @@ function TerminalUsageReport() {
                         <TerminalUsageReportCard period="project" pct_tokens_used={userUsageReport?.pct_year_tokens_used}
                                                  pct_cost_used={projectUsageReport?.pct_year_cost_used}
                                                  cost_used={projectUsageReport?.cur_year_total_cost}
-                                                 className="!border-blue-500" />
+                                                 className="!border-midnight-info" />
 
                     </div>
                 </div>
             }>
                 <span className="mr-10 cursor-pointer">
-                    <span className="text-white">[{tierDisplay}]</span>
+                    <span className="text-midnight-text-primary">[{tierDisplay}]</span>
                     {' '}
 
                     <span className={getMetricStyle(userUsageReport?.pct_minute_tokens_used, userUsageReport?.pct_minute_cost_used)}>

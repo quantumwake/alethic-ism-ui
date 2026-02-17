@@ -178,12 +178,12 @@ const CustomStudioEdge = ({
                         }}
                         className="nodrag nopan text-xs"
                     >
-                        <div className="flex flex-row items-center gap-1 p-1 rounded-md bg-midnight-surface/90 backdrop-blur-sm border border-midnight-border shadow-lg">
+                        <div className="flex flex-row items-center gap-1 p-1  bg-midnight-surface/90 backdrop-blur-sm border border-midnight-border shadow-lg">
                             {/* Play button - only for playable edges */}
                             {edgeType === 'state_auto_stream_playable_edge' && (
                                 <button
                                     onClick={handlePlay}
-                                    className="p-1.5 rounded-md bg-green-900/30 text-green-400 hover:bg-green-600 hover:text-white transition-colors"
+                                    className="p-1.5  bg-green-900/30 text-green-400 hover:bg-green-600 hover:text-white transition-colors"
                                     title="Execute Route"
                                 >
                                     <Play className="w-3.5 h-3.5" />
@@ -193,7 +193,7 @@ const CustomStudioEdge = ({
                             {/* Filter button */}
                             <button
                                 onClick={() => setIsFilterDialogOpen(true)}
-                                className="p-1.5 rounded-md bg-blue-900/30 text-blue-400 hover:bg-blue-600 hover:text-white transition-colors"
+                                className="p-1.5  bg-blue-900/30 text-blue-400 hover:bg-blue-600 hover:text-white transition-colors"
                                 title="Filter Data"
                             >
                                 <Filter className="w-3.5 h-3.5" />
@@ -202,7 +202,7 @@ const CustomStudioEdge = ({
                             {/* Settings/Bolt button */}
                             <button
                                 onClick={handleSettings}
-                                className="p-1.5 rounded-md bg-purple-900/30 text-purple-400 hover:bg-purple-600 hover:text-white transition-colors"
+                                className="p-1.5  bg-purple-900/30 text-purple-400 hover:bg-purple-600 hover:text-white transition-colors"
                                 title="Edge Settings"
                             >
                                 <Zap className="w-3.5 h-3.5" />
@@ -210,14 +210,14 @@ const CustomStudioEdge = ({
 
                             {/* Syslog button */}
                             <TerminalSyslog
-                                buttonClass="p-1.5 rounded-md bg-amber-900/30 text-amber-400 hover:bg-amber-600 hover:text-white transition-colors"
+                                buttonClass="p-1.5  bg-amber-900/30 text-amber-400 hover:bg-amber-600 hover:text-white transition-colors"
                                 routeId={id}
                             />
 
                             {/* Delete button */}
                             <button
                                 onClick={handleDelete}
-                                className="p-1.5 rounded-md bg-red-900/30 text-red-400 hover:bg-red-600 hover:text-white transition-colors"
+                                className="p-1.5  bg-red-900/30 text-red-400 hover:bg-red-600 hover:text-white transition-colors"
                                 title="Delete Edge"
                             >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -262,12 +262,12 @@ const NodeToolbar = ({ nodeId, nodeType, actions = {} }) => {
     const isStateNode = nodeType === 'state';
 
     return (
-        <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1 bg-midnight-surface/95 backdrop-blur-sm border border-midnight-border rounded-md shadow-lg z-10">
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1 bg-midnight-surface/95 backdrop-blur-sm border border-midnight-border  shadow-lg z-10">
             {/* State-specific actions */}
             {isStateNode && onView && (
                 <button
                     onClick={(e) => { e.stopPropagation(); onView(); }}
-                    className="p-1.5 rounded bg-green-900/30 text-green-400 hover:bg-green-600 hover:text-white transition-colors"
+                    className="p-1.5  bg-green-900/30 text-green-400 hover:bg-green-600 hover:text-white transition-colors"
                     title="View Data"
                 >
                     <Eye className="w-3.5 h-3.5" />
@@ -277,7 +277,7 @@ const NodeToolbar = ({ nodeId, nodeType, actions = {} }) => {
             {isStateNode && onExport && (
                 <button
                     onClick={(e) => { e.stopPropagation(); onExport(); }}
-                    className="p-1.5 rounded bg-cyan-900/30 text-cyan-400 hover:bg-cyan-600 hover:text-white transition-colors"
+                    className="p-1.5  bg-cyan-900/30 text-cyan-400 hover:bg-cyan-600 hover:text-white transition-colors"
                     title="Export Data"
                 >
                     <Download className="w-3.5 h-3.5" />
@@ -287,7 +287,7 @@ const NodeToolbar = ({ nodeId, nodeType, actions = {} }) => {
             {isStateNode && onImport && (
                 <button
                     onClick={(e) => { e.stopPropagation(); onImport(); }}
-                    className="p-1.5 rounded bg-amber-900/30 text-amber-400 hover:bg-amber-600 hover:text-white transition-colors"
+                    className="p-1.5  bg-amber-900/30 text-amber-400 hover:bg-amber-600 hover:text-white transition-colors"
                     title="Import Data"
                 >
                     <Upload className="w-3.5 h-3.5" />
@@ -297,7 +297,7 @@ const NodeToolbar = ({ nodeId, nodeType, actions = {} }) => {
             {isStateNode && onImportHg && (
                 <button
                     onClick={(e) => { e.stopPropagation(); onImportHg(); }}
-                    className="p-1.5 rounded bg-purple-900/30 text-purple-400 hover:bg-purple-600 hover:text-white transition-colors"
+                    className="p-1.5  bg-purple-900/30 text-purple-400 hover:bg-purple-600 hover:text-white transition-colors"
                     title="Import from HuggingFace"
                 >
                     <Cloud className="w-3.5 h-3.5" />
@@ -307,7 +307,7 @@ const NodeToolbar = ({ nodeId, nodeType, actions = {} }) => {
             {isStateNode && onPurge && (
                 <button
                     onClick={(e) => { e.stopPropagation(); onPurge(); }}
-                    className="p-1.5 rounded bg-orange-900/30 text-orange-400 hover:bg-orange-600 hover:text-white transition-colors"
+                    className="p-1.5  bg-orange-900/30 text-orange-400 hover:bg-orange-600 hover:text-white transition-colors"
                     title="Purge Data"
                 >
                     <Eraser className="w-3.5 h-3.5" />
@@ -318,7 +318,7 @@ const NodeToolbar = ({ nodeId, nodeType, actions = {} }) => {
             {onSettings && (
                 <button
                     onClick={(e) => { e.stopPropagation(); onSettings(); }}
-                    className="p-1.5 rounded bg-blue-900/30 text-blue-400 hover:bg-blue-600 hover:text-white transition-colors"
+                    className="p-1.5  bg-blue-900/30 text-blue-400 hover:bg-blue-600 hover:text-white transition-colors"
                     title="Node Settings"
                 >
                     <Settings className="w-3.5 h-3.5" />
@@ -328,7 +328,7 @@ const NodeToolbar = ({ nodeId, nodeType, actions = {} }) => {
             {onDelete && (
                 <button
                     onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                    className="p-1.5 rounded bg-red-900/30 text-red-400 hover:bg-red-600 hover:text-white transition-colors"
+                    className="p-1.5  bg-red-900/30 text-red-400 hover:bg-red-600 hover:text-white transition-colors"
                     title="Delete Node"
                 >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -387,7 +387,11 @@ const NODE_SIZE = 'w-52 min-h-[100px]';
 
 const StateNodeComponent = ({ id, data, selected }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const { deleteNode, setSelectedNodeId, purgeStateData, getNodeData, fetchState } = useStore();
+    const { deleteNode, setSelectedNodeId, purgeStateData, getNodeData, fetchState, setNodeVisualCollapsed } = useStore();
+
+    // Get collapsed state from store
+    const isCollapsed = useStore(state => state.isNodeVisuallyCollapsed(id));
+    const setIsCollapsed = (collapsed) => setNodeVisualCollapsed(id, collapsed);
 
     // Fetch state data on mount
     useEffect(() => {
@@ -436,11 +440,48 @@ const StateNodeComponent = ({ id, data, selected }) => {
         onPurge: () => toggleDialog('purgeConfirm')
     };
 
+    // Collapsed view
+    if (isCollapsed) {
+        return (
+            <>
+                <div
+                    className={`
+                        w-10 h-10 relative flex items-center justify-center cursor-pointer
+                        bg-midnight-success/30 border-2 border-midnight-success/50
+                        hover:border-midnight-success-bright hover:bg-midnight-success/50
+                        ${selected ? 'border-midnight-success-bright shadow-midnight-success' : ''}
+                        transition-all duration-200
+                    `}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    onClick={() => setIsCollapsed(false)}
+                    onDoubleClick={handleDoubleClick}
+                    title={`${configName || stateType}${rowCount ? ` (${rowCount} rows)` : ''}\nClick to expand`}
+                >
+                    {renderHandles('#10b981')}
+                    <Database className="w-5 h-5 text-midnight-success-bright" />
+                </div>
+
+                {/* Dialogs still available in collapsed state */}
+                <TerminalStateDataTable isOpen={dialogs.view} onClose={() => toggleDialog('view')} nodeId={id} />
+                <TerminalStateUploadDialog isOpen={dialogs.upload} setIsOpen={() => toggleDialog('upload')} nodeId={id} />
+                <TerminalDialogConfirmation
+                    isOpen={dialogs.deleteConfirm}
+                    onAccept={() => { deleteNode(id); toggleDialog('deleteConfirm'); }}
+                    onCancel={() => toggleDialog('deleteConfirm')}
+                    onClose={() => toggleDialog('deleteConfirm')}
+                    title="Delete State"
+                    content="Are you sure you wish to delete this state entirely?"
+                />
+            </>
+        );
+    }
+
     return (
         <>
             <div
                 className={`
-                    ${NODE_SIZE} px-3 py-2 rounded-lg relative
+                    ${NODE_SIZE} px-3 py-2  relative
                     bg-gradient-to-br from-midnight-success/30 via-midnight-elevated to-midnight-surface
                     border-2 ${selected ? 'border-midnight-success-bright shadow-midnight-success' : 'border-midnight-border'}
                     transition-all duration-200
@@ -461,6 +502,13 @@ const StateNodeComponent = ({ id, data, selected }) => {
                     <span className="text-midnight-success-bright font-semibold text-xs uppercase tracking-wide truncate">
                         {stateType}
                     </span>
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setIsCollapsed(true); }}
+                        className="ml-auto p-1 hover:bg-midnight-success/30 text-midnight-text-subdued hover:text-midnight-success-bright transition-colors"
+                        title="Collapse"
+                    >
+                        <span className="text-xs">−</span>
+                    </button>
                 </div>
 
                 {/* Content */}
@@ -527,9 +575,12 @@ const StateNodeComponent = ({ id, data, selected }) => {
 
 const ProcessorNodeComponent = ({ id, data, selected }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false); // Default expanded, manually collapse
-    const { deleteNode, setSelectedNodeId, fetchProcessor, getNodeData, getProviderById } = useStore();
+    const { deleteNode, setSelectedNodeId, fetchProcessor, getNodeData, getProviderById, isNodeVisuallyCollapsed, setNodeVisualCollapsed } = useStore();
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+    // Get collapsed state from store
+    const isCollapsed = useStore(state => state.isNodeVisuallyCollapsed(id));
+    const setIsCollapsed = (collapsed) => setNodeVisualCollapsed(id, collapsed);
 
     // Fetch processor data on mount
     useEffect(() => {
@@ -575,10 +626,10 @@ const ProcessorNodeComponent = ({ id, data, selected }) => {
             <>
                 <div
                     className={`
-                        w-10 h-10 rounded-lg relative flex items-center justify-center cursor-pointer
-                        bg-midnight-info/30 border-2 border-midnight-info/50
-                        hover:border-midnight-info-bright hover:bg-midnight-info/50
-                        ${selected ? 'border-midnight-info-bright shadow-midnight-info' : ''}
+                        w-10 h-10  relative flex items-center justify-center cursor-pointer
+                        bg-midnight-warning/30 border-2 border-midnight-warning/50
+                        hover:border-midnight-warning-bright hover:bg-midnight-warning/50
+                        ${selected ? 'border-midnight-warning-bright shadow-[0_0_15px_rgba(245,158,11,0.4)]' : ''}
                         transition-all duration-200
                     `}
                     onMouseEnter={() => setIsHovered(true)}
@@ -586,8 +637,8 @@ const ProcessorNodeComponent = ({ id, data, selected }) => {
                     onClick={() => setIsCollapsed(false)}
                     title={`${getDisplayType()}${providerName ? `: ${providerName}` : ''}\nClick to expand`}
                 >
-                    {renderHandles('#3b82f6')}
-                    <Cpu className="w-5 h-5 text-midnight-info-bright" />
+                    {renderHandles('#f59e0b')}
+                    <Cpu className="w-5 h-5 text-midnight-warning-bright" />
                 </div>
 
                 <TerminalDialogConfirmation
@@ -607,9 +658,9 @@ const ProcessorNodeComponent = ({ id, data, selected }) => {
         <>
             <div
                 className={`
-                    ${NODE_SIZE} px-3 py-2 rounded-lg relative
-                    bg-gradient-to-br from-midnight-info/30 via-midnight-elevated to-midnight-surface
-                    border-2 ${selected ? 'border-midnight-info-bright shadow-midnight-info' : 'border-midnight-border'}
+                    ${NODE_SIZE} px-3 py-2  relative
+                    bg-gradient-to-br from-midnight-warning/30 via-midnight-elevated to-midnight-surface
+                    border-2 ${selected ? 'border-midnight-warning-bright shadow-[0_0_15px_rgba(245,158,11,0.4)]' : 'border-midnight-border'}
                     transition-all duration-200
                 `}
                 onMouseEnter={() => setIsHovered(true)}
@@ -619,17 +670,17 @@ const ProcessorNodeComponent = ({ id, data, selected }) => {
                     <NodeToolbar nodeId={id} nodeType="processor" actions={toolbarActions} />
                 )}
 
-                {renderHandles('#3b82f6')}
+                {renderHandles('#f59e0b')}
 
                 {/* Header */}
                 <div className="flex items-center gap-2 border-b border-midnight-border/50 pb-2 mb-2">
-                    <Cpu className="w-4 h-4 text-midnight-info-bright flex-shrink-0" />
-                    <span className="text-midnight-info-bright font-semibold text-xs uppercase tracking-wide truncate">
+                    <Cpu className="w-4 h-4 text-midnight-warning-bright flex-shrink-0" />
+                    <span className="text-midnight-warning-bright font-semibold text-xs uppercase tracking-wide truncate">
                         {getDisplayType()}
                     </span>
                     <button
                         onClick={(e) => { e.stopPropagation(); setIsCollapsed(true); }}
-                        className="ml-auto p-1 rounded hover:bg-midnight-info/30 text-midnight-text-subdued hover:text-midnight-info-bright transition-colors"
+                        className="ml-auto p-1  hover:bg-midnight-warning/30 text-midnight-text-subdued hover:text-midnight-warning-bright transition-colors"
                         title="Collapse"
                     >
                         <span className="text-xs">−</span>
@@ -644,7 +695,7 @@ const ProcessorNodeComponent = ({ id, data, selected }) => {
                         </div>
                     )}
                     {providerClass && (
-                        <div className="text-xs text-midnight-info-bright truncate" title={providerClass}>
+                        <div className="text-xs text-midnight-warning-bright truncate" title={providerClass}>
                             {providerClass}
                         </div>
                     )}
@@ -694,7 +745,7 @@ const TransformNodeComponent = ({ id, data, selected }) => {
         <>
             <div
                 className={`
-                    ${NODE_SIZE} px-3 py-2 rounded-lg relative
+                    ${NODE_SIZE} px-3 py-2  relative
                     bg-gradient-to-br from-midnight-accent/30 via-midnight-elevated to-midnight-surface
                     border-2 ${selected ? 'border-midnight-accent-bright shadow-midnight-glow' : 'border-midnight-border'}
                     transition-all duration-200
@@ -768,7 +819,7 @@ const FunctionNodeComponent = ({ id, data, selected }) => {
         <>
             <div
                 className={`
-                    ${NODE_SIZE} px-3 py-2 rounded-lg relative
+                    ${NODE_SIZE} px-3 py-2  relative
                     bg-gradient-to-br from-midnight-warning/30 via-midnight-elevated to-midnight-surface
                     border-2 ${selected ? 'border-midnight-warning-bright shadow-midnight-glow' : 'border-midnight-border'}
                     transition-all duration-200
@@ -922,7 +973,7 @@ const CustomStudioInner = () => {
     };
 
     return (
-        <div className="flex h-full w-full bg-midnight-base">
+        <div className="flex h-full w-full" style={{ backgroundColor: '#0e0e10' }}>
             <div className="flex-1 relative">
                 {/* Toolbar */}
                 <div className="z-50 absolute top-3 right-3 flex gap-2">

@@ -132,7 +132,7 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
             {hasChildren ? (
                 <button
                     onClick={() => toggleNodeCollapse(nodeId)}
-                    className={`p-1 min-w-[3rem] h-5 flex items-center justify-center rounded-sm ${isCollapsed ? 'bg-purple-600 bg-opacity-60 text-white' : 'bg-purple-900 bg-opacity-20 text-white text-opacity-40'} hover:bg-purple-600 hover:bg-opacity-100 hover:text-white`}
+                    className={`p-1 min-w-[3rem] h-5 flex items-center justify-center rounded-md transition-colors ${isCollapsed ? 'bg-midnight-success/60 text-white' : 'bg-midnight-success/20 text-midnight-text-muted'} hover:bg-midnight-success hover:text-white`}
                     title={isCollapsed ? `Expand (${descendantCount} hidden)` : 'Collapse'}>
                     {isCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                     {isCollapsed && descendantCount > 0 && (
@@ -150,7 +150,7 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
         <div className={`flex flex-col ${theme.text}`}>
             <div className="p-2">
                 <div>{nodeData?.config?.name}</div>
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-midnight-text-subdued">
                     {nodeData?.count ? `${nodeData.count} rows` : 'Empty - double-click to upload'}
                 </div>
             </div>

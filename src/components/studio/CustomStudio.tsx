@@ -108,7 +108,7 @@ const DefaultNode: React.FC<{ data: any; selected: boolean }> = ({ data, selecte
         height: 12,
         borderRadius: '50%',
         border: '2px solid #8b5cf6',
-        backgroundColor: '#0f0f18',
+        backgroundColor: '#262640',
     };
 
     return (
@@ -214,14 +214,14 @@ const Toolbar: React.FC<ToolbarProps> = ({
     hasSelection,
 }) => {
     const buttonClass = `
-        p-2 rounded-md transition-all duration-200
+        p-2  transition-all duration-200
         bg-midnight-surface hover:bg-midnight-elevated
         border border-midnight-border hover:border-midnight-border-glow
         text-midnight-text-body hover:text-midnight-accent-bright
     `;
 
     const activeClass = `
-        p-2 rounded-md transition-all duration-200
+        p-2  transition-all duration-200
         bg-midnight-info/20 hover:bg-midnight-info/30
         border border-midnight-info hover:border-midnight-info-bright
         text-midnight-info-bright
@@ -229,8 +229,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
     return (
         <div className={`
-            flex items-center gap-1 p-2 rounded-lg
-            bg-midnight-surface/90 backdrop-blur-sm
+            flex items-center gap-1 p-2             bg-midnight-surface/90 backdrop-blur-sm
             border border-midnight-border shadow-midnight-glow-sm
         `}>
             <button onClick={onAddNode} className={buttonClass} title="Add Node">
@@ -503,7 +502,7 @@ const CustomStudio: React.FC<CustomStudioProps> = ({
     return (
         <div
             className={`w-full h-full bg-midnight-base ${className}`}
-            style={style}
+            style={{ ...style, backgroundColor: '#0e0e10' }}
         >
             <ReactFlow
                 nodes={nodes}
@@ -535,8 +534,8 @@ const CustomStudio: React.FC<CustomStudioProps> = ({
                     <Background
                         variant={backgroundVariant}
                         gap={backgroundGap}
-                        color="rgba(139, 92, 246, 0.15)"
-                        size={1}
+                        color="rgba(255, 255, 255, 0.15)"
+                        size={1.5}
                     />
                 )}
 
@@ -544,11 +543,11 @@ const CustomStudio: React.FC<CustomStudioProps> = ({
 
                 {showMiniMap && (
                     <MiniMap
-                        nodeColor={() => '#8b5cf6'}
-                        maskColor="rgba(8, 8, 12, 0.8)"
+                        nodeColor={() => '#60a5fa'}
+                        maskColor="rgba(14, 14, 16, 0.9)"
                         style={{
-                            backgroundColor: '#0f0f18',
-                            border: '1px solid #2a2a45',
+                            backgroundColor: '#161618',
+                            border: '1px solid #333338',
                         }}
                     />
                 )}
