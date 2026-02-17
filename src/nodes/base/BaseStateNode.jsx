@@ -30,6 +30,7 @@ import {TerminalDialogConfirmation, TerminalHoverMenu, TerminalInfoButton} from 
 import TerminalStateUploadDialog from "../../components/ism/TerminalStateUploadDialog";
 import TerminalStateDataTable from "../../components/ism/TerminalStateDataTable";
 import TerminalStateImportHgDialog from "../../components/ism/TerminalStateImportHgDialog";
+import TerminalStateExportHgDialog from "../../components/ism/TerminalStateExportHgDialog";
 import TerminalStateExportDialog from "../../components/ism/TerminalStateExportDialog";
 
 function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalContent }) {
@@ -92,16 +93,15 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
                     title: 'Import from sheet'
                 },
                 {
-                    icon: CloudUploadIcon,
+                    icon: CloudDownloadIcon,
                     onClick: () => toggleDialog('hgImport'),
-                    title: 'Import from huggingface'
+                    title: 'Import from HuggingFace'
                 },
-                // {
-                //     icon: CloudDownloadIcon,
-                //     onClick: () => toggleDialog('hgImport'),
-                //     className: theme.buttonAccent,
-                //     title: 'HuggingFace Dataset Export'
-                // },
+                {
+                    icon: CloudUploadIcon,
+                    onClick: () => toggleDialog('hgExport'),
+                    title: 'Export to HuggingFace'
+                },
             ]
         },
         {
@@ -234,6 +234,12 @@ function BaseStateNode({ nodeId, renderAdditionalControls, renderAdditionalConte
                 setIsOpen={(open) => toggleDialog('hgImport')}
                 stateId={nodeId}>
             </TerminalStateImportHgDialog>
+
+            <TerminalStateExportHgDialog
+                isOpen={dialogs.hgExport}
+                setIsOpen={(open) => toggleDialog('hgExport')}
+                stateId={nodeId}>
+            </TerminalStateExportHgDialog>
 
             <TerminalStateDataTable
                 isOpen={dialogs.view}

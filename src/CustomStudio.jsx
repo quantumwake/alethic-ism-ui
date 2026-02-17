@@ -23,7 +23,8 @@ import {
     Upload,
     Download,
     Eraser,
-    Cloud
+    CloudDownload,
+    CloudUpload
 } from 'lucide-react';
 import { TerminalButton, TerminalDialogConfirmation } from "./components/common";
 import TerminalStreamDebug from "./components/ism/TerminalStreamDebug";
@@ -33,6 +34,7 @@ import TerminalStateDataTable from "./components/ism/TerminalStateDataTable";
 import TerminalStateUploadDialog from "./components/ism/TerminalStateUploadDialog";
 import TerminalStateExportDialog from "./components/ism/TerminalStateExportDialog";
 import TerminalStateImportHgDialog from "./components/ism/TerminalStateImportHgDialog";
+import TerminalStateExportHgDialog from "./components/ism/TerminalStateExportHgDialog";
 
 // ============================================================================
 // Custom Edge Component with Hover Toolbar
@@ -256,6 +258,7 @@ const NodeToolbar = ({ nodeId, nodeType, actions = {} }) => {
         onExport,
         onImport,
         onImportHg,
+        onExportHg,
         onPurge
     } = actions;
 
@@ -300,7 +303,17 @@ const NodeToolbar = ({ nodeId, nodeType, actions = {} }) => {
                     className="p-1.5  bg-purple-900/30 text-purple-400 hover:bg-purple-600 hover:text-white transition-colors"
                     title="Import from HuggingFace"
                 >
-                    <Cloud className="w-3.5 h-3.5" />
+                    <CloudDownload className="w-3.5 h-3.5" />
+                </button>
+            )}
+
+            {isStateNode && onExportHg && (
+                <button
+                    onClick={(e) => { e.stopPropagation(); onExportHg(); }}
+                    className="p-1.5  bg-indigo-900/30 text-indigo-400 hover:bg-indigo-600 hover:text-white transition-colors"
+                    title="Export to HuggingFace"
+                >
+                    <CloudUpload className="w-3.5 h-3.5" />
                 </button>
             )}
 
@@ -387,7 +400,7 @@ const NODE_SIZE = 'w-52 min-h-[100px]';
 
 const StateNodeComponent = ({ id, data, selected }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const { deleteNode, setSelectedNodeId, purgeStateData, getNodeData, fetchState, setNodeVisualCollapsed } = useStore();
+    const { deleteState, setSelectedNodeId, purgeStateData, getNodeData, fetchState, setNodeVisualCollapsed } = useStore();
 
     // Get collapsed state from store
     const isCollapsed = useStore(state => state.isNodeVisuallyCollapsed(id));
@@ -409,6 +422,7 @@ const StateNodeComponent = ({ id, data, selected }) => {
         upload: false,
         export: false,
         hgImport: false,
+        hgExport: false,
         purgeConfirm: false,
         deleteConfirm: false
     });
@@ -437,6 +451,7 @@ const StateNodeComponent = ({ id, data, selected }) => {
         onExport: () => toggleDialog('export'),
         onImport: () => toggleDialog('upload'),
         onImportHg: () => toggleDialog('hgImport'),
+        onExportHg: () => toggleDialog('hgExport'),
         onPurge: () => toggleDialog('purgeConfirm')
     };
 
@@ -467,7 +482,7 @@ const StateNodeComponent = ({ id, data, selected }) => {
                 <TerminalStateUploadDialog isOpen={dialogs.upload} setIsOpen={() => toggleDialog('upload')} nodeId={id} />
                 <TerminalDialogConfirmation
                     isOpen={dialogs.deleteConfirm}
-                    onAccept={() => { deleteNode(id); toggleDialog('deleteConfirm'); }}
+                    onAccept={() => { deleteState(id); toggleDialog('deleteConfirm'); }}
                     onCancel={() => toggleDialog('deleteConfirm')}
                     onClose={() => toggleDialog('deleteConfirm')}
                     title="Delete State"
@@ -552,6 +567,12 @@ const StateNodeComponent = ({ id, data, selected }) => {
                 stateId={id}
             />
 
+            <TerminalStateExportHgDialog
+                isOpen={dialogs.hgExport}
+                setIsOpen={() => toggleDialog('hgExport')}
+                stateId={id}
+            />
+
             <TerminalDialogConfirmation
                 isOpen={dialogs.purgeConfirm}
                 onAccept={() => { purgeStateData(id); toggleDialog('purgeConfirm'); }}
@@ -563,7 +584,7 @@ const StateNodeComponent = ({ id, data, selected }) => {
 
             <TerminalDialogConfirmation
                 isOpen={dialogs.deleteConfirm}
-                onAccept={() => { deleteNode(id); toggleDialog('deleteConfirm'); }}
+                onAccept={() => { deleteState(id); toggleDialog('deleteConfirm'); }}
                 onCancel={() => toggleDialog('deleteConfirm')}
                 onClose={() => toggleDialog('deleteConfirm')}
                 title="Delete State"
@@ -575,7 +596,7 @@ const StateNodeComponent = ({ id, data, selected }) => {
 
 const ProcessorNodeComponent = ({ id, data, selected }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const { deleteNode, setSelectedNodeId, fetchProcessor, getNodeData, getProviderById, isNodeVisuallyCollapsed, setNodeVisualCollapsed } = useStore();
+    const { deleteProcessor, setSelectedNodeId, fetchProcessor, getNodeData, getProviderById, isNodeVisuallyCollapsed, setNodeVisualCollapsed } = useStore();
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     // Get collapsed state from store
@@ -643,7 +664,7 @@ const ProcessorNodeComponent = ({ id, data, selected }) => {
 
                 <TerminalDialogConfirmation
                     isOpen={showDeleteConfirm}
-                    onAccept={() => { deleteNode(id); setShowDeleteConfirm(false); }}
+                    onAccept={() => { deleteProcessor(id); setShowDeleteConfirm(false); }}
                     onCancel={() => setShowDeleteConfirm(false)}
                     onClose={() => setShowDeleteConfirm(false)}
                     title="Delete Processor"
@@ -709,7 +730,7 @@ const ProcessorNodeComponent = ({ id, data, selected }) => {
 
             <TerminalDialogConfirmation
                 isOpen={showDeleteConfirm}
-                onAccept={() => { deleteNode(id); setShowDeleteConfirm(false); }}
+                onAccept={() => { deleteProcessor(id); setShowDeleteConfirm(false); }}
                 onCancel={() => setShowDeleteConfirm(false)}
                 onClose={() => setShowDeleteConfirm(false)}
                 title="Delete Processor"
@@ -721,7 +742,7 @@ const ProcessorNodeComponent = ({ id, data, selected }) => {
 
 const TransformNodeComponent = ({ id, data, selected }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const { deleteNode, setSelectedNodeId, getNodeData, getProviderById } = useStore();
+    const { deleteProcessor, setSelectedNodeId, getNodeData, getProviderById } = useStore();
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const nodeData = useStore(state => state.getNodeData(id)) || data || {};
@@ -782,7 +803,7 @@ const TransformNodeComponent = ({ id, data, selected }) => {
 
             <TerminalDialogConfirmation
                 isOpen={showDeleteConfirm}
-                onAccept={() => { deleteNode(id); setShowDeleteConfirm(false); }}
+                onAccept={() => { deleteProcessor(id); setShowDeleteConfirm(false); }}
                 onCancel={() => setShowDeleteConfirm(false)}
                 onClose={() => setShowDeleteConfirm(false)}
                 title="Delete Transform"
@@ -794,7 +815,7 @@ const TransformNodeComponent = ({ id, data, selected }) => {
 
 const FunctionNodeComponent = ({ id, data, selected }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const { deleteNode, setSelectedNodeId, getNodeData, getProviderById } = useStore();
+    const { deleteProcessor, setSelectedNodeId, getNodeData, getProviderById } = useStore();
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const nodeData = useStore(state => state.getNodeData(id)) || data || {};
@@ -863,7 +884,7 @@ const FunctionNodeComponent = ({ id, data, selected }) => {
 
             <TerminalDialogConfirmation
                 isOpen={showDeleteConfirm}
-                onAccept={() => { deleteNode(id); setShowDeleteConfirm(false); }}
+                onAccept={() => { deleteProcessor(id); setShowDeleteConfirm(false); }}
                 onCancel={() => setShowDeleteConfirm(false)}
                 onClose={() => setShowDeleteConfirm(false)}
                 title="Delete Function"
