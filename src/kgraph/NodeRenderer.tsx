@@ -137,6 +137,9 @@ const NodeWrapper: React.FC<NodeWrapperProps> = ({
         const target = e.target as HTMLElement;
         if (target.closest('[data-handleid]')) return;
 
+        // Don't interfere with interactions inside dialogs (e.g. HeadlessUI)
+        if (target.closest('[role="dialog"]')) return;
+
         if (selectable) {
             onNodeClick?.(e, node);
         }

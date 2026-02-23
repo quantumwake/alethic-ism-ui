@@ -1,12 +1,12 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { HandleProps, HandlePosition } from './types';
-import { useKGraphContext } from './KGraphProvider';
+import { useHandleContext } from './NodeRenderer';
 
 // Map position to CSS placement
 function getPositionStyle(position: HandlePosition): React.CSSProperties {
     const base: React.CSSProperties = {
         position: 'absolute',
-        zIndex: 5,
+        zIndex: 20,
     };
 
     switch (position) {
@@ -32,10 +32,13 @@ const Handle: React.FC<KGraphHandleProps> = ({
     position,
     style,
     className = '',
-    nodeId,
-    onConnectionStart,
+    nodeId: nodeIdProp,
+    onConnectionStart: onConnectionStartProp,
 }) => {
-    const { registerHandle, unregisterHandle } = useKGraphContext();
+    // Get nodeId and onConnectionStart from HandleContext if not provided as props
+    const handleCtx = useHandleContext();
+    const nodeId = nodeIdProp ?? handleCtx.nodeId;
+    const onConnectionStart = onConnectionStartProp ?? handleCtx.onConnectionStart;
 
     // Registration happens via NodeWrapper which has position knowledge
     // Handle just renders the visual element and provides interaction target

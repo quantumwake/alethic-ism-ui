@@ -75,6 +75,28 @@ const InnerCanvas: React.FC<InnerCanvasProps> = ({
 
     const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
+    // Refs for stable access in pane-click closures (avoids stale nodes/edges)
+    const nodesRef = useRef(nodes);
+    nodesRef.current = nodes;
+    const edgesRef = useRef(edges);
+    edgesRef.current = edges;
+    const onNodesChangeRef = useRef(onNodesChange);
+    onNodesChangeRef.current = onNodesChange;
+    const onEdgesChangeRef = useRef(onEdgesChange);
+    onEdgesChangeRef.current = onEdgesChange;
+
+    // Deselect all nodes and edges (uses refs so it's closure-safe)
+    const deselectAll = useCallback(() => {
+        const nodeDeselects: NodeChange[] = nodesRef.current
+            .filter(n => n.selected)
+            .map(n => ({ type: 'select' as const, id: n.id, selected: false }));
+        const edgeDeselects: EdgeChange[] = edgesRef.current
+            .filter(e => e.selected)
+            .map(e => ({ type: 'select' as const, id: e.id, selected: false }));
+        if (nodeDeselects.length) onNodesChangeRef.current?.(nodeDeselects);
+        if (edgeDeselects.length) onEdgesChangeRef.current?.(edgeDeselects);
+    }, []);
+
     // Track container size
     useEffect(() => {
         if (!containerRef.current) return;
@@ -107,6 +129,7 @@ const InnerCanvas: React.FC<InnerCanvasProps> = ({
 
         if (!panOnDrag) {
             // Still handle pane click for deselection
+            deselectAll();
             onPaneClick?.(e);
             return;
         }
@@ -142,7 +165,8 @@ const InnerCanvas: React.FC<InnerCanvasProps> = ({
 
         const handleMouseUp = (ev: MouseEvent) => {
             if (panRef.current && !panRef.current.isPanning) {
-                // It was a click, not a drag
+                // It was a click, not a drag — deselect all nodes/edges
+                deselectAll();
                 onPaneClick?.(ev as unknown as React.MouseEvent);
             }
             panRef.current = null;
@@ -217,8 +241,14 @@ const InnerCanvas: React.FC<InnerCanvasProps> = ({
 
             if (handleEl) {
                 const targetNodeId = handleEl.getAttribute('data-nodeid');
-                const targetHandleId = handleEl.getAttribute('data-handleid');
+                let targetHandleId = handleEl.getAttribute('data-handleid');
                 const targetHandleType = handleEl.getAttribute('data-handletype');
+
+                // If we landed on a source handle (invisible, stacked on top),
+                // use the corresponding target handle ID instead
+                if (targetHandleType === 'source' && targetHandleId) {
+                    targetHandleId = targetHandleId.replace('source-', 'target-');
+                }
 
                 if (targetNodeId && targetHandleId && targetNodeId !== nodeId) {
                     onConnect?.({
@@ -255,22 +285,68 @@ const InnerCanvas: React.FC<InnerCanvasProps> = ({
     // ==================== Node Click ====================
     const handleNodeClick = useCallback((e: React.MouseEvent, node: KGraphNode) => {
         if (!elementsSelectable) return;
+
+        // Select clicked node, deselect all others
+        const nodeChanges: NodeChange[] = [];
+        for (const n of nodes) {
+            if (n.id === node.id && !n.selected) {
+                nodeChanges.push({ type: 'select', id: n.id, selected: true });
+            } else if (n.id !== node.id && n.selected) {
+                nodeChanges.push({ type: 'select', id: n.id, selected: false });
+            }
+        }
+        if (nodeChanges.length) onNodesChange?.(nodeChanges);
+
+        // Deselect all edges
+        const edgeDeselects: EdgeChange[] = edges
+            .filter(ed => ed.selected)
+            .map(ed => ({ type: 'select' as const, id: ed.id, selected: false }));
+        if (edgeDeselects.length) onEdgesChange?.(edgeDeselects);
+
         onNodeClick?.(e, node);
-    }, [elementsSelectable, onNodeClick]);
+    }, [elementsSelectable, nodes, edges, onNodesChange, onEdgesChange, onNodeClick]);
 
     // ==================== Edge Click ====================
     const handleEdgeClick = useCallback((e: React.MouseEvent, edge: KGraphEdge) => {
         if (!elementsSelectable) return;
         e.stopPropagation();
+
+        // Select clicked edge, deselect all others
+        const edgeChanges: EdgeChange[] = [];
+        for (const ed of edges) {
+            if (ed.id === edge.id && !ed.selected) {
+                edgeChanges.push({ type: 'select', id: ed.id, selected: true });
+            } else if (ed.id !== edge.id && ed.selected) {
+                edgeChanges.push({ type: 'select', id: ed.id, selected: false });
+            }
+        }
+        if (edgeChanges.length) onEdgesChange?.(edgeChanges);
+
+        // Deselect all nodes
+        const nodeDeselects: NodeChange[] = nodes
+            .filter(n => n.selected)
+            .map(n => ({ type: 'select' as const, id: n.id, selected: false }));
+        if (nodeDeselects.length) onNodesChange?.(nodeDeselects);
+
         onEdgeClick?.(e, edge);
-    }, [elementsSelectable, onEdgeClick]);
+    }, [elementsSelectable, nodes, edges, onNodesChange, onEdgesChange, onEdgeClick]);
 
     // ==================== Keyboard ====================
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Backspace' || e.key === 'Delete') {
-                // Only if focus is not in an input
-                if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') return;
+                const target = e.target as HTMLElement;
+
+                // Skip if focus is in any interactive element or inside a dialog
+                if (
+                    target.tagName === 'INPUT' ||
+                    target.tagName === 'TEXTAREA' ||
+                    target.tagName === 'SELECT' ||
+                    target.isContentEditable ||
+                    target.closest('[role="dialog"]') ||
+                    target.closest('[role="combobox"]') ||
+                    target.closest('[role="listbox"]')
+                ) return;
 
                 const selectedNode = nodes.find(n => n.selected);
                 const selectedEdge = edges.find(ed => ed.selected);
