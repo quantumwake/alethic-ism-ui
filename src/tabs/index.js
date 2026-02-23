@@ -6,3 +6,4 @@ export { default as MenuTab } from './MenuTab';
 export { default as ComponentTab } from './ComponentTab';
 export { default as ComponentTab2 } from './ComponentTab2';
 export { default as AIAssistantTab } from './AIAssistantTab';
+export { default as ComponentTab3 } from './ComponentTab3';

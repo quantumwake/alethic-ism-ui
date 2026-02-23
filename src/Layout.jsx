@@ -8,7 +8,8 @@ import {
     FolderOpenIcon,
     BoxesIcon, ChevronDown, AlarmSmokeIcon,
     SparklesIcon,
-    Layers
+    Layers,
+    Workflow
 } from 'lucide-react'
 
 import {
@@ -21,7 +22,7 @@ import {
 
 import {useStore} from "./store"
 
-import {MenuTab, ProjectTab, ProjectFileTab, ComponentTab, ComponentTab2, PropertyTab, AIAssistantTab}  from "./tabs"
+import {MenuTab, ProjectTab, ProjectFileTab, ComponentTab, ComponentTab2, ComponentTab3, PropertyTab, AIAssistantTab}  from "./tabs"
 import {
     TerminalTemplateEditor,
     TerminalUsageReport,
@@ -31,10 +32,12 @@ import {
 } from "./components/ism"
 import Studio from "./Studio"
 import CustomStudio from "./CustomStudio"
+import StudioV3 from "./StudioV3"
 
 const TAB_COMPONENTS = {
     component: ComponentTab,
     component2: ComponentTab2,
+    component3: ComponentTab3,
     files: ProjectFileTab,
     project: ProjectTab,
     property: PropertyTab,
@@ -77,6 +80,7 @@ const Layout = () => {
         { id: 'project', icon: <LayoutIcon className="w-4 h-4" /> },
         { id: 'component', icon: <BoxesIcon className="w-4 h-4" /> },
         { id: 'component2', icon: <Layers className="w-4 h-4" /> },
+        { id: 'component3', icon: <Workflow className="w-4 h-4" /> },
         { id: 'files', icon: <FolderOpenIcon className="w-4 h-4" /> }
     ];
 
@@ -150,18 +154,17 @@ const Layout = () => {
                                 closeable: false,
                             },
                             {
+                                name: 'studio-v3',
+                                label: 'Studio V3',
+                                content: <StudioV3 />,
+                                closeable: false,
+                            },
+                            {
                                 name: 'editor',
                                 label: 'Editor',
                                 content: <TerminalTemplateEditor />,
                                 closeable: false,
                             },
-                            // Old Studio - disabled for now
-                            // {
-                            //     name: 'studio-legacy',
-                            //     label: 'Studio (Legacy)',
-                            //     content: <Studio />,
-                            //     closeable: false,
-                            // },
                         ]}
                         position="bottom"
                         onTabClose={(index) => console.log('Close tab', index)}

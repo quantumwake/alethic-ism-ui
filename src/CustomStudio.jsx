@@ -14,6 +14,7 @@ import {
     RefreshCcwIcon,
     BugOffIcon,
     Play,
+    Pause,
     Trash2,
     Settings,
     Filter,
@@ -250,7 +251,7 @@ const customEdgeTypes = {
 // Node Toolbar Component (shown on hover/select)
 // ============================================================================
 
-const NodeToolbar = ({ nodeId, nodeType, actions = {} }) => {
+const NodeToolbar = ({ nodeId, nodeType, actions = {}, isStopped }) => {
     const {
         onSettings,
         onDelete,
@@ -259,13 +260,26 @@ const NodeToolbar = ({ nodeId, nodeType, actions = {} }) => {
         onImport,
         onImportHg,
         onExportHg,
-        onPurge
+        onPurge,
+        onPlayPause
     } = actions;
 
     const isStateNode = nodeType === 'state';
+    const isProcessorNode = nodeType === 'processor';
 
     return (
         <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1 bg-midnight-surface/95 backdrop-blur-sm border border-midnight-border  shadow-lg z-10">
+            {/* Processor Play/Pause */}
+            {isProcessorNode && onPlayPause && (
+                <button
+                    onClick={(e) => { e.stopPropagation(); onPlayPause(); }}
+                    className={`p-1.5 transition-colors ${isStopped ? 'bg-green-900/30 text-green-400 hover:bg-green-600 hover:text-white' : 'bg-red-900/30 text-red-400 hover:bg-red-600 hover:text-white'}`}
+                    title={isStopped ? 'Start Processor' : 'Stop Processor'}
+                >
+                    {isStopped ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
+                </button>
+            )}
+
             {/* State-specific actions */}
             {isStateNode && onView && (
                 <button
@@ -596,17 +610,22 @@ const StateNodeComponent = ({ id, data, selected }) => {
 
 const ProcessorNodeComponent = ({ id, data, selected }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const { deleteProcessor, setSelectedNodeId, fetchProcessor, getNodeData, getProviderById, isNodeVisuallyCollapsed, setNodeVisualCollapsed } = useStore();
+    const { deleteProcessor, setSelectedNodeId, fetchProcessor, getNodeData, getProviderById, isNodeVisuallyCollapsed, setNodeVisualCollapsed, changeProcessorStatus } = useStore();
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [isStopped, setIsStopped] = useState(true);
 
     // Get collapsed state from store
     const isCollapsed = useStore(state => state.isNodeVisuallyCollapsed(id));
     const setIsCollapsed = (collapsed) => setNodeVisualCollapsed(id, collapsed);
 
-    // Fetch processor data on mount
+    // Fetch processor data on mount and sync stopped status
     useEffect(() => {
         if (id) {
-            fetchProcessor(id);
+            fetchProcessor(id).then((processorData) => {
+                if (processorData?.status) {
+                    setIsStopped(['TERMINATE', 'STOPPED'].includes(processorData.status));
+                }
+            });
         }
     }, [id, fetchProcessor]);
 
@@ -636,9 +655,17 @@ const ProcessorNodeComponent = ({ id, data, selected }) => {
         return typeMap[processorType] || processorType.replace('processor_', '').replace(/_/g, ' ');
     };
 
+    const startOrStopProcessor = useCallback(async () => {
+        const newStatus = isStopped ? 'COMPLETED' : 'TERMINATE';
+        await changeProcessorStatus(id, newStatus);
+        const currentNode = getNodeData(id);
+        setIsStopped(['TERMINATE', 'STOPPED'].includes(currentNode?.status));
+    }, [id, isStopped, changeProcessorStatus, getNodeData]);
+
     const toolbarActions = {
         onSettings: () => setSelectedNodeId(id),
-        onDelete: () => setShowDeleteConfirm(true)
+        onDelete: () => setShowDeleteConfirm(true),
+        onPlayPause: startOrStopProcessor
     };
 
     // Collapsed view - small compact indicator
@@ -688,7 +715,7 @@ const ProcessorNodeComponent = ({ id, data, selected }) => {
                 onMouseLeave={() => setIsHovered(false)}
             >
                 {(isHovered || selected) && (
-                    <NodeToolbar nodeId={id} nodeType="processor" actions={toolbarActions} />
+                    <NodeToolbar nodeId={id} nodeType="processor" actions={toolbarActions} isStopped={isStopped} />
                 )}
 
                 {renderHandles('#f59e0b')}
