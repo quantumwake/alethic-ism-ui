@@ -146,20 +146,21 @@ const InnerCanvas: React.FC<InnerCanvasProps> = ({
         };
 
         const handleMouseMove = (ev: MouseEvent) => {
-            if (!panRef.current) return;
-            const dx = ev.clientX - panRef.current.startX;
-            const dy = ev.clientY - panRef.current.startY;
+            const pan = panRef.current;
+            if (!pan) return;
+            const dx = ev.clientX - pan.startX;
+            const dy = ev.clientY - pan.startY;
 
-            if (!panRef.current.isPanning && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
-                panRef.current.isPanning = true;
+            if (!pan.isPanning && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
+                pan.isPanning = true;
             }
 
-            if (!panRef.current.isPanning) return;
+            if (!pan.isPanning) return;
 
             setViewport(v => ({
                 ...v,
-                x: panRef.current!.startVX + dx,
-                y: panRef.current!.startVY + dy,
+                x: pan.startVX + dx,
+                y: pan.startVY + dy,
             }));
         };
 
