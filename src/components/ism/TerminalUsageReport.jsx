@@ -151,6 +151,7 @@ function TerminalUsageReport() {
             `}</style>
             <Tippy
                 interactive={true}
+                zIndex={9999}
                 content={
                 <div className={`${theme?.usageReport?.tooltip?.bg} p-2 shadow-2xl border ${theme?.usageReport?.tooltip?.border} w-[420px] max-w-[420px]`}>
                     <div className={`mb-2 ${theme?.usageReport?.tooltip?.headerText} border-b ${theme?.usageReport?.tooltip?.border} pb-2 flex items-center justify-between`}>
