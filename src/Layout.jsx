@@ -35,8 +35,10 @@ import CustomStudio from "./CustomStudio"
 import StudioV3 from "./StudioV3"
 
 const TAB_COMPONENTS = {
+    /* OLD STUDIO palettes - hidden, replaced by component3 (KGraph/Bench)
     component: ComponentTab,
     component2: ComponentTab2,
+    */
     component3: ComponentTab3,
     files: ProjectFileTab,
     project: ProjectTab,
@@ -78,8 +80,10 @@ const Layout = () => {
     const leftTabs = [
         { id: 'menu', icon: <Menu className="w-4 h-4" /> },
         { id: 'project', icon: <LayoutIcon className="w-4 h-4" /> },
+        /* OLD STUDIO palettes - hidden, replaced by component3 (KGraph/Bench)
         { id: 'component', icon: <BoxesIcon className="w-4 h-4" /> },
         { id: 'component2', icon: <Layers className="w-4 h-4" /> },
+        */
         { id: 'component3', icon: <Workflow className="w-4 h-4" /> },
         { id: 'files', icon: <FolderOpenIcon className="w-4 h-4" /> }
     ];
@@ -147,15 +151,17 @@ const Layout = () => {
                 <main className="flex-1 p-0 overflow-auto">
                     <TerminalTabView
                         tabs={[
+                            /* OLD STUDIO - hidden, replaced by Bench (StudioV3)
                             {
                                 name: 'studio',
                                 label: 'Studio',
                                 content: <CustomStudio />,
                                 closeable: false,
                             },
+                            */
                             {
-                                name: 'studio-v3',
-                                label: 'Studio V3',
+                                name: 'bench',
+                                label: 'Bench',
                                 content: <StudioV3 />,
                                 closeable: false,
                             },

@@ -14,6 +14,7 @@ export const TerminalFooter = ({
             bg-midnight-surface/90 backdrop-blur-sm
             border-t border-midnight-border
             text-xs font-mono
+            relative z-50
             ${className}
         `}>
             <span className="text-midnight-text-subdued">{leftContent}</span>
