@@ -86,6 +86,7 @@ export const ProcessorNodeComponent: React.FC<NodeComponentProps> = ({ id, data,
                     onDoubleClick={() => setIsCollapsed(false)}
                     title={`${getDisplayType()}${providerName ? `: ${providerName}` : ''}${providerVersion ? ` v${providerVersion}` : ''}${processorName ? `\n${processorName}` : ''}\nDouble-click to expand`}
                 >
+                    {(isHovered || selected) && <NodeToolbar nodeId={id} nodeType="processor" actions={toolbarActions} isStopped={isStopped} />}
                     {renderHandles('#f59e0b')}
                     <Cpu className="w-5 h-5 text-midnight-warning-bright" />
                 </div>

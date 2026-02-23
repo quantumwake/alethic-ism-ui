@@ -57,6 +57,7 @@ export const StateNodeComponent: React.FC<NodeComponentProps> = ({ id, data, sel
                     onDoubleClick={() => setIsCollapsed(false)}
                     title={`${label}${rowCount ? ` (${rowCount} rows)` : ''}\nDouble-click to expand`}
                 >
+                    {(isHovered || selected) && <NodeToolbar nodeId={id} nodeType="state" actions={toolbarActions} />}
                     {renderHandles('#10b981')}
                     <Database className="w-5 h-5 text-midnight-success-bright" />
                 </div>
