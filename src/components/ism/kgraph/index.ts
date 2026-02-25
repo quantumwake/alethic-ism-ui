@@ -9,3 +9,6 @@ export { ProcessorNodeComponent } from './ProcessorNodeComponent';
 export { TransformNodeComponent } from './TransformNodeComponent';
 export { FunctionNodeComponent } from './FunctionNodeComponent';
 export { customNodeTypes } from './nodeTypes';
+export { ClusterNodeComponent } from './ClusterNodeComponent';
+export { useClusteredGraph } from './useClusteredGraph';
+export { GroupFrameOverlay } from './GroupFrameOverlay';

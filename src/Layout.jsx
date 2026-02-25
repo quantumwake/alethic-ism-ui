@@ -30,6 +30,7 @@ import {
     TerminalSyslog,
     TerminalUserMenu
 } from "./components/ism"
+import TerminalNotificationQueue from "./components/common/TerminalNotification"
 import Studio from "./Studio"
 import CustomStudio from "./CustomStudio"
 import StudioV3 from "./StudioV3"
@@ -228,6 +229,8 @@ const Layout = () => {
             {/*    isOpen={isErrorsDialogOpen}*/}
             {/*    setIsOpen={setIsErrorsDialogOpen}*/}
             {/*/>*/}
+
+            <TerminalNotificationQueue />
 
         </TerminalContainer>
     );

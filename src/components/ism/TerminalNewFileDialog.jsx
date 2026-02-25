@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, useEffect } from "react";
 import {TerminalDialog, TerminalButton, TerminalFileUpload, TerminalLabel, TerminalInput} from "../common";
 import {useStore} from "../../store";
 import {TerminalDropdown} from "../common";
@@ -8,7 +8,7 @@ function TerminalNewFileDialog({ isOpen, setIsOpen }) {
     const theme = useStore(state => state.getCurrentTheme());
     const {saveFile} = useStore()
     const [fileType, setFileType] = useState("mako")
-    const [fileName, setFileName] = useState()
+    const [fileName, setFileName] = useState("")
     const [fileTypes] = useState([
         { id: "basic", label: "Basic Template" },
         { id: "mako", label: "Mako Template" },
@@ -18,12 +18,15 @@ function TerminalNewFileDialog({ isOpen, setIsOpen }) {
         { id: "lua", label: "Lua" },
     ]);
 
-
-    // const { uploadState } = useStore();
+    useEffect(() => {
+        if (isOpen) {
+            setFileName("")
+            setFileType("mako")
+        }
+    }, [isOpen]);
 
     const handleClose = () => {
         setIsOpen(false);
-        // setSelectedFile(null);
     };
 
     const handleCreate = async() => {
@@ -35,7 +38,10 @@ function TerminalNewFileDialog({ isOpen, setIsOpen }) {
             }
         )
         const result = await saveFile(file)
-        console.debug(`created new file: ${result})`)
+        console.debug(`created new file: ${result}`)
+        setIsOpen(false)
+        setFileName("")
+        setFileType("mako")
     }
 
     return (

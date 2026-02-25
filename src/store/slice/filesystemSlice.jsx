@@ -56,6 +56,31 @@ export const useFileSystemSlice = (set, get) => ({
             throw new Error("invalid file type")
         }
     },
+    deleteFile: async (file) => {
+        if (!file) {
+            console.error('unable to delete undefined file')
+            return false
+        }
+
+        if (file instanceof FileTemplate) {
+            const templateId = file.id
+            const success = await get().deleteTemplate(templateId)
+            if (success) {
+                const files = await get().buildFileTemplates(get().templates)
+                await get().buildAndSetProjectFileStructure(files)
+                if (get().selectedFile?.id === templateId) {
+                    set({ selectedFile: null })
+                }
+            }
+            return success
+        } else {
+            console.error('invalid file type for delete')
+            return false
+        }
+    },
+    deleteSelectedFile: async () => {
+        return get().deleteFile(get().selectedFile)
+    },
     buildFileTemplateStructure: (name, label, templates) => {
         if (!templates) return []
         const filtered = templates.filter(t => t.template_type === name)

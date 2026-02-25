@@ -14,6 +14,7 @@ export interface KGraphNode {
     hidden?: boolean;
     width?: number;
     height?: number;
+    group?: string;  // cluster group ID
 }
 
 export interface KGraphEdge {

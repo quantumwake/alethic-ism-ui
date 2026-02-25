@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {useStore} from '../store';
 import {
     Coffee, CopyIcon,
@@ -11,12 +11,18 @@ import {
     Image,
     PencilIcon,
     TrashIcon,
+    Upload,
     User
 } from 'lucide-react';
 import {PlusIcon} from "@heroicons/react/24/outline";
 import TerminalContextMenu from "../components/common/TerminalContextMenu";
 import TerminalNewFileDialog from "../components/ism/TerminalNewFileDialog";
 import TerminalFileRenameDialog from "../components/ism/TerminalFileRenameDialog";
+import {TerminalDialogConfirmation} from "../components/common/TerminalDialogConfirmation";
+import {TerminalSearchBar} from "../components/common/TerminalSearchBar";
+import {FileTemplate, Directory} from "../store/model";
+import {TerminalDialog, TerminalButton} from "../components/common";
+import TerminalFileUpload from "../components/common/TerminalFileUpload";
 
 export const ProjectFileTab = ({}) => {
     const theme = useStore(state => state.getCurrentTheme());
@@ -25,7 +31,10 @@ export const ProjectFileTab = ({}) => {
         setCurrentWorkspace,
         selectedProjectId,
         projectFiles,
-        fetchProjectFiles
+        fetchProjectFiles,
+        saveFile,
+        deleteFile,
+        addMessage
     } = useStore()
 
     const [selectedItem, setSelectedItem] = useState(null)
@@ -38,12 +47,40 @@ export const ProjectFileTab = ({}) => {
     // used to display the create new file dialog
     const [isNewFileDialogOpen, setIsNewFileDialogOpen] = useState(false)
     const [isFileRenameDialogOpen, setIsFileRenameDialogOpen] = useState(false)
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false)
+    const [uploadedFile, setUploadedFile] = useState(null)
 
     useEffect(() => {
         fetchProjectFiles().then(() => {
             console.log(`finished loading project files: ${selectedProjectId}`)
         })
     }, [selectedProjectId]);
+
+    const filterTree = (items, query) => {
+        if (!items || !query) return items
+        const lowerQuery = query.toLowerCase()
+
+        return items.reduce((acc, item) => {
+            if (item.type === 'directory') {
+                const filteredChildren = filterTree(item.children, query)
+                if (filteredChildren && filteredChildren.length > 0) {
+                    acc.push(new Directory(item.id, item.name, filteredChildren))
+                }
+            } else {
+                if (item.name.toLowerCase().includes(lowerQuery)) {
+                    acc.push(item)
+                }
+            }
+            return acc
+        }, [])
+    }
+
+    const filteredProjectFiles = useMemo(() => {
+        if (!searchQuery) return projectFiles
+        return filterTree(projectFiles, searchQuery)
+    }, [projectFiles, searchQuery])
 
     const getFileIcon = (file) => {
         const format = file.format
@@ -92,7 +129,6 @@ export const ProjectFileTab = ({}) => {
         e.preventDefault();
         e.stopPropagation();
 
-        // Get the mouse coordinates from the event
         const clickX = e.clientX;
         const clickY = e.clientY;
 
@@ -118,11 +154,18 @@ export const ProjectFileTab = ({}) => {
 
         let options = []
         if (selectedItem.type === "directory") {
-            options.push({
-                id: 'new',
-                label: 'New File',
-                icon: PlusIcon
-            })
+            options.push(
+                {
+                    id: 'new',
+                    label: 'New File',
+                    icon: PlusIcon
+                },
+                {
+                    id: 'upload',
+                    label: 'Upload File',
+                    icon: Upload
+                }
+            )
         } else if (selectedItem.type === "file") {
             options.push(
                 {
@@ -155,7 +198,81 @@ export const ProjectFileTab = ({}) => {
                 break
             case "rename":
                 toggleFileRenameDialog()
+                break
+            case "delete":
+                setIsDeleteConfirmOpen(true)
+                break
+            case "clone":
+                handleCloneFile()
+                break
+            case "upload":
+                setIsUploadDialogOpen(true)
+                break
         }
+    }
+
+    const handleCloneFile = async () => {
+        if (!selectedItem || selectedItem.type !== 'file') return
+
+        const clonedFile = new FileTemplate({
+            template_path: `${selectedItem.name}_copy`,
+            template_type: selectedItem.format,
+            template_content: selectedItem.content || ""
+        })
+
+        try {
+            await saveFile(clonedFile)
+            addMessage({ level: 'success', heading: 'Clone', body: `Cloned "${selectedItem.name}" as "${selectedItem.name}_copy"` })
+        } catch (error) {
+            addMessage({ level: 'error', heading: 'Clone Failed', body: error.message || 'Failed to clone file' })
+        }
+    }
+
+    const handleDeleteConfirm = async () => {
+        if (!selectedItem) return
+
+        try {
+            const success = await deleteFile(selectedItem)
+            if (success) {
+                addMessage({ level: 'success', heading: 'Deleted', body: `Deleted "${selectedItem.name}"` })
+                setSelectedItem(null)
+            } else {
+                addMessage({ level: 'error', heading: 'Delete Failed', body: `Failed to delete "${selectedItem.name}"` })
+            }
+        } catch (error) {
+            addMessage({ level: 'error', heading: 'Delete Failed', body: error.message || 'Failed to delete file' })
+        }
+    }
+
+    const handleUploadFile = (file) => {
+        setUploadedFile(file)
+    }
+
+    const handleUploadConfirm = async () => {
+        if (!uploadedFile || !selectedItem) return
+
+        const reader = new FileReader()
+        reader.onload = async (e) => {
+            const content = e.target.result
+            const templateType = selectedItem.id // directory id is the template type
+
+            const newFile = new FileTemplate({
+                template_path: uploadedFile.name,
+                template_type: templateType,
+                template_content: content
+            })
+
+            try {
+                await saveFile(newFile)
+                addMessage({ level: 'success', heading: 'Uploaded', body: `Uploaded "${uploadedFile.name}"` })
+            } catch (error) {
+                addMessage({ level: 'error', heading: 'Upload Failed', body: error.message || 'Failed to upload file' })
+            }
+
+            setIsUploadDialogOpen(false)
+            setUploadedFile(null)
+        }
+        reader.readAsText(uploadedFile)
     }
 
     const toggleNewFileDialog = () => {
@@ -172,7 +289,7 @@ export const ProjectFileTab = ({}) => {
         }
 
         const Icon = item.type === 'directory' ? Folder : getFileIcon(item);
-        const isExpanded = expandedFolders.has(item.id);
+        const isExpanded = expandedFolders.has(item.id) || (searchQuery && item.type === 'directory');
 
         const isSelected = item?.id === selectedItem?.id ? theme.files.select : ""
 
@@ -180,7 +297,7 @@ export const ProjectFileTab = ({}) => {
             <div key={item.id}>
                 <button
                     onClick={() => handleClick(item)}
-                    onContextMenu={(e) => handleContextMenu(e, item)}  // Add this line
+                    onContextMenu={(e) => handleContextMenu(e, item)}
                     className={`w-full py-1.5 ${theme.hover} flex items-center gap-2 ${isSelected}`}
                     style={{ paddingLeft: `${(depth) * 0.50}rem` }}>
 
@@ -206,19 +323,44 @@ export const ProjectFileTab = ({}) => {
 
     return (
         <div className="space-y-0 mt-2 w-full">
-            {projectFiles && projectFiles.map(item => renderItem(item, 0, true))}
+            <div className="px-1 pb-2">
+                <TerminalSearchBar
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
+
+            {filteredProjectFiles && filteredProjectFiles.map(item => renderItem(item, 0, true))}
 
             <TerminalContextMenu menuRef={contextMenuRef} isOpen={isContextMenuOpen} setIsOpen={setIsContextMenuOpen} menuItems={contextMenuItems}
                 onItemClick={handleItemClick} menuPosition={contextMenuPosition}
             />
 
-            <TerminalNewFileDialog isOpen={isNewFileDialogOpen} setIsOpen={() => toggleNewFileDialog()} />
-            <TerminalFileRenameDialog isOpen={isFileRenameDialogOpen} setIsOpen={() => toggleFileRenameDialog()} />
+            <TerminalNewFileDialog isOpen={isNewFileDialogOpen} setIsOpen={setIsNewFileDialogOpen} />
+            <TerminalFileRenameDialog isOpen={isFileRenameDialogOpen} setIsOpen={setIsFileRenameDialogOpen} />
 
+            <TerminalDialogConfirmation
+                isOpen={isDeleteConfirmOpen}
+                onClose={() => setIsDeleteConfirmOpen(false)}
+                title="DELETE FILE"
+                content={`Are you sure you want to delete "${selectedItem?.name}"? This action cannot be undone.`}
+                onCancel={() => setIsDeleteConfirmOpen(false)}
+                onAccept={handleDeleteConfirm}
+            />
 
+            <TerminalDialog isOpen={isUploadDialogOpen} onClose={() => { setIsUploadDialogOpen(false); setUploadedFile(null); }} title="UPLOAD FILE">
+                <div className="space-y-4">
+                    <TerminalFileUpload
+                        accept="*"
+                        onChange={handleUploadFile}
+                    />
+                    <div className="flex justify-end gap-2">
+                        <TerminalButton variant="primary" onClick={() => { setIsUploadDialogOpen(false); setUploadedFile(null); }}>Cancel</TerminalButton>
+                        <TerminalButton variant="primary" onClick={handleUploadConfirm} disabled={!uploadedFile}>Upload</TerminalButton>
+                    </div>
+                </div>
+            </TerminalDialog>
         </div>
-
-
     );
 };
 

@@ -3,15 +3,15 @@ import { useStore } from '../../store'
 
 const TerminalNotificationQueue = () => {
     const theme = useStore(state => state.getCurrentTheme())
-    const messages = useMessageStore(state => state.messages)
-    const removeMessage = useMessageStore(state => state.removeMessage)
+    const messages = useStore(state => state.messages)
+    const removeMessage = useStore(state => state.removeMessage)
 
     const levelStyles = {
-        info: theme.button.info,
-        warning: theme.button.warning,
-        error: theme.button.danger,
-        success: theme.button.success,
-        'validation-failed': theme.button.danger
+        info: theme.button?.info || theme.button?.secondary || '',
+        warning: theme.button?.warning || theme.button?.secondary || '',
+        error: theme.button?.danger || theme.button?.primary || '',
+        success: theme.button?.success || theme.button?.secondary || '',
+        'validation-failed': theme.button?.danger || theme.button?.primary || ''
     }
 
     return (

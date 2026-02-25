@@ -16,9 +16,9 @@ import {
     RefreshCcwIcon,
     BugOffIcon,
 } from 'lucide-react';
-import { TerminalButton } from './components/common';
+import { TerminalButton, TerminalDialog, TerminalInput, TerminalLabel } from './components/common';
 import TerminalStreamDebug from './components/ism/TerminalStreamDebug';
-import { customNodeTypes, customEdgeTypes, StudioToolbar } from './components/ism/kgraph';
+import { customNodeTypes, customEdgeTypes, StudioToolbar, useClusteredGraph, GroupFrameOverlay, NODE_WIDTH, NODE_HEIGHT } from './components/ism/kgraph';
 
 // ============================================================================
 // V3 Nodes/Edges state synced hooks (using KGraph applyChanges)
@@ -78,14 +78,139 @@ const StudioV3Inner: React.FC = () => {
         fetchProjectProcessorStates,
         isStudioRefreshEnabled,
         setStudioIsRefreshEnabled,
+        collapsedGroups,
+        groupDefinitions,
+        createGroup,
+        deleteGroup,
+        renameGroup,
+        toggleGroupCollapse,
+        getGroupMembers,
     } = useStore();
 
-    const [nodes, , onNodesChange] = useNodesStateSyncedV3();
-    const [edges, , onEdgesChange] = useEdgesStateSyncedV3();
+    const [rawNodes, , rawOnNodesChange] = useNodesStateSyncedV3();
+    const [rawEdges, , rawOnEdgesChange] = useEdgesStateSyncedV3();
+
+    // Clustering: transform raw nodes/edges into display nodes/edges
+    const { displayNodes, displayEdges } = useClusteredGraph(
+        rawNodes, rawEdges, collapsedGroups, groupDefinitions
+    );
+    const nodes = displayNodes;
+    const edges = displayEdges;
+
+    // Compute bounding boxes for expanded (non-collapsed) groups to render group frames
+    const expandedGroups = useMemo(() => {
+        const groups: { groupId: string; groupName: string; groupColor: string; memberNodeIds: string[]; bounds: { x: number; y: number; width: number; height: number } }[] = [];
+        // Collect member positions per expanded group from display nodes
+        const groupData = new Map<string, { nodeIds: string[]; rects: { x: number; y: number; w: number; h: number }[] }>();
+        for (const node of displayNodes) {
+            const gid = node.data?._groupId as string | undefined;
+            if (!gid) continue;
+            if (!groupData.has(gid)) groupData.set(gid, { nodeIds: [], rects: [] });
+            const entry = groupData.get(gid)!;
+            entry.nodeIds.push(node.id);
+            const w = node.width || NODE_WIDTH;
+            const h = node.height || NODE_HEIGHT;
+            entry.rects.push({ x: node.position.x, y: node.position.y, w, h });
+        }
+        for (const [gid, { nodeIds, rects }] of groupData) {
+            if (rects.length === 0) continue;
+            const def = groupDefinitions[gid];
+            if (!def) continue;
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            for (const m of rects) {
+                minX = Math.min(minX, m.x);
+                minY = Math.min(minY, m.y);
+                maxX = Math.max(maxX, m.x + m.w);
+                maxY = Math.max(maxY, m.y + m.h);
+            }
+            groups.push({
+                groupId: gid,
+                groupName: def.name,
+                groupColor: def.color,
+                memberNodeIds: nodeIds,
+                bounds: { x: minX, y: minY, width: maxX - minX, height: maxY - minY },
+            });
+        }
+        return groups;
+    }, [displayNodes, groupDefinitions]);
+
+    // Track last known cluster positions so we can compute drag deltas.
+    // Seed from display nodes so the first drag event has a reference point.
+    const clusterPositionsRef = useRef<Record<string, { x: number; y: number }>>({});
+    for (const n of displayNodes) {
+        if (n.id.startsWith('cluster-')) {
+            const gid = n.id.replace('cluster-', '');
+            clusterPositionsRef.current[gid] = { x: n.position.x, y: n.position.y };
+        }
+    }
+
+    // Wrap onNodesChange: intercept cluster node drags → move all member nodes
+    const onNodesChange = useCallback((changes: NodeChange[]) => {
+        const realChanges: NodeChange[] = [];
+        const memberPositionChanges: NodeChange[] = [];
+
+        for (const c of changes) {
+            const id = (c as any).id as string | undefined;
+            if (!id?.startsWith('cluster-')) {
+                realChanges.push(c);
+                continue;
+            }
+
+            // Cluster node change — only handle position (ignore select, remove, etc.)
+            if (c.type === 'position' && c.position) {
+                const groupId = id.replace('cluster-', '');
+                const prev = clusterPositionsRef.current[groupId];
+                if (prev) {
+                    const dx = c.position.x - prev.x;
+                    const dy = c.position.y - prev.y;
+                    // Move all member nodes by the same delta
+                    const memberIds = getGroupMembers(groupId);
+                    for (const memberId of memberIds) {
+                        const memberNode = rawNodes.find(n => n.id === memberId);
+                        if (memberNode) {
+                            memberPositionChanges.push({
+                                type: 'position',
+                                id: memberId,
+                                position: {
+                                    x: memberNode.position.x + dx,
+                                    y: memberNode.position.y + dy,
+                                },
+                                dragging: c.dragging,
+                            });
+                        }
+                    }
+                }
+                clusterPositionsRef.current[groupId] = { x: c.position.x, y: c.position.y };
+            }
+        }
+
+        const all = [...realChanges, ...memberPositionChanges];
+        if (all.length) rawOnNodesChange(all);
+    }, [rawOnNodesChange, rawNodes, getGroupMembers]);
+
+    // Wrap onEdgesChange to filter out changes targeting remapped edges
+    const onEdgesChange = useCallback((changes: EdgeChange[]) => {
+        const filtered = changes.filter(c => !c.id?.startsWith('remapped-'));
+        if (filtered.length) rawOnEdgesChange(filtered);
+    }, [rawOnEdgesChange]);
+
+    // Track selected node IDs for grouping
+    const selectedNodeIds = useMemo(() => {
+        return (rawNodes || []).filter(n => n.selected).map(n => n.id);
+    }, [rawNodes]);
+    // Ref keeps the latest selection available even if a re-render clears it between mouseup/click
+    const selectedNodeIdsRef = useRef<string[]>(selectedNodeIds);
+    selectedNodeIdsRef.current = selectedNodeIds;
+
     const [isStreamDebugOpen, setIsStreamDebugOpen] = useState(false);
     const [isGridVisible, setIsGridVisible] = useState(true);
     const [isLocked, setIsLocked] = useState(false);
     const timeoutIdRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+    // Group naming dialog state
+    const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
+    const [groupDialogName, setGroupDialogName] = useState('');
+    const pendingGroupIdsRef = useRef<string[]>([]);
 
     useEffect(() => {
         console.log('StudioV3 - Nodes:', nodes?.length, nodes);
@@ -115,8 +240,12 @@ const StudioV3Inner: React.FC = () => {
         }
     }, [selectedProjectId, createProcessorWithWorkflowNode, createStateWithWorkflowNode]);
 
-    // Handle new connections
+    // Handle new connections (reject connections to/from cluster nodes)
     const handleConnect = useCallback((connection: { source: string; target: string; sourceHandle?: string; targetHandle?: string }) => {
+        if (connection.source.startsWith('cluster-') || connection.target.startsWith('cluster-')) {
+            console.warn('Cannot connect to/from a collapsed cluster. Expand the group first.');
+            return;
+        }
         console.log('StudioV3 - New connection:', connection);
         createProcessorStateWithWorkflowEdge({
             source: connection.source,
@@ -125,6 +254,31 @@ const StudioV3Inner: React.FC = () => {
             targetHandle: connection.targetHandle,
         });
     }, [createProcessorStateWithWorkflowEdge]);
+
+    // Handle group creation — opens a dialog for the group name
+    const handleGroupSelected = useCallback(() => {
+        const ids = selectedNodeIdsRef.current;
+        if (ids.length < 2) return;
+        pendingGroupIdsRef.current = [...ids];
+        setGroupDialogName(`Group ${Object.keys(groupDefinitions).length + 1}`);
+        setIsGroupDialogOpen(true);
+    }, [groupDefinitions]);
+
+    const handleGroupDialogConfirm = useCallback(() => {
+        const ids = pendingGroupIdsRef.current;
+        if (ids.length >= 2 && groupDialogName.trim()) {
+            createGroup(ids, groupDialogName.trim());
+        }
+        setIsGroupDialogOpen(false);
+        setGroupDialogName('');
+        pendingGroupIdsRef.current = [];
+    }, [groupDialogName, createGroup]);
+
+    const handleGroupDialogClose = useCallback(() => {
+        setIsGroupDialogOpen(false);
+        setGroupDialogName('');
+        pendingGroupIdsRef.current = [];
+    }, []);
 
     // Auto-refresh logic
     const refreshStudio = useCallback(() => {
@@ -202,11 +356,21 @@ const StudioV3Inner: React.FC = () => {
                         elementsSelectable={!isLocked}
                         fitView={true}
                     >
+                        <GroupFrameOverlay
+                            expandedGroups={expandedGroups}
+                            rawNodes={rawNodes}
+                            onNodesChange={onNodesChange}
+                            onCollapse={toggleGroupCollapse}
+                            onUngroup={deleteGroup}
+                            onRename={renameGroup}
+                        />
                         <StudioToolbar
                             isGridVisible={isGridVisible}
                             isLocked={isLocked}
                             onToggleGrid={() => setIsGridVisible(v => !v)}
                             onToggleLock={() => setIsLocked(v => !v)}
+                            selectedNodeIds={selectedNodeIds}
+                            onGroupSelected={handleGroupSelected}
                         />
                     </KGraphCanvas>
                 ) : (
@@ -219,6 +383,39 @@ const StudioV3Inner: React.FC = () => {
                 )}
 
                 {isStreamDebugOpen && <TerminalStreamDebug />}
+
+                {/* Group naming dialog */}
+                <TerminalDialog
+                    isOpen={isGroupDialogOpen}
+                    onClose={handleGroupDialogClose}
+                    title="Create Group"
+                >
+                    <div className="space-y-4">
+                        <div>
+                            <TerminalLabel>Group Name</TerminalLabel>
+                            <TerminalInput
+                                value={groupDialogName}
+                                onChange={(e) => setGroupDialogName(e.target.value)}
+                                placeholder="Enter group name..."
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleGroupDialogConfirm();
+                                }}
+                            />
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <TerminalButton variant="secondary" onClick={handleGroupDialogClose}>
+                                Cancel
+                            </TerminalButton>
+                            <TerminalButton
+                                variant="primary"
+                                onClick={handleGroupDialogConfirm}
+                                disabled={!groupDialogName.trim()}
+                            >
+                                Create Group
+                            </TerminalButton>
+                        </div>
+                    </div>
+                </TerminalDialog>
             </div>
         </div>
     );

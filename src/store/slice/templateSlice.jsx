@@ -67,9 +67,24 @@ export const useTemplateSlice = (set, get) => ({
             return false;
         }
     },
+    deleteTemplate: async (templateId) => {
+        try {
+            const response = await get().authDelete(`/template/${templateId}`);
+            if (!response.ok) {
+                return false;
+            }
+            set((state) => ({
+                templates: state.templates.filter(t => t.template_id !== templateId)
+            }));
+            return true;
+        } catch (error) {
+            console.error('Failed to delete template:', error);
+            return false;
+        }
+    },
     fetchTemplates: async (projectId) => {
         try {
-            set({ setTemplates: []});
+            set({ templates: []});
 
             let templates = []
             const response = await get().authGet(`/project/${projectId}/templates`);

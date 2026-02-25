@@ -287,22 +287,31 @@ const InnerCanvas: React.FC<InnerCanvasProps> = ({
     const handleNodeClick = useCallback((e: React.MouseEvent, node: KGraphNode) => {
         if (!elementsSelectable) return;
 
-        // Select clicked node, deselect all others
+        const isMultiSelect = e.shiftKey || e.metaKey;
+
         const nodeChanges: NodeChange[] = [];
-        for (const n of nodes) {
-            if (n.id === node.id && !n.selected) {
-                nodeChanges.push({ type: 'select', id: n.id, selected: true });
-            } else if (n.id !== node.id && n.selected) {
-                nodeChanges.push({ type: 'select', id: n.id, selected: false });
+        if (isMultiSelect) {
+            // Toggle clicked node's selection without affecting others
+            nodeChanges.push({ type: 'select', id: node.id, selected: !node.selected });
+        } else {
+            // Select clicked node, deselect all others
+            for (const n of nodes) {
+                if (n.id === node.id && !n.selected) {
+                    nodeChanges.push({ type: 'select', id: n.id, selected: true });
+                } else if (n.id !== node.id && n.selected) {
+                    nodeChanges.push({ type: 'select', id: n.id, selected: false });
+                }
             }
         }
         if (nodeChanges.length) onNodesChange?.(nodeChanges);
 
-        // Deselect all edges
-        const edgeDeselects: EdgeChange[] = edges
-            .filter(ed => ed.selected)
-            .map(ed => ({ type: 'select' as const, id: ed.id, selected: false }));
-        if (edgeDeselects.length) onEdgesChange?.(edgeDeselects);
+        // Deselect all edges (unless multi-select)
+        if (!isMultiSelect) {
+            const edgeDeselects: EdgeChange[] = edges
+                .filter(ed => ed.selected)
+                .map(ed => ({ type: 'select' as const, id: ed.id, selected: false }));
+            if (edgeDeselects.length) onEdgesChange?.(edgeDeselects);
+        }
 
         onNodeClick?.(e, node);
     }, [elementsSelectable, nodes, edges, onNodesChange, onEdgesChange, onNodeClick]);
@@ -349,14 +358,14 @@ const InnerCanvas: React.FC<InnerCanvasProps> = ({
                     target.closest('[role="listbox"]')
                 ) return;
 
-                const selectedNode = nodes.find(n => n.selected);
-                const selectedEdge = edges.find(ed => ed.selected);
+                const selectedNodes = nodes.filter(n => n.selected);
+                const selectedEdges = edges.filter(ed => ed.selected);
 
-                if (selectedNode) {
-                    onNodesChange?.([{ type: 'remove', id: selectedNode.id }]);
+                if (selectedNodes.length) {
+                    onNodesChange?.(selectedNodes.map(n => ({ type: 'remove' as const, id: n.id })));
                 }
-                if (selectedEdge) {
-                    onEdgesChange?.([{ type: 'remove', id: selectedEdge.id }]);
+                if (selectedEdges.length) {
+                    onEdgesChange?.(selectedEdges.map(ed => ({ type: 'remove' as const, id: ed.id })));
                 }
             }
         };

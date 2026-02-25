@@ -1,23 +1,22 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, useEffect } from "react";
 import {TerminalDialog, TerminalButton, TerminalLabel, TerminalInput} from "../common";
 import {useStore} from "../../store";
-import {TerminalDropdown} from "../common";
 
 function TerminalFileRenameDialog({ isOpen, setIsOpen }) {
     const theme = useStore(state => state.getCurrentTheme());
     const {renameSelectedFile, selectedFile} = useStore()
-    const [fileName, setFileName] = useState(selectedFile?.name)
+    const [fileName, setFileName] = useState('')
+
+    useEffect(() => {
+        if (isOpen && selectedFile?.name) {
+            setFileName(selectedFile.name)
+        }
+    }, [isOpen, selectedFile]);
 
     const handleRename = async() => {
-        // const file = new FileTemplate(
-        //     {
-        //         template_path: fileName,
-        //         template_type: fileType,
-        //         template_content: ""
-        //     }
-        // )
         const result = await renameSelectedFile(fileName)
-        console.debug(`created new file: ${selectedFile})`)
+        console.debug(`renamed file: ${fileName}`)
+        setIsOpen(false)
     }
 
     const handleClose = async() => {
@@ -37,7 +36,6 @@ function TerminalFileRenameDialog({ isOpen, setIsOpen }) {
                 >
                 </TerminalInput>
 
-                {/*<TerminalFileUpload onChange={handleFileChange} accept=".csv" icon={<Upload className={`w-4 h-4 ${theme.icon}`} />} />*/}
                 <div className="flex justify-end gap-2">
                     <TerminalButton variant="primary" onClick={handleClose}>Discard</TerminalButton>
                     <TerminalButton variant="primary" onClick={handleRename}>Rename</TerminalButton>

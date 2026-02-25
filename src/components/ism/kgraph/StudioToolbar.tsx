@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useKGraph, useKGraphContext } from '../../../kgraph';
-import { ZoomIn, ZoomOut, Maximize2, Grid3X3, Lock, Unlock, ImageDown } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, Grid3X3, Lock, Unlock, ImageDown, Layers } from 'lucide-react';
 import { toPng, toSvg } from 'html-to-image';
 
 export const StudioToolbar: React.FC<{
@@ -8,7 +8,9 @@ export const StudioToolbar: React.FC<{
     isLocked: boolean;
     onToggleGrid: () => void;
     onToggleLock: () => void;
-}> = ({ isGridVisible, isLocked, onToggleGrid, onToggleLock }) => {
+    selectedNodeIds?: string[];
+    onGroupSelected?: () => void;
+}> = ({ isGridVisible, isLocked, onToggleGrid, onToggleLock, selectedNodeIds = [], onGroupSelected }) => {
     const { fitView, zoomIn, zoomOut } = useKGraph();
     const { containerRef } = useKGraphContext();
 
@@ -47,7 +49,10 @@ export const StudioToolbar: React.FC<{
     const activeClass = 'p-2 transition-all duration-200 bg-midnight-info/20 hover:bg-midnight-info/30 border border-midnight-info hover:border-midnight-info-bright text-midnight-info-bright';
 
     return (
-        <div className="absolute top-3 left-3 z-30 flex items-center gap-1 p-2 bg-midnight-surface/90 backdrop-blur-sm border border-midnight-border shadow-midnight-glow-sm">
+        <div
+            className="absolute top-3 left-3 z-30 flex items-center gap-1 p-2 bg-midnight-surface/90 backdrop-blur-sm border border-midnight-border shadow-midnight-glow-sm"
+            onMouseDown={(e) => e.stopPropagation()}
+        >
             <button onClick={() => zoomIn()} className={btnClass} title="Zoom In"><ZoomIn className="w-4 h-4" /></button>
             <button onClick={() => zoomOut()} className={btnClass} title="Zoom Out"><ZoomOut className="w-4 h-4" /></button>
             <button onClick={() => fitView({ padding: 0.2 })} className={btnClass} title="Fit View"><Maximize2 className="w-4 h-4" /></button>
@@ -61,6 +66,19 @@ export const StudioToolbar: React.FC<{
             <button onClick={exportToSvg} className={btnClass} title="Export as SVG">
                 <span className="text-xs font-mono font-bold leading-none" style={{ fontSize: 10 }}>SVG</span>
             </button>
+            {onGroupSelected && (
+                <>
+                    <div className="w-px h-6 bg-midnight-border mx-1" />
+                    <button
+                        onClick={onGroupSelected}
+                        disabled={selectedNodeIds.length < 2}
+                        className={selectedNodeIds.length >= 2 ? btnClass : `${btnClass} opacity-30 cursor-not-allowed`}
+                        title={selectedNodeIds.length < 2 ? 'Select 2+ nodes to group (Shift+Click)' : `Group ${selectedNodeIds.length} selected nodes`}
+                    >
+                        <Layers className="w-4 h-4" />
+                    </button>
+                </>
+            )}
         </div>
     );
 };

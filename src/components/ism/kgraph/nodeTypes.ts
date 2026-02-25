@@ -3,6 +3,7 @@ import { StateNodeComponent } from './StateNodeComponent';
 import { ProcessorNodeComponent } from './ProcessorNodeComponent';
 import { TransformNodeComponent } from './TransformNodeComponent';
 import { FunctionNodeComponent } from './FunctionNodeComponent';
+import { ClusterNodeComponent } from './ClusterNodeComponent';
 
 export const customNodeTypes: Record<string, React.ComponentType<NodeComponentProps>> = {
     state: StateNodeComponent,
@@ -18,4 +19,5 @@ export const customNodeTypes: Record<string, React.ComponentType<NodeComponentPr
     processor_provider: ProcessorNodeComponent,
     trainer: ProcessorNodeComponent,
     function_datasource_sql: FunctionNodeComponent,
+    cluster: ClusterNodeComponent,
 };

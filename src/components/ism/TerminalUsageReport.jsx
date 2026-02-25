@@ -82,7 +82,7 @@ function TerminalUsageReport() {
         if (!jwtToken) {
             return
         }
-        refreshUsage().then({
+        refreshUsage().then(() => {
             // done refreshing
         })
     }, [jwtToken]); // Fetch projects when userId changes
