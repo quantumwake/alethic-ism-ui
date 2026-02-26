@@ -1,5 +1,5 @@
 export const useWorkspaceSlice = (set, get) => ({
-    currentWorkspace: "studio",
+    currentWorkspace: "home",
     setCurrentWorkspace: (currentWorkspace) => set( { currentWorkspace: currentWorkspace }),
 });
 

@@ -19,5 +19,4 @@ export { default as useNotificationSlice } from './notificationSlice'
 export { default as useStudioSlice } from './studioSlice'
 export { default as useHuggingFaceSlice } from './huggingFaceSlice'
 export { useFilterSlice } from './filterSlice'
-
-
+export { default as useChatAssistantSlice } from './chatAssistantSlice'

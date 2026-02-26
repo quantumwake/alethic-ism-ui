@@ -6,9 +6,8 @@ import {
     List,
     LayoutIcon,
     FolderOpenIcon,
-    BoxesIcon, ChevronDown, AlarmSmokeIcon,
+    AlarmSmokeIcon,
     SparklesIcon,
-    Layers,
     Workflow
 } from 'lucide-react'
 
@@ -22,7 +21,7 @@ import {
 
 import {useStore} from "./store"
 
-import {MenuTab, ProjectTab, ProjectFileTab, ComponentTab, ComponentTab2, ComponentTab3, PropertyTab, AIAssistantTab}  from "./tabs"
+import {HomeTab, MenuTab, ProjectTab, ProjectFileTab, ComponentTab3, PropertyTab, AIAssistantTab}  from "./tabs"
 import {
     TerminalTemplateEditor,
     TerminalUsageReport,
@@ -31,15 +30,9 @@ import {
     TerminalUserMenu
 } from "./components/ism"
 import TerminalNotificationQueue from "./components/common/TerminalNotification"
-import Studio from "./Studio"
-import CustomStudio from "./CustomStudio"
 import StudioV3 from "./StudioV3"
 
 const TAB_COMPONENTS = {
-    /* OLD STUDIO palettes - hidden, replaced by component3 (KGraph/Bench)
-    component: ComponentTab,
-    component2: ComponentTab2,
-    */
     component3: ComponentTab3,
     files: ProjectFileTab,
     project: ProjectTab,
@@ -81,10 +74,6 @@ const Layout = () => {
     const leftTabs = [
         { id: 'menu', icon: <Menu className="w-4 h-4" /> },
         { id: 'project', icon: <LayoutIcon className="w-4 h-4" /> },
-        /* OLD STUDIO palettes - hidden, replaced by component3 (KGraph/Bench)
-        { id: 'component', icon: <BoxesIcon className="w-4 h-4" /> },
-        { id: 'component2', icon: <Layers className="w-4 h-4" /> },
-        */
         { id: 'component3', icon: <Workflow className="w-4 h-4" /> },
         { id: 'files', icon: <FolderOpenIcon className="w-4 h-4" /> }
     ];
@@ -152,14 +141,12 @@ const Layout = () => {
                 <main className="flex-1 p-0 overflow-auto">
                     <TerminalTabView
                         tabs={[
-                            /* OLD STUDIO - hidden, replaced by Bench (StudioV3)
                             {
-                                name: 'studio',
-                                label: 'Studio',
-                                content: <CustomStudio />,
+                                name: 'home',
+                                label: 'Home',
+                                content: <HomeTab />,
                                 closeable: false,
                             },
-                            */
                             {
                                 name: 'bench',
                                 label: 'Bench',
@@ -211,7 +198,7 @@ const Layout = () => {
                     <div className="flex">
 
                         <span><TerminalUsageReport /></span>
-                        <span className="ml-4">v2.0 ALPHA</span>
+                        <span className="ml-4">v2.0 BETA</span>
                         <AlarmSmokeIcon className={`ml-4 w-5 h-5 ${errors?.length > 0 ? "bg-midnight-warning/30 text-midnight-danger-bright": ""} ${theme.icon}`} onClick={() => setIsErrorsDialogOpen(true)} />
                         <span className="ml-2">{errors?.length}</span>
                     </div>

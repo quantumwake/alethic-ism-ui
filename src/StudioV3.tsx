@@ -219,8 +219,7 @@ const StudioV3Inner: React.FC = () => {
 
     // Handle drop from palette
     const handleDrop = useCallback(async (event: React.DragEvent, position: { x: number; y: number }) => {
-        // Accept both application/reactflow (existing palette) and application/kgraph
-        const type = event.dataTransfer.getData('application/reactflow') || event.dataTransfer.getData('application/kgraph');
+        const type = event.dataTransfer.getData('application/kgraph');
         if (!type || !selectedProjectId) return;
 
         const nodeData = {

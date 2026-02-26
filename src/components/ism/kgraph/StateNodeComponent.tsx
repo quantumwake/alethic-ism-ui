@@ -14,7 +14,7 @@ import { NodeToolbar } from './NodeToolbar';
 
 export const StateNodeComponent: React.FC<NodeComponentProps> = ({ id, data, selected }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const { deleteState, setSelectedNodeId, purgeStateData, fetchState, setNodeVisualCollapsed } = useStore();
+    const { deleteState, setSelectedNodeId, purgeStateData, fetchState, setNodeVisualCollapsed, pendingUploadStateId, clearPendingUploadStateId } = useStore();
     const isCollapsed = useStore(state => state.isNodeVisuallyCollapsed(id));
     const setIsCollapsed = (collapsed: boolean) => setNodeVisualCollapsed(id, collapsed);
 
@@ -25,6 +25,14 @@ export const StateNodeComponent: React.FC<NodeComponentProps> = ({ id, data, sel
         view: false, upload: false, export: false, hgImport: false, hgExport: false, purgeConfirm: false, deleteConfirm: false,
     });
     const toggleDialog = (dialog: string) => setDialogs(prev => ({ ...prev, [dialog]: !prev[dialog as keyof typeof prev] }));
+
+    // Open upload dialog when triggered by the chat assistant
+    useEffect(() => {
+        if (pendingUploadStateId === id) {
+            setDialogs(prev => ({ ...prev, upload: true }));
+            clearPendingUploadStateId();
+        }
+    }, [pendingUploadStateId, id, clearPendingUploadStateId]);
 
     const rowCount = nodeData?.count;
     const stateType = nodeData?.state_type || 'state';

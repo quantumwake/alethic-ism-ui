@@ -95,7 +95,7 @@ export const useWorkflowSlice = (set, get) => ({
                 }
             });
 
-            // remap the api data structure to the internal reactflow data structure
+            // remap the api data structure to the internal kgraph data structure
             const updatedNodes = nodes.map(node => ({
                 id: node.node_id,
                 type: node.node_type,
@@ -314,7 +314,7 @@ export const useWorkflowSlice = (set, get) => ({
             const response = await get().authGet(`/project/${projectId}/workflow/edges`);
             const edges = await response.json();
 
-            // remap the api data structure to the internal reactflow data structure
+            // remap the api data structure to the internal kgraph data structure
             const updatedEdges = edges.map(edge => ({
                 // ...node, // Spread the original node properties
                 id: edge.source_node_id + ":" + edge.target_node_id,
@@ -447,7 +447,7 @@ export const useWorkflowSlice = (set, get) => ({
 
         const visibleNodes = workflowNodes.filter(node => !hiddenNodes.has(node.id));
 
-        // ReactFlow automatically hides edges when nodes are hidden
+        // KGraph automatically hides edges when nodes are hidden
         return { visibleNodes, visibleEdges: workflowEdges };
     },
 

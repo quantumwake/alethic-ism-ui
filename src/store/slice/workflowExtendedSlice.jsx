@@ -6,11 +6,13 @@ export const useWorkflowExtendedSlice = (set, get) => ({
         const newNodeData = await get().createProcessor(newNode.id)
 
         get().setNodeData(newNode.id, newNodeData)
+        return newNode
     },
 
     createStateWithWorkflowNode: async (nodeData) => {
         const newNode = await get().createNewNode(nodeData)
         const newNodeData = await get().createState(newNode.id)
+        return newNode
     },
 
     createTrainerWithWorkflowNode: async (nodeData) => {
@@ -19,12 +21,13 @@ export const useWorkflowExtendedSlice = (set, get) => ({
     },
 
     createProcessorStateWithWorkflowEdge: async (connection) => {
-        // createProcessorState(connection.id, targetNode.id, sourceNode.id, "INPUT")
-
         const sourceNode = get().getNode(connection.source)
         const targetNode = get().getNode(connection.target)
         const sourceType = sourceNode.type
         const targetType = targetNode.type
+
+        // Helper: check if a node type is a processor (includes function_* types)
+        const isProcessor = (type) => type?.startsWith('processor') || type?.startsWith('function')
 
         // check to ensure that the source node to the target node is not of same type
         if (sourceType === targetType) {
@@ -39,12 +42,13 @@ export const useWorkflowExtendedSlice = (set, get) => ({
             source_handle: connection.sourceHandle,
             target_handle: connection.targetHandle,
             type: 'default',
-            edge_label: "", // TODO make it editable?
+            edge_label: "",
             animated: false,
         }
 
         // if the target node is a processor then the target node id is a processor id
-        if (targetNode.type.startsWith('processor')) {
+        // INPUT direction: state → processor
+        if (isProcessor(targetType)) {
             newConnection.type = 'state_auto_stream_playable_edge'
             await get().createNewEdge(newConnection).then((updatedEdge) => {
                 get().createProcessorState(
@@ -59,7 +63,8 @@ export const useWorkflowExtendedSlice = (set, get) => ({
         }
 
         // if the target node is a state then the target node id is a state id
-        if (targetNode.type.startsWith('state')) {
+        // OUTPUT direction: processor → state
+        if (targetType === 'state') {
             newConnection.type = 'default'
             await get().createNewEdge(newConnection).then((updatedEdge) => {
                 get().createProcessorState(
@@ -72,9 +77,6 @@ export const useWorkflowExtendedSlice = (set, get) => ({
                 )
             })
         }
-        // get().createNewEdge(edge).then({
-        //     get().createProcessorState(connection.id, targetNode.id, sourceNode.id, "INPUT")
-        // })
     },
 
 });

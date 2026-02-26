@@ -119,7 +119,7 @@ const ProjectTab = () => {
         await fetchTemplates(projectId);
         await fetchProviders();
         setSelectedProjectId(projectId);
-        setCurrentWorkspace("studio")
+        setCurrentWorkspace("bench")
     };
 
     const handleItemClick = (item) => {

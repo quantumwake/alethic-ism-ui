@@ -1,10 +1,8 @@
 import React, {lazy, useEffect} from "react";
 import {createBrowserRouter, RouterProvider, useLocation, useNavigationType} from "react-router-dom";
-import {ReactFlowProvider} from "@xyflow/react";
 import RootLayout from "./RootLayout";
 import Layout from "./Layout";
 import {useStore} from "./store";
-import CustomStudio from "./CustomStudio";
 import SignupBasic from "./SignupBasic";
 import LayoutBasic from "./LayoutBasic";
 
@@ -39,10 +37,7 @@ const router = createBrowserRouter(
         children: [
             {
                 path: "home",
-                element:
-                    <ReactFlowProvider>
-                        <Layout/>
-                    </ReactFlowProvider>
+                element: <Layout/>
             },
             // {
             //     path: "login",
@@ -63,10 +58,8 @@ const router = createBrowserRouter(
                     }
                 ]
             },
-            {
-                path: "test",
-                element: <CustomStudio/>
-            },
+
+
         ]
     }],
     // Pass the dynamic basename here.

@@ -108,10 +108,7 @@ const ComponentTab3 = () => {
     const [collapsedSections, setCollapsedSections] = useState({});
 
     const onDragStart = (event, nodeType) => {
-        // Set both keys so StudioV3 picks it up, and the existing studio also works
-        // if the user accidentally drags onto the wrong canvas
         event.dataTransfer.setData('application/kgraph', nodeType);
-        event.dataTransfer.setData('application/reactflow', nodeType);
         event.dataTransfer.effectAllowed = 'move';
     };
 
