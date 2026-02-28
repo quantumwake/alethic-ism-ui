@@ -7,7 +7,6 @@ import {
     LayoutIcon,
     FolderOpenIcon,
     AlarmSmokeIcon,
-    SparklesIcon,
     Workflow
 } from 'lucide-react'
 
@@ -21,7 +20,7 @@ import {
 
 import {useStore} from "./store"
 
-import {HomeTab, MenuTab, ProjectTab, ProjectFileTab, ComponentTab3, PropertyTab, AIAssistantTab}  from "./tabs"
+import {HomeTab, MenuTab, ProjectTab, ProjectFileTab, ComponentTab3, PropertyTab}  from "./tabs"
 import {
     TerminalTemplateEditor,
     TerminalUsageReport,
@@ -38,7 +37,6 @@ const TAB_COMPONENTS = {
     project: ProjectTab,
     property: PropertyTab,
     menu: MenuTab,
-    ai: AIAssistantTab
 };
 
 export const TerminalTabContent = ({ activeTab, ...props }) => {
@@ -81,7 +79,6 @@ const Layout = () => {
     const rightTabs = [
         { id: 'property', icon: <Settings className="w-4 h-4" /> },
         { id: 'logs', icon: <List className="w-4 h-4" /> },
-        { id: 'ai', icon: <SparklesIcon className="w-4 h-4" /> }
     ];
     const handleItemClick = (item) => {
         // // Different handling based on tab type

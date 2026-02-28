@@ -1,12 +1,9 @@
-import idMapping from '../../tools/idMapping.js';
-
 export const useProjectSlice = (set, get) => ({
 
     // projects list
     projects: [],
     selectedProjectId: null,
     setSelectedProjectId: (projectId) => {
-        idMapping.reset();
         set({ selectedProjectId: projectId });
     },
 

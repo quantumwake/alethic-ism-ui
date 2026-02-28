@@ -4,24 +4,15 @@ import {
     Brain,
     Database,
     Code,
-    BrainCircuit,
     ArrowRight,
     Zap,
     Layers,
     GitBranch,
-    CloudLightning,
     Plus,
     FolderOpen,
-    MessageSquare,
     Cpu,
     FileText,
     Cable,
-    Sparkles,
-    Play,
-    Settings,
-    Upload,
-    Thermometer,
-    List,
 } from 'lucide-react';
 import { useStore } from '../store';
 
@@ -39,7 +30,6 @@ const HomeTab = () => {
         fetchProviders,
         newProject,
         saveProject,
-        sendChatMessage,
     } = useStore();
 
     const onSelectProject = async (project) => {
@@ -58,10 +48,6 @@ const HomeTab = () => {
         if (saved) {
             setCurrentWorkspace('bench');
         }
-    };
-
-    const handleAIPrompt = (prompt) => {
-        sendChatMessage(prompt);
     };
 
     const recentProjects = (projects || []).slice(0, 5);
@@ -255,36 +241,6 @@ const HomeTab = () => {
                     </div>
                 </div>
 
-                {/* AI Assistant Examples */}
-                <div className="mb-10">
-                    <h2 className={`text-xs uppercase tracking-wider ${theme.textMuted} mb-4`}>
-                        <span className="flex items-center gap-2">
-                            <Sparkles className="w-3.5 h-3.5" />
-                            AI Assistant — Try These
-                        </span>
-                    </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {[
-                            { icon: Workflow, prompt: 'Create an OpenAI pipeline with input and output states' },
-                            { icon: Plus, prompt: 'Add an Anthropic processor connected to the same input and output' },
-                            { icon: FileText, prompt: 'Create a template for summarizing articles' },
-                            { icon: List, prompt: 'List all nodes in the current project' },
-                            { icon: Thermometer, prompt: 'Set temperature to 0.9 on the processor' },
-                            { icon: Upload, prompt: 'Upload test data to the input state' },
-                        ].map(({ icon: Icon, prompt }) => (
-                            <button
-                                key={prompt}
-                                onClick={() => handleAIPrompt(prompt)}
-                                className={`flex items-center gap-2.5 p-3 rounded-lg border text-left transition-all duration-200 ${theme.border} ${theme.hover}`}
-                            >
-                                <Icon className={`w-3.5 h-3.5 ${theme.textAccent} flex-none`} />
-                                <span className={`text-xs ${theme.text}`}>{prompt}</span>
-                                <MessageSquare className={`w-3 h-3 ${theme.textMuted} flex-none ml-auto`} />
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
                 {/* Getting Started */}
                 <div className="mb-10">
                     <h2 className={`text-xs uppercase tracking-wider ${theme.textMuted} mb-4`}>Getting Started</h2>
@@ -319,7 +275,6 @@ const HomeTab = () => {
                             { icon: Database, title: 'Data Sources', desc: 'SQL databases, CSV upload, JSON, and streaming data sources.', color: theme.status.success.text },
                             { icon: Layers, title: 'Edge Functions', desc: 'Lua scripts for validation, filtering, retry logic, and data transformation.', color: theme.status.warning.text },
                             { icon: GitBranch, title: 'Visual Workflows', desc: 'Node grouping, auto-layout, real-time status, and drag-and-drop canvas.', color: theme.status.info.text },
-                            { icon: BrainCircuit, title: 'AI Assistant', desc: '44+ tools for natural language workflow building, configuration, and data management.', color: theme.textAccent },
                         ].map(({ icon: Icon, title, desc, color }) => (
                             <div key={title} className={`p-5 rounded-lg border transition-all duration-200 ${theme.border} ${theme.hover} group`}>
                                 <div className="inline-flex p-2.5 rounded-lg mb-3">

@@ -3,5 +3,4 @@ export { default as ProjectTab } from './ProjectTab';
 export { default as ProjectFileTab } from './ProjectFileTab';
 export { default as PropertyTab } from './PropertyTab';
 export { default as MenuTab } from './MenuTab';
-export { default as AIAssistantTab } from './AIAssistantTab';
 export { default as ComponentTab3 } from './ComponentTab3';
