@@ -1,4 +1,4 @@
-import type { NodeComponentProps } from '../../../kgraph';
+import type { NodeComponentProps } from '@quantumwake/kgraph';
 import { StateNodeComponent } from './StateNodeComponent';
 import { ProcessorNodeComponent } from './ProcessorNodeComponent';
 import { TransformNodeComponent } from './TransformNodeComponent';

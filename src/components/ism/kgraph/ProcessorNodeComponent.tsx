@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import type { NodeComponentProps } from '../../../kgraph';
+import type { NodeComponentProps } from '@quantumwake/kgraph';
 import { useStore } from '../../../store';
 import { Cpu } from 'lucide-react';
 import { TerminalDialogConfirmation } from '../../common';

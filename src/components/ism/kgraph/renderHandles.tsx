@@ -1,5 +1,5 @@
 import React from 'react';
-import { Handle } from '../../../kgraph';
+import { Handle } from '@quantumwake/kgraph';
 
 export const renderHandles = (color: string) => {
     const handleStyle: React.CSSProperties = {
