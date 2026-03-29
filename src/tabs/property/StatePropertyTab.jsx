@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {useStore} from '../../store';
 import {
     TerminalInput,
@@ -22,13 +22,12 @@ const configOptions = [
     {id: 'StateConfigUserInput', label: 'Interactive'},
 ];
 
-const StatePropertyTab = () => {
+const StatePropertyTab = ({ saveRef }) => {
 
     const theme = useStore(state => state.getCurrentTheme());
     const {templates} = useStore();
 
-
-    const {selectedNodeId, setNodeData, fetchState, getNode, getNodeData, selectedProjectId} = useStore()
+    const {selectedNodeId, setNodeData, fetchState, createState, getNode, getNodeData, selectedProjectId} = useStore()
     const node = useStore(state => state.getNode(selectedNodeId))
     const nodeData = useStore(state => state.getNodeData(selectedNodeId))
 
@@ -57,6 +56,16 @@ const StatePropertyTab = () => {
             }
         })();
     }, [fetchState, selectedNodeId])
+
+    // Register save handler with parent
+    const handleSave = useCallback(async () => {
+        if (!selectedNodeId) return;
+        return await createState(selectedNodeId);
+    }, [selectedNodeId, createState]);
+
+    useEffect(() => {
+        if (saveRef) saveRef.current = handleSave;
+    }, [saveRef, handleSave]);
 
     const onChangeDropDownSelection = (type, value) => {
 

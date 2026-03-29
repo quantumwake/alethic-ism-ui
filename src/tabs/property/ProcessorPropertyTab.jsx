@@ -1,15 +1,15 @@
 import {useStore} from '../../store';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {TerminalInput, TerminalLabel, TerminalTabViewSection, TerminalAutocomplete} from "../../components/common";
 import ProcessorJoinConfig from "./processor/ProcessorJoinConfig";
 import ProcessorStateTablesConfig from "./processor/ProcessorStateTablesConfig";
 import ProcessorLLMConfig from "./processor/ProcessorLLMConfig";
 import ProcessorBaseConfig from "./processor/ProcessorBaseConfig";
 
-const ProcessorPropertyTab = () => {
+const ProcessorPropertyTab = ({ saveRef }) => {
     const theme = useStore(state => state.getCurrentTheme());
     const {setNodeData} = useStore()
-    const {providers, getProviderById, fetchProviders, fetchProcessor} = useStore()
+    const {providers, getProviderById, fetchProviders, fetchProcessor, createProcessor} = useStore()
     const {selectedNodeId} = useStore()
     const nodeData = useStore(state => state.getNodeData(selectedNodeId))
 
@@ -58,6 +58,15 @@ const ProcessorPropertyTab = () => {
         }
     }, [providers]);
 
+    // Register save handler with parent
+    const handleSave = useCallback(async () => {
+        if (!selectedNodeId) return;
+        return await createProcessor(selectedNodeId);
+    }, [selectedNodeId, createProcessor]);
+
+    useEffect(() => {
+        if (saveRef) saveRef.current = handleSave;
+    }, [saveRef, handleSave]);
 
     const update = () => {
         const state_type = nodeData?.state_type
