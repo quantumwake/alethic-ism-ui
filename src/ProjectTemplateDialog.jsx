@@ -48,7 +48,7 @@ const templateSample = {
         # returns the new output states such that it can be passed in as an input to the next process
         return output_states
 
-    # if this instruction is connected to an output state that happens to be of type stream (StateConfigStream)
+    # if this instruction is connected to an output state that happens to be of type stream (StateConfig)
     def process_stream(self, query_state: Any):
         # the data that is passed in is simply yielded to the stream 
         # (e.g. a websocket on the egress of an output state that happens to be a state stream config)
@@ -99,7 +99,7 @@ const templateSample = {
         # returns the new output states such that it can be passed in as an input to the next process
         return output_states
 
-    # if this instruction is connected to an output state that happens to be of type stream (StateConfigStream)
+    # if this instruction is connected to an output state that happens to be of type stream (StateConfig)
     def process_stream(self, query_state: Any):
         # the data that is passed in is simply yielded to the stream 
         # (e.g. a websocket on the egress of an output state that happens to be a state stream config)
