@@ -1,35 +1,25 @@
-import React from "react";
+import React, { useRef } from "react";
 import {useStore} from '../store';
-import {RefreshCcwIcon, SaveIcon} from "lucide-react";
+import {SaveIcon} from "lucide-react";
 import {TerminalButton, TerminalLabel} from "../components/common";
 import StatePropertyTab from "./property/StatePropertyTab";
 import ProcessorPropertyTab from "./property/ProcessorPropertyTab";
 import EdgePropertyTab from "./property/EdgePropertyTab";
 
 const PropertyTab = () => {
-    const {selectedNodeId, getNode} = useStore()
+    const {selectedNodeId} = useStore()
     const {selectedEdgeId} = useStore()
-    const {updateNode, createState, createProcessor} = useStore()
     const theme = useStore(state => state.getCurrentTheme());
     const selectedNode = useStore(state => state.getNode(selectedNodeId));
+    const saveRef = useRef(null);
 
     const handleSave = async () => {
-        if (!selectedNodeId || !selectedNode) {
-            console.warn("unable to persist node, no node selected.")
-            return
-        }
-
-        if (selectedNode.type === "state") {
-            // updateNode(selectedNodeId).then(() => {
-                const newState = createState(selectedNodeId).then(() => {
-                    console.log('saved state: ' + newState)
-                })
-            // })
-        } else if (selectedNode.type.includes("processor")) {
-            const processor = await createProcessor(selectedNodeId)
-            console.log(`saved processor: ${processor}`)
+        if (saveRef.current) {
+            await saveRef.current();
         }
     }
+
+    const nodeType = selectedNode?.type;
 
     return (<div className={`relative flex-grow h-screen flex w-full ${theme.bg}`}>
                 <div className="z-50 absolute top-2 right-6 flex gap-4">
@@ -44,11 +34,11 @@ const PropertyTab = () => {
                         <div className={`${theme.text} ${theme.spacing.base} mb-0`}>
                             <TerminalLabel>{selectedNodeId}</TerminalLabel>
                         </div>
-                        {selectedNode.type === "state" && (
-                            <StatePropertyTab/>
+                        {nodeType === "state" && (
+                            <StatePropertyTab saveRef={saveRef} />
                         )}
-                        {selectedNode.type.startsWith("processor") && (
-                            <ProcessorPropertyTab/>
+                        {nodeType?.startsWith("processor") && (
+                            <ProcessorPropertyTab saveRef={saveRef} />
                         )}
                     </>)}
                     {!selectedNodeId && selectedEdgeId && (<>
