@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Minimize2, Unlink, GripHorizontal, Pencil } from 'lucide-react';
-import { useKGraphContext } from '../../../kgraph';
-import type { KGraphNode, NodeChange } from '../../../kgraph';
+import { useKGraphContext } from '@quantumwake/kgraph';
+import type { KGraphNode, NodeChange } from '@quantumwake/kgraph';
 
 interface ExpandedGroup {
     groupId: string;

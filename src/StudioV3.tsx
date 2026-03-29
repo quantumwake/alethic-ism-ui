@@ -4,11 +4,11 @@ import {
     KGraphProvider,
     applyNodeChanges,
     applyEdgeChanges,
-} from './kgraph';
+} from '@quantumwake/kgraph';
 import type {
     NodeChange,
     EdgeChange,
-} from './kgraph';
+} from '@quantumwake/kgraph';
 import WithAuth from './WithAuth';
 import { useStore } from './store';
 import {

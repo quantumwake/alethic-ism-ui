@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { getBezierPath, useKGraphContext } from '../../../kgraph';
-import type { EdgeComponentProps } from '../../../kgraph';
+import { getBezierPath, useKGraphContext } from '@quantumwake/kgraph';
+import type { EdgeComponentProps } from '@quantumwake/kgraph';
 import { useStore } from '../../../store';
 import { Play, Filter, Zap, Trash2 } from 'lucide-react';
 import TerminalSyslog from '../TerminalSyslog';

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useKGraph, useKGraphContext } from '../../../kgraph';
+import { useKGraph, useKGraphContext } from '@quantumwake/kgraph';
 import { ZoomIn, ZoomOut, Maximize2, Grid3X3, Lock, Unlock, ImageDown, Layers } from 'lucide-react';
 import { toPng, toSvg } from 'html-to-image';
 

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { KGraphNode, KGraphEdge } from '../../../kgraph';
+import type { KGraphNode, KGraphEdge } from '@quantumwake/kgraph';
 
 interface GroupDefinition {
     name: string;

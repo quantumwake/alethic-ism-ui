@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { NodeComponentProps } from '../../../kgraph';
+import type { NodeComponentProps } from '@quantumwake/kgraph';
 import { Layers, Maximize2, Unlink, Pencil } from 'lucide-react';
 import { useStore } from '../../../store';
 import { renderHandles } from './renderHandles';
