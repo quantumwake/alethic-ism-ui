@@ -4,13 +4,13 @@ import {
     TerminalInput,
     TerminalLabel,
     TerminalDropdown,
-    TerminalToggle,
     TerminalTabViewSection,
     TemplateFieldWithEditor,
 } from '../../components/common'
 
 import StateColumns from "./state/StateColumns";
 import StateConfigDataKeyDefinition from "./state/StateConfigDataKeyDefinition";
+import StatePropertiesSections from "./state/StatePropertiesSections";
 
 const configOptions = [
     {id: 'StateConfig', label: 'Basic'},
@@ -18,7 +18,6 @@ const configOptions = [
     {id: 'StateConfigDB', label: 'Database'},
     {id: 'StateConfigVisual', label: 'Visual'},
     {id: 'StateConfigCode', label: 'Code'},
-    {id: 'StateConfigStream', label: 'Stream'},
     {id: 'StateConfigAudio', label: 'Audio'},
     {id: 'StateConfigUserInput', label: 'Interactive'},
 ];
@@ -32,8 +31,7 @@ const StatePropertyTab = () => {
     const {selectedNodeId, setNodeData, fetchState, getNode, getNodeData, selectedProjectId} = useStore()
     const node = useStore(state => state.getNode(selectedNodeId))
     const nodeData = useStore(state => state.getNodeData(selectedNodeId))
-    const [isAdvancedCollapsed, setIsAdvancedCollapsed] = useState(false);
-    
+
     // Debug logging
     console.log('StatePropertyTab render:', { 
         selectedNodeId, 
@@ -43,9 +41,6 @@ const StatePropertyTab = () => {
         systemTemplateId: nodeData?.config?.system_template_id,
         templateId: nodeData?.config?.template_id
     })
-
-    // Extract the flags from the config
-    const flags = Object.keys(nodeData?.config || {}).filter(key => key.startsWith('flag_'));
 
     // Fetch state object data if id is provided
     useEffect(() => {
@@ -62,19 +57,6 @@ const StatePropertyTab = () => {
             }
         })();
     }, [fetchState, selectedNodeId])
-
-    const onChangeConfigFlag = async (flag_name, value) => {
-        console.log(flag_name, value)
-        setNodeData(selectedNodeId, {
-            ...nodeData,
-            config: {
-                ...(nodeData?.config || {}),
-                [flag_name]: value
-            }
-        })
-    }
-
-
 
     const onChangeDropDownSelection = (type, value) => {
 
@@ -197,38 +179,8 @@ const StatePropertyTab = () => {
         }
     }
 
-    const generalFlags = (type => {
-        // Flags Section
-        if (flags.length === 0) {
-            return <></>
-        }
-
-        return {
-            title: "Flags",
-            content: (
-                <div className={theme.spacing.base}>
-                    <TerminalLabel description="available type of state flags">
-                        State Flags
-                    </TerminalLabel>
-                    {flags.map(flag => (
-                        <div key={flag} className={`flex items-center ${theme.spacing.sm}`}>
-                            <span className={theme.text}>
-                                {flag.replace('flag_', '').replace(/_/g, ' ')}
-                            </span>
-                            <TerminalToggle
-                                checked={nodeData?.config[flag]}
-                                onChange={(checked) => onChangeConfigFlag(flag, checked)}
-                            />
-                        </div>
-                    ))}
-                </div>
-            )
-        }
-    })
-
     const functionTemplate = (type) => {
-        if (![  "StateConfigStream",
-                "StateConfigCode",
+        if (![  "StateConfigCode",
                 "StateConfigVisual",
                 "StateConfigAudio",
                 "StateConfigUserInput",
@@ -390,7 +342,15 @@ const StatePropertyTab = () => {
                 title: "General",
                 items: {
                     basic: generalBasic(type),
-                    flags: generalFlags(type)
+                }
+            },
+            properties: {
+                title: "Properties",
+                items: {
+                    content: {
+                        title: "Properties",
+                        content: <StatePropertiesSections nodeId={selectedNodeId} stateType={type} />
+                    }
                 }
             },
             function: {
@@ -427,8 +387,6 @@ const StatePropertyTab = () => {
                         title: "",
                         content: <TerminalTabViewSection title="Templated" items={stateConfigTemplatedColumns(type)} sub={true} />
                     }
-                    // columns: <TerminalTabViewSection title="Columns" items={stateColumns(type)} />,
-                    // primary_key: <TerminalTabViewSection title="Primary Key" items={stateConfigPrimaryKey(type)} />
                 }
             }
         }

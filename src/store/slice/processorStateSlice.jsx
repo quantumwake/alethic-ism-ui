@@ -6,12 +6,14 @@ export const useProcessorStateSlice = (set, get) => ({
     deleteProcessorState: async (routeId) => {
         try {
             const response = await get().authDelete(`/processor/state/route/${routeId}`);
-
             if (!response.ok) {
-                // TODO proper error handling -- throw new Error('Network response was not ok');
+                console.error(`Failed to delete processor_state route ${routeId}: ${response.status}`);
+                return false;
             }
+            return true;
         } catch (error) {
-            console.error(`Failed to delete state node configuration definition key  with id ${routeId}: `, error);
+            console.error(`Failed to delete processor_state route ${routeId}:`, error);
+            return false;
         }
     },
 

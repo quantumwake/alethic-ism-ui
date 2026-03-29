@@ -47,6 +47,10 @@ const useStore = create(
             ENVIRONMENT: window.env.REACT_APP_ENVIRONMENT,
             ISM_API_BASE_URL: window.env.REACT_APP_ISM_API_BASE_URL,
 
+            // Hook point for mutation side-effects (e.g. assistant context sync).
+            // Override in enterprise slices; noop by default.
+            afterMutation: null,
+
             ...useHttpSlice(set, get),
             ...useThemeSlice(set, get),
             ...useAccountSlice(set, get),
